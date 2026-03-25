@@ -1,6 +1,5 @@
 <template>
   <div class="app-layout" :class="`theme-${rolTema}`">
-
     <!-- Sidebar -->
     <aside class="sidebar" :class="{ collapsed: sidebarColapsado }">
       <div class="sidebar-header">
@@ -8,19 +7,22 @@
           <span class="brand-icon">◈</span>
           <span class="brand-text">Nails Bere</span>
         </div>
-        <button class="collapse-btn" @click="sidebarColapsado = !sidebarColapsado">
-          {{ sidebarColapsado ? '→' : '←' }}
+        <button
+          class="collapse-btn"
+          @click="sidebarColapsado = !sidebarColapsado"
+        >
+          {{ sidebarColapsado ? "→" : "←" }}
         </button>
       </div>
 
       <nav class="sidebar-nav">
         <RouterLink
-            v-for="(item, i) in navItems"
-            :key="item.name"
-            :to="{ name: item.name }"
-            class="nav-item"
-            active-class="nav-item--active"
-            :style="{ animationDelay: `${i * 0.07}s` }"
+          v-for="(item, i) in navItems"
+          :key="item.name"
+          :to="{ name: item.name }"
+          class="nav-item"
+          active-class="nav-item--active"
+          :style="{ animationDelay: `${i * 0.07}s` }"
         >
           <span class="nav-icon">{{ item.icono }}</span>
           <span class="nav-label">{{ item.titulo }}</span>
@@ -37,7 +39,6 @@
 
     <!-- Contenido principal -->
     <main class="main-content">
-
       <!-- Top bar con perfil -->
       <header class="top-bar">
         <div class="page-title">
@@ -53,7 +54,9 @@
               <div class="perfil-avatar" :class="`avatar-${rolTema}`">
                 {{ auth.usuario?.avatar }}
               </div>
-              <span class="perfil-chevron" :class="{ rotado: perfilAbierto }">▾</span>
+              <span class="perfil-chevron" :class="{ rotado: perfilAbierto }"
+                >▾</span
+              >
             </button>
 
             <!-- Dropdown -->
@@ -65,14 +68,16 @@
                   </div>
                   <div class="dropdown-info">
                     <p class="dropdown-nombre">{{ auth.usuario?.nombre }}</p>
-                    <span class="dropdown-rol" :class="`badge-${rolTema}`">{{ etiquetaRol }}</span>
+                    <span class="dropdown-rol" :class="`badge-${rolTema}`">{{
+                      etiquetaRol
+                    }}</span>
                   </div>
                 </div>
                 <div class="dropdown-divider"></div>
                 <RouterLink
-                    :to="rutaPerfil"
-                    class="dropdown-item"
-                    @click="perfilAbierto = false"
+                  :to="rutaPerfil"
+                  class="dropdown-item"
+                  @click="perfilAbierto = false"
                 >
                   <span>👤</span> Mi perfil
                 </RouterLink>
@@ -94,97 +99,110 @@
           </Transition>
         </RouterView>
       </div>
-
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/nucleo/estado/auth";
 
 const props = defineProps({
-  navItems:    { type: Array,  default: () => [] },
-  rolTema:     { type: String, default: 'usuario' },
-  etiquetaRol: { type: String, default: 'Usuario' },
-})
+  navItems: { type: Array, default: () => [] },
+  rolTema: { type: String, default: "usuario" },
+  etiquetaRol: { type: String, default: "Usuario" },
+});
 
-const auth = useAuthStore()
-const router = useRouter()
-const sidebarColapsado = ref(false)
-const perfilAbierto = ref(false)
-const perfilRef = ref(null)
-const horaActual = ref('')
-let intervalo = null
+const auth = useAuthStore();
+const router = useRouter();
+const sidebarColapsado = ref(false);
+const perfilAbierto = ref(false);
+const perfilRef = ref(null);
+const horaActual = ref("");
+let intervalo = null;
 
 // Ruta de perfil según rol
 const rutaPerfil = computed(() => {
   const rutas = {
-    usuario:  '/usuario/perfil',
-    empleado: '/empleado/perfil',
-    admin:    '/admin/dashboard',
-  }
-  return rutas[props.rolTema] || '/'
-})
+    usuario: "/usuario/perfil",
+    empleado: "/empleado/perfil",
+    admin: "/admin/dashboard",
+  };
+  return rutas[props.rolTema] || "/";
+});
 
 function actualizarHora() {
-  horaActual.value = new Date().toLocaleTimeString('es-MX', {
-    hour: '2-digit', minute: '2-digit',
-  })
+  horaActual.value = new Date().toLocaleTimeString("es-MX", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 // Cerrar dropdown al hacer clic fuera
 function handleClickFuera(e) {
   if (perfilRef.value && !perfilRef.value.contains(e.target)) {
-    perfilAbierto.value = false
+    perfilAbierto.value = false;
   }
 }
 
 onMounted(() => {
-  actualizarHora()
-  intervalo = setInterval(actualizarHora, 30000)
-  document.addEventListener('click', handleClickFuera)
-})
+  actualizarHora();
+  intervalo = setInterval(actualizarHora, 30000);
+  document.addEventListener("click", handleClickFuera);
+});
 
 onUnmounted(() => {
-  clearInterval(intervalo)
-  document.removeEventListener('click', handleClickFuera)
-})
+  clearInterval(intervalo);
+  document.removeEventListener("click", handleClickFuera);
+});
 
 function handleLogout() {
-  auth.logout()
-  router.push('/login')
+  auth.logout();
+  router.push("/login");
 }
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap");
 
 /* ── Layout base ─────────────────────────────────── */
 .app-layout {
   display: flex;
   min-height: 100vh;
   background: #0d0d14;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   color: #fff;
 }
 
 /* ── Variables por rol ───────────────────────────── */
-.theme-usuario  { --accent: #f9a8d4; --accent-dim: rgba(249,168,212,0.12); --accent-mid: rgba(249,168,212,0.25); }
-.theme-empleado { --accent: #f9a8d4; --accent-dim: rgba(249,168,212,0.12); --accent-mid: rgba(249,168,212,0.25); }
-.theme-admin    { --accent: #f9a8d4; --accent-dim: rgba(249,168,212,0.12); --accent-mid: rgba(249,168,212,0.25); }
+.theme-usuario {
+  --accent: #f9a8d4;
+  --accent-dim: rgba(249, 168, 212, 0.12);
+  --accent-mid: rgba(249, 168, 212, 0.25);
+}
+.theme-empleado {
+  --accent: #f9a8d4;
+  --accent-dim: rgba(249, 168, 212, 0.12);
+  --accent-mid: rgba(249, 168, 212, 0.25);
+}
+.theme-admin {
+  --accent: #f9a8d4;
+  --accent-dim: rgba(249, 168, 212, 0.12);
+  --accent-mid: rgba(249, 168, 212, 0.25);
+}
 
 /* ── Sidebar ─────────────────────────────────────── */
 .sidebar {
   width: 220px;
   min-width: 220px;
   background: #111118;
-  border-right: 1px solid rgba(249,168,212,0.1);
+  border-right: 1px solid rgba(249, 168, 212, 0.1);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s cubic-bezier(0.4,0,0.2,1),
-  min-width 0.3s cubic-bezier(0.4,0,0.2,1);
+  transition:
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
@@ -198,7 +216,7 @@ function handleLogout() {
   align-items: center;
   justify-content: space-between;
   padding: 1.2rem 1rem;
-  border-bottom: 1px solid rgba(249,168,212,0.08);
+  border-bottom: 1px solid rgba(249, 168, 212, 0.08);
 }
 
 .sidebar-brand {
@@ -216,12 +234,17 @@ function handleLogout() {
 }
 
 @keyframes pulse-icon {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .brand-text {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: "Cormorant Garamond", serif;
   font-weight: 600;
   font-style: italic;
   font-size: 1.25rem;
@@ -235,14 +258,16 @@ function handleLogout() {
 .collapse-btn {
   background: none;
   border: none;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   flex-shrink: 0;
   transition: color 0.2s;
 }
-.collapse-btn:hover { color: var(--accent); }
+.collapse-btn:hover {
+  color: var(--accent);
+}
 
 /* ── Nav items ───────────────────────────────────── */
 .sidebar-nav {
@@ -258,11 +283,14 @@ function handleLogout() {
   align-items: center;
   gap: 0.75rem;
   padding: 0.6rem 1rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   text-decoration: none;
   font-size: 0.85rem;
   border-left: 3px solid transparent;
-  transition: color 0.2s, background 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    border-color 0.2s;
   white-space: nowrap;
   overflow: hidden;
   /* Animación de entrada */
@@ -270,13 +298,19 @@ function handleLogout() {
 }
 
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-16px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .nav-item:hover {
-  color: rgba(255,255,255,0.85);
-  background: rgba(249,168,212,0.05);
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(249, 168, 212, 0.05);
 }
 
 .nav-item--active {
@@ -293,7 +327,9 @@ function handleLogout() {
   transition: transform 0.2s;
 }
 
-.nav-item:hover .nav-icon { transform: scale(1.15); }
+.nav-item:hover .nav-icon {
+  transform: scale(1.15);
+}
 
 .nav-label {
   overflow: hidden;
@@ -304,7 +340,7 @@ function handleLogout() {
 /* ── Sidebar footer ──────────────────────────────── */
 .sidebar-footer {
   padding: 0.75rem 0;
-  border-top: 1px solid rgba(249,168,212,0.08);
+  border-top: 1px solid rgba(249, 168, 212, 0.08);
 }
 
 .btn-logout {
@@ -314,20 +350,24 @@ function handleLogout() {
   padding: 0.6rem 1rem;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   font-size: 0.85rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   width: 100%;
   transition: color 0.2s;
   white-space: nowrap;
   overflow: hidden;
 }
-.btn-logout:hover { color: #ff6b6b; }
+.btn-logout:hover {
+  color: #ff6b6b;
+}
 
 /* Ocultar labels colapsado */
 .collapsed .nav-label,
-.collapsed .brand-text { display: none; }
+.collapsed .brand-text {
+  display: none;
+}
 
 /* ── Main content ────────────────────────────────── */
 .main-content {
@@ -344,8 +384,8 @@ function handleLogout() {
   align-items: center;
   justify-content: space-between;
   padding: 0.9rem 1.5rem;
-  border-bottom: 1px solid rgba(249,168,212,0.08);
-  background: rgba(255,255,255,0.015);
+  border-bottom: 1px solid rgba(249, 168, 212, 0.08);
+  background: rgba(255, 255, 255, 0.015);
   backdrop-filter: blur(8px);
   position: sticky;
   top: 0;
@@ -354,12 +394,18 @@ function handleLogout() {
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .page-title {
-  font-family: 'Syne', sans-serif;
+  font-family: "Syne", sans-serif;
   font-weight: 700;
   font-size: 1rem;
   color: #fff;
@@ -373,7 +419,7 @@ function handleLogout() {
 
 .current-time {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.25);
+  color: rgba(255, 255, 255, 0.25);
 }
 
 /* ── Perfil btn ──────────────────────────────────── */
@@ -394,7 +440,7 @@ function handleLogout() {
 }
 
 .perfil-btn:hover {
-  background: rgba(249,168,212,0.08);
+  background: rgba(249, 168, 212, 0.08);
 }
 
 .perfil-avatar {
@@ -407,28 +453,32 @@ function handleLogout() {
   font-size: 0.72rem;
   font-weight: 700;
   border: 2px solid var(--accent);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .perfil-btn:hover .perfil-avatar {
   transform: scale(1.08);
-  box-shadow: 0 0 12px rgba(249,168,212,0.4);
+  box-shadow: 0 0 12px rgba(249, 168, 212, 0.4);
 }
 
 .avatar-usuario,
 .avatar-empleado,
 .avatar-admin {
-  background: rgba(249,168,212,0.15);
+  background: rgba(249, 168, 212, 0.15);
   color: #f9a8d4;
 }
 
 .perfil-chevron {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   transition: transform 0.25s;
 }
 
-.perfil-chevron.rotado { transform: rotate(180deg); }
+.perfil-chevron.rotado {
+  transform: rotate(180deg);
+}
 
 /* ── Dropdown perfil ─────────────────────────────── */
 .perfil-dropdown {
@@ -437,10 +487,10 @@ function handleLogout() {
   right: 0;
   width: 220px;
   background: #1a1a24;
-  border: 1px solid rgba(249,168,212,0.2);
+  border: 1px solid rgba(249, 168, 212, 0.2);
   border-radius: 14px;
   padding: 0.5rem;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   z-index: 100;
 }
 
@@ -460,9 +510,9 @@ function handleLogout() {
   justify-content: center;
   font-size: 0.72rem;
   font-weight: 700;
-  background: rgba(249,168,212,0.15);
+  background: rgba(249, 168, 212, 0.15);
   color: #f9a8d4;
-  border: 1px solid rgba(249,168,212,0.3);
+  border: 1px solid rgba(249, 168, 212, 0.3);
   flex-shrink: 0;
 }
 
@@ -485,13 +535,13 @@ function handleLogout() {
 .badge-usuario,
 .badge-empleado,
 .badge-admin {
-  background: rgba(249,168,212,0.15);
+  background: rgba(249, 168, 212, 0.15);
   color: #f9a8d4;
 }
 
 .dropdown-divider {
   height: 1px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   margin: 0.3rem 0;
 }
 
@@ -500,7 +550,7 @@ function handleLogout() {
   align-items: center;
   gap: 0.6rem;
   padding: 0.55rem 0.7rem;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
   font-size: 0.82rem;
   border-radius: 8px;
@@ -508,25 +558,29 @@ function handleLogout() {
   background: none;
   border: none;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: background 0.15s, color 0.15s;
+  font-family: "DM Sans", sans-serif;
+  transition:
+    background 0.15s,
+    color 0.15s;
   text-align: left;
 }
 
 .dropdown-item:hover {
-  background: rgba(249,168,212,0.08);
+  background: rgba(249, 168, 212, 0.08);
   color: #fff;
 }
 
 .logout-item:hover {
-  background: rgba(255,100,100,0.08);
+  background: rgba(255, 100, 100, 0.08);
   color: #ff6b6b;
 }
 
 /* ── Transición dropdown ─────────────────────────── */
 .dropdown-enter-active,
 .dropdown-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 .dropdown-enter-from,
 .dropdown-leave-to {
@@ -536,10 +590,14 @@ function handleLogout() {
 
 /* ── Transición de página ────────────────────────── */
 .page-enter-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 .page-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 .page-enter-from {
   opacity: 0;

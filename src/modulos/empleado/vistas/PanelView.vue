@@ -1,12 +1,15 @@
 <template>
   <div class="dashboard">
-
     <!-- Header de bienvenida -->
     <div class="welcome-banner">
       <div class="welcome-left">
         <p class="welcome-label">🌸 Hola de nuevo,</p>
-        <h1 class="welcome-nombre">{{ auth.usuario?.nombre?.split(' ')[0] }}</h1>
-        <p class="welcome-fecha">{{ fechaHoy }} · {{ citasHoy.length }} citas programadas</p>
+        <h1 class="welcome-nombre">
+          {{ auth.usuario?.nombre?.split(" ")[0] }}
+        </h1>
+        <p class="welcome-fecha">
+          {{ fechaHoy }} · {{ citasHoy.length }} citas programadas
+        </p>
       </div>
       <div class="welcome-stats">
         <div v-for="s in resumen" :key="s.titulo" class="mini-stat">
@@ -21,10 +24,10 @@
       <h2 class="seccion-titulo">📋 Agenda de hoy</h2>
       <div class="agenda-list">
         <div
-            v-for="cita in citasHoy"
-            :key="cita.id"
-            class="agenda-item"
-            :class="`estado-${cita.estado}`"
+          v-for="cita in citasHoy"
+          :key="cita.id"
+          class="agenda-item"
+          :class="`estado-${cita.estado}`"
         >
           <div class="agenda-hora">
             <span class="hora-txt">{{ cita.hora }}</span>
@@ -36,17 +39,23 @@
             <p class="agenda-cliente">👤 {{ cita.cliente }}</p>
           </div>
           <div class="agenda-acciones">
-            <span class="estado-pill" :class="`pill-${cita.estado}`">{{ cita.etiqueta }}</span>
+            <span class="estado-pill" :class="`pill-${cita.estado}`">{{
+              cita.etiqueta
+            }}</span>
             <button
-                v-if="cita.estado === 'pendiente'"
-                class="btn-confirmar"
-                @click="confirmar(cita)"
-            >Confirmar</button>
+              v-if="cita.estado === 'pendiente'"
+              class="btn-confirmar"
+              @click="confirmar(cita)"
+            >
+              Confirmar
+            </button>
             <button
-                v-if="cita.estado === 'confirmada'"
-                class="btn-completar"
-                @click="completar(cita)"
-            >Completar</button>
+              v-if="cita.estado === 'confirmada'"
+              class="btn-completar"
+              @click="completar(cita)"
+            >
+              Completar
+            </button>
           </div>
         </div>
       </div>
@@ -63,47 +72,99 @@
         </div>
       </div>
     </section>
-
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
+import { ref } from "vue";
+import { useAuthStore } from "@/nucleo/estado/auth";
 
-const auth = useAuthStore()
+const auth = useAuthStore();
 
-const fechaHoy = new Date().toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })
+const fechaHoy = new Date().toLocaleDateString("es-MX", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
 
 const resumen = [
-  { titulo: 'Hoy',      valor: '6' },
-  { titulo: 'Semana',   valor: '24' },
-  { titulo: 'Mes',      valor: '98' },
-]
+  { titulo: "Hoy", valor: "6" },
+  { titulo: "Semana", valor: "24" },
+  { titulo: "Mes", valor: "98" },
+];
 
 const citasHoy = ref([
-  { id: 1, hora: '9:00',  duracion: '45min', servicio: 'Corte de cabello',      cliente: 'Carlos López',    estado: 'completada', etiqueta: 'Completada' },
-  { id: 2, hora: '10:00', duracion: '1hr',   servicio: 'Limpieza facial',        cliente: 'María García',    estado: 'confirmada', etiqueta: 'Confirmada' },
-  { id: 3, hora: '12:00', duracion: '1hr',   servicio: 'Manicure semipermanente',cliente: 'Pedro Sánchez',   estado: 'confirmada', etiqueta: 'Confirmada' },
-  { id: 4, hora: '3:00',  duracion: '1hr',   servicio: 'Maquillaje social',      cliente: 'Lucía Hernández', estado: 'pendiente',  etiqueta: 'Pendiente' },
-  { id: 5, hora: '4:30',  duracion: '2hrs',  servicio: 'Tinte y coloración',     cliente: 'Rosa Méndez',     estado: 'pendiente',  etiqueta: 'Pendiente' },
-])
+  {
+    id: 1,
+    hora: "9:00",
+    duracion: "45min",
+    servicio: "Corte de cabello",
+    cliente: "Carlos López",
+    estado: "completada",
+    etiqueta: "Completada",
+  },
+  {
+    id: 2,
+    hora: "10:00",
+    duracion: "1hr",
+    servicio: "Limpieza facial",
+    cliente: "María García",
+    estado: "confirmada",
+    etiqueta: "Confirmada",
+  },
+  {
+    id: 3,
+    hora: "12:00",
+    duracion: "1hr",
+    servicio: "Manicure semipermanente",
+    cliente: "Pedro Sánchez",
+    estado: "confirmada",
+    etiqueta: "Confirmada",
+  },
+  {
+    id: 4,
+    hora: "3:00",
+    duracion: "1hr",
+    servicio: "Maquillaje social",
+    cliente: "Lucía Hernández",
+    estado: "pendiente",
+    etiqueta: "Pendiente",
+  },
+  {
+    id: 5,
+    hora: "4:30",
+    duracion: "2hrs",
+    servicio: "Tinte y coloración",
+    cliente: "Rosa Méndez",
+    estado: "pendiente",
+    etiqueta: "Pendiente",
+  },
+]);
 
 const metricas = [
-  { titulo: 'Citas completadas', valor: '98',   icono: '✅' },
-  { titulo: 'Calificación',      valor: '4.9⭐', icono: '🌸' },
-  { titulo: 'Clientes nuevos',   valor: '12',   icono: '👤' },
-  { titulo: 'Ingresos generados',valor: '$16,240', icono: '💰' },
-]
+  { titulo: "Citas completadas", valor: "98", icono: "✅" },
+  { titulo: "Calificación", valor: "4.9⭐", icono: "🌸" },
+  { titulo: "Clientes nuevos", valor: "12", icono: "👤" },
+  { titulo: "Ingresos generados", valor: "$16,240", icono: "💰" },
+];
 
-function confirmar(cita) { cita.estado = 'confirmada'; cita.etiqueta = 'Confirmada' }
-function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completada' }
+function confirmar(cita) {
+  cita.estado = "confirmada";
+  cita.etiqueta = "Confirmada";
+}
+function completar(cita) {
+  cita.estado = "completada";
+  cita.etiqueta = "Completada";
+}
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap");
 
-.dashboard { max-width: 900px; font-family: 'DM Sans', sans-serif; }
+.dashboard {
+  max-width: 900px;
+  font-family: "DM Sans", sans-serif;
+}
 
 /* ── Banner bienvenida ───────────────────────────── */
 .welcome-banner {
@@ -118,12 +179,12 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
 
 .welcome-label {
   font-size: 0.82rem;
-  color: rgba(157,23,77,0.7);
+  color: rgba(157, 23, 77, 0.7);
   margin: 0 0 0.2rem;
 }
 
 .welcome-nombre {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.8rem;
   font-weight: 700;
   color: #831843;
@@ -133,7 +194,7 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
 
 .welcome-fecha {
   font-size: 0.78rem;
-  color: rgba(157,23,77,0.6);
+  color: rgba(157, 23, 77, 0.6);
   margin: 0;
   text-transform: capitalize;
 }
@@ -145,7 +206,7 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
 
 .mini-stat {
   text-align: center;
-  background: rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.4);
   border-radius: 12px;
   padding: 0.6rem 1rem;
   backdrop-filter: blur(4px);
@@ -153,7 +214,7 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
 
 .mini-val {
   display: block;
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: #9d174d;
@@ -162,16 +223,18 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
 
 .mini-lbl {
   font-size: 0.68rem;
-  color: rgba(157,23,77,0.6);
+  color: rgba(157, 23, 77, 0.6);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 /* ── Sección ─────────────────────────────────────── */
-.seccion { margin-bottom: 1.5rem; }
+.seccion {
+  margin-bottom: 1.5rem;
+}
 
 .seccion-titulo {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.05rem;
   font-weight: 600;
   color: #fff;
@@ -189,20 +252,25 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(249,168,212,0.15);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(249, 168, 212, 0.15);
   border-radius: 14px;
   padding: 0.9rem 1.2rem;
   transition: border-color 0.2s;
 }
 
-.agenda-item:hover { border-color: rgba(249,168,212,0.3); }
+.agenda-item:hover {
+  border-color: rgba(249, 168, 212, 0.3);
+}
 
-.agenda-hora { text-align: center; min-width: 52px; }
+.agenda-hora {
+  text-align: center;
+  min-width: 52px;
+}
 
 .hora-txt {
   display: block;
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1rem;
   font-weight: 600;
   color: #f9a8d4;
@@ -210,7 +278,7 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
 
 .duracion-txt {
   font-size: 0.65rem;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .agenda-linea {
@@ -219,11 +287,19 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
   border-radius: 2px;
 }
 
-.linea-pendiente  { background: rgba(251,191,36,0.5); }
-.linea-confirmada { background: rgba(249,168,212,0.6); }
-.linea-completada { background: rgba(134,239,172,0.5); }
+.linea-pendiente {
+  background: rgba(251, 191, 36, 0.5);
+}
+.linea-confirmada {
+  background: rgba(249, 168, 212, 0.6);
+}
+.linea-completada {
+  background: rgba(134, 239, 172, 0.5);
+}
 
-.agenda-info { flex: 1; }
+.agenda-info {
+  flex: 1;
+}
 
 .agenda-servicio {
   font-size: 0.9rem;
@@ -234,7 +310,7 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
 
 .agenda-cliente {
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   margin: 0;
 }
 
@@ -252,35 +328,48 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
   font-weight: 500;
 }
 
-.pill-pendiente  { background: rgba(251,191,36,0.15);  color: #fbbf24; }
-.pill-confirmada { background: rgba(249,168,212,0.15); color: #f9a8d4; }
-.pill-completada { background: rgba(134,239,172,0.15); color: #86efac; }
+.pill-pendiente {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+.pill-confirmada {
+  background: rgba(249, 168, 212, 0.15);
+  color: #f9a8d4;
+}
+.pill-completada {
+  background: rgba(134, 239, 172, 0.15);
+  color: #86efac;
+}
 
 .btn-confirmar {
-  background: rgba(249,168,212,0.15);
-  border: 1px solid rgba(249,168,212,0.35);
+  background: rgba(249, 168, 212, 0.15);
+  border: 1px solid rgba(249, 168, 212, 0.35);
   color: #f9a8d4;
   padding: 0.28rem 0.75rem;
   border-radius: 8px;
   font-size: 0.72rem;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   transition: background 0.2s;
 }
-.btn-confirmar:hover { background: rgba(249,168,212,0.25); }
+.btn-confirmar:hover {
+  background: rgba(249, 168, 212, 0.25);
+}
 
 .btn-completar {
-  background: rgba(134,239,172,0.12);
-  border: 1px solid rgba(134,239,172,0.3);
+  background: rgba(134, 239, 172, 0.12);
+  border: 1px solid rgba(134, 239, 172, 0.3);
   color: #86efac;
   padding: 0.28rem 0.75rem;
   border-radius: 8px;
   font-size: 0.72rem;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   transition: background 0.2s;
 }
-.btn-completar:hover { background: rgba(134,239,172,0.22); }
+.btn-completar:hover {
+  background: rgba(134, 239, 172, 0.22);
+}
 
 /* ── Métricas ────────────────────────────────────── */
 .metricas-grid {
@@ -290,8 +379,8 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
 }
 
 .metrica-card {
-  background: rgba(249,168,212,0.06);
-  border: 1px solid rgba(249,168,212,0.18);
+  background: rgba(249, 168, 212, 0.06);
+  border: 1px solid rgba(249, 168, 212, 0.18);
   border-radius: 14px;
   padding: 1.1rem;
   display: flex;
@@ -302,12 +391,16 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
   transition: border-color 0.2s;
 }
 
-.metrica-card:hover { border-color: rgba(249,168,212,0.35); }
+.metrica-card:hover {
+  border-color: rgba(249, 168, 212, 0.35);
+}
 
-.metrica-icono { font-size: 1.5rem; }
+.metrica-icono {
+  font-size: 1.5rem;
+}
 
 .metrica-valor {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: #f9a8d4;
@@ -315,6 +408,6 @@ function completar(cita) { cita.estado = 'completada'; cita.etiqueta = 'Completa
 
 .metrica-titulo {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255, 255, 255, 0.35);
 }
 </style>

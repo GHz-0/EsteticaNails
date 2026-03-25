@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "@/nucleo/estado/auth";
 
 const rutasPublicas = [
   {
@@ -9,7 +9,8 @@ const rutasPublicas = [
   {
     path: "/login",
     name: "login",
-    component: () => import("@/views/auth/LoginView.vue"),
+    component: () =>
+      import("@/modulos/autenticacion/vistas/InicioSesionView.vue"),
     meta: { publica: true, soloNoAuth: true },
   },
 ];
@@ -17,32 +18,32 @@ const rutasPublicas = [
 const rutasUsuario = [
   {
     path: "/usuario",
-    component: () => import("@/layouts/UsuarioLayout.vue"),
+    component: () => import("@/modulos/usuario/layouts/UsuarioLayout.vue"),
     meta: { requiereAuth: true, roles: ["usuario"] },
     children: [
       { path: "", redirect: "/usuario/dashboard" },
       {
         path: "dashboard",
         name: "usuario-dashboard",
-        component: () => import("@/views/user/DashboardView.vue"),
+        component: () => import("@/modulos/usuario/vistas/PanelView.vue"),
         meta: { titulo: "Mi Panel", icono: "🏠" },
       },
       {
         path: "servicios",
         name: "usuario-servicios",
-        component: () => import("@/views/user/ServiciosView.vue"),
+        component: () => import("@/modulos/usuario/vistas/ServiciosView.vue"),
         meta: { titulo: "Servicios", icono: "🛍️" },
       },
       {
         path: "mis-citas",
         name: "usuario-citas",
-        component: () => import("@/views/user/CitasView.vue"),
+        component: () => import("@/modulos/usuario/vistas/CitasView.vue"),
         meta: { titulo: "Mis Citas", icono: "📅" },
       },
       {
         path: "perfil",
         name: "usuario-perfil",
-        component: () => import("@/views/user/PerfilView.vue"),
+        component: () => import("@/modulos/usuario/vistas/PerfilView.vue"),
         meta: { titulo: "Mi Perfil", icono: "👤" },
       },
     ],
@@ -52,32 +53,33 @@ const rutasUsuario = [
 const rutasEmpleado = [
   {
     path: "/empleado",
-    component: () => import("@/layouts/EmpleadoLayout.vue"),
+    component: () => import("@/modulos/empleado/layouts/EmpleadoLayout.vue"),
     meta: { requiereAuth: true, roles: ["empleado"] },
     children: [
       { path: "", redirect: "/empleado/dashboard" },
       {
         path: "dashboard",
         name: "empleado-dashboard",
-        component: () => import("@/views/employee/DashboardView.vue"),
+        component: () => import("@/modulos/empleado/vistas/PanelView.vue"),
         meta: { titulo: "Panel Empleado", icono: "🏠" },
       },
       {
         path: "citas",
         name: "empleado-citas",
-        component: () => import("@/views/employee/GestionCitasView.vue"),
+        component: () =>
+          import("@/modulos/empleado/vistas/GestionCitasView.vue"),
         meta: { titulo: "Gestión de Citas", icono: "📋" },
       },
       {
         path: "clientes",
         name: "empleado-clientes",
-        component: () => import("@/views/employee/ClientesView.vue"),
+        component: () => import("@/modulos/empleado/vistas/ClientesView.vue"),
         meta: { titulo: "Clientes", icono: "👥" },
       },
       {
         path: "perfil",
         name: "empleado-perfil",
-        component: () => import("@/views/employee/PerfilView.vue"),
+        component: () => import("@/modulos/empleado/vistas/PerfilView.vue"),
         meta: { titulo: "Mi Perfil", icono: "👤" },
       },
     ],
@@ -87,38 +89,44 @@ const rutasEmpleado = [
 const rutasAdmin = [
   {
     path: "/admin",
-    component: () => import("@/layouts/AdminLayout.vue"),
+    component: () =>
+      import("@/modulos/administracion/layouts/AdministradorLayout.vue"),
     meta: { requiereAuth: true, roles: ["admin"] },
     children: [
       { path: "", redirect: "/admin/dashboard" },
       {
         path: "dashboard",
         name: "admin-dashboard",
-        component: () => import("@/views/admin/DashboardView.vue"),
+        component: () =>
+          import("@/modulos/administracion/vistas/PanelView.vue"),
         meta: { titulo: "Panel Admin", icono: "🏠" },
       },
       {
         path: "reportes",
         name: "admin-reportes",
-        component: () => import("@/views/admin/ReportesView.vue"),
+        component: () =>
+          import("@/modulos/administracion/vistas/ReportesView.vue"),
         meta: { titulo: "Reportes", icono: "📊" },
       },
       {
         path: "empleados",
         name: "admin-empleados",
-        component: () => import("@/views/admin/EmpleadosView.vue"),
+        component: () =>
+          import("@/modulos/administracion/vistas/EmpleadosView.vue"),
         meta: { titulo: "Empleados", icono: "👨‍💼" },
       },
       {
         path: "servicios",
         name: "admin-servicios",
-        component: () => import("@/views/admin/ServiciosView.vue"),
+        component: () =>
+          import("@/modulos/administracion/vistas/ServiciosView.vue"),
         meta: { titulo: "Servicios", icono: "🛠️" },
       },
       {
         path: "configuracion",
         name: "admin-config",
-        component: () => import("@/views/admin/ConfiguracionView.vue"),
+        component: () =>
+          import("@/modulos/administracion/vistas/ConfiguracionView.vue"),
         meta: { titulo: "Configuración", icono: "⚙️" },
       },
     ],
@@ -129,13 +137,15 @@ const rutasError = [
   {
     path: "/sin-permiso",
     name: "sin-permiso",
-    component: () => import("@/views/auth/SinPermisoView.vue"),
+    component: () =>
+      import("@/modulos/autenticacion/vistas/AccesoDenegadoView.vue"),
     meta: { publica: true },
   },
   {
     path: "/:pathMatch(.*)*",
     name: "not-found",
-    component: () => import("@/views/auth/NotFoundView.vue"),
+    component: () =>
+      import("@/modulos/autenticacion/vistas/NoEncontradoView.vue"),
     meta: { publica: true },
   },
 ];

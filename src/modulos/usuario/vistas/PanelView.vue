@@ -1,12 +1,13 @@
 <template>
   <div class="dashboard">
-
     <!-- Banner del salón -->
     <div class="salon-banner">
       <div class="banner-overlay">
         <div class="banner-content">
           <p class="banner-saludo">Bienvenida de vuelta,</p>
-          <h1 class="banner-nombre">{{ auth.usuario?.nombre?.split(' ')[0] }} ✨</h1>
+          <h1 class="banner-nombre">
+            {{ auth.usuario?.nombre?.split(" ")[0] }} ✨
+          </h1>
           <p class="banner-sub">¿Qué servicio te gustaría hoy?</p>
         </div>
         <div class="banner-deco">
@@ -23,7 +24,9 @@
       <div class="proxima-left">
         <span class="proxima-label">📅 Tu próxima cita</span>
         <p class="proxima-servicio">{{ proximaCita.servicio }}</p>
-        <p class="proxima-info">{{ proximaCita.fecha }} · {{ proximaCita.hora }}</p>
+        <p class="proxima-info">
+          {{ proximaCita.fecha }} · {{ proximaCita.hora }}
+        </p>
       </div>
       <div class="proxima-right">
         <span class="proxima-empleada">👩 {{ proximaCita.empleada }}</span>
@@ -46,62 +49,85 @@
     <section class="seccion">
       <div class="seccion-header">
         <h2 class="seccion-titulo">🌸 Servicios para ti</h2>
-        <RouterLink to="/usuario/servicios" class="ver-todos">Ver todos →</RouterLink>
+        <RouterLink to="/usuario/servicios" class="ver-todos"
+          >Ver todos →</RouterLink
+        >
       </div>
       <div class="servicios-grid">
-        <div
-            v-for="s in serviciosDestacados"
-            :key="s.id"
-            class="servicio-card"
-        >
+        <div v-for="s in serviciosDestacados" :key="s.id" class="servicio-card">
           <div class="servicio-emoji">{{ s.icono }}</div>
           <div class="servicio-body">
             <h3 class="servicio-nombre">{{ s.nombre }}</h3>
             <p class="servicio-desc">{{ s.desc }}</p>
             <div class="servicio-footer">
               <span class="servicio-precio">{{ s.precio }}</span>
-              <RouterLink to="/usuario/servicios" class="btn-agendar">Agendar</RouterLink>
+              <RouterLink to="/usuario/servicios" class="btn-agendar"
+                >Agendar</RouterLink
+              >
             </div>
           </div>
         </div>
       </div>
     </section>
-
   </div>
 </template>
 
 <script setup>
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from "@/nucleo/estado/auth";
 
-const auth = useAuthStore()
+const auth = useAuthStore();
 
 const proximaCita = {
-  servicio: 'Corte y peinado',
-  fecha: 'Miércoles 12 Mar',
-  hora: '10:00 AM',
-  empleada: 'Ana Martínez',
-}
+  servicio: "Corte y peinado",
+  fecha: "Miércoles 12 Mar",
+  hora: "10:00 AM",
+  empleada: "Ana Martínez",
+};
 
 const stats = [
-  { titulo: 'Citas este mes',   valor: '2',  icono: '📅' },
-  { titulo: 'Servicios usados', valor: '8',  icono: '✨' },
-  { titulo: 'Puntos acumulados',valor: '320',icono: '🌸' },
-]
+  { titulo: "Citas este mes", valor: "2", icono: "📅" },
+  { titulo: "Servicios usados", valor: "8", icono: "✨" },
+  { titulo: "Puntos acumulados", valor: "320", icono: "🌸" },
+];
 
 const serviciosDestacados = [
-  { id: 1, icono: '✂️', nombre: 'Corte & Peinado',      desc: 'Corte personalizado a tu estilo', precio: '$250' },
-  { id: 2, icono: '🧖', nombre: 'Limpieza Facial',       desc: 'Hidratación profunda y luminosidad', precio: '$550' },
-  { id: 3, icono: '💅', nombre: 'Manicure Semipermanente', desc: 'Hasta 3 semanas de duración', precio: '$320' },
-  { id: 4, icono: '💄', nombre: 'Maquillaje Social',     desc: 'Look perfecto para cada ocasión', precio: '$450' },
-]
+  {
+    id: 1,
+    icono: "✂️",
+    nombre: "Corte & Peinado",
+    desc: "Corte personalizado a tu estilo",
+    precio: "$250",
+  },
+  {
+    id: 2,
+    icono: "🧖",
+    nombre: "Limpieza Facial",
+    desc: "Hidratación profunda y luminosidad",
+    precio: "$550",
+  },
+  {
+    id: 3,
+    icono: "💅",
+    nombre: "Manicure Semipermanente",
+    desc: "Hasta 3 semanas de duración",
+    precio: "$320",
+  },
+  {
+    id: 4,
+    icono: "💄",
+    nombre: "Maquillaje Social",
+    desc: "Look perfecto para cada ocasión",
+    precio: "$450",
+  },
+];
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap");
 
 .dashboard {
   max-width: 960px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
 }
 
 /* ── Banner ─────────────────────────────────────── */
@@ -109,7 +135,13 @@ const serviciosDestacados = [
   border-radius: 20px;
   overflow: hidden;
   margin-bottom: 1.2rem;
-  background: linear-gradient(135deg, #f9a8d4 0%, #fbcfe8 40%, #fce7f3 70%, #fdf2f8 100%);
+  background: linear-gradient(
+    135deg,
+    #f9a8d4 0%,
+    #fbcfe8 40%,
+    #fce7f3 70%,
+    #fdf2f8 100%
+  );
   position: relative;
   min-height: 160px;
 }
@@ -131,7 +163,7 @@ const serviciosDestacados = [
 }
 
 .banner-nombre {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2rem;
   font-weight: 700;
   color: #831843;
@@ -155,30 +187,47 @@ const serviciosDestacados = [
 .deco-circle {
   width: 48px;
   height: 48px;
-  background: rgba(255,255,255,0.5);
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.3rem;
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,0.6);
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-.c1 { animation: float 3s ease-in-out infinite; }
-.c2 { animation: float 3s ease-in-out infinite 0.5s; }
-.c3 { animation: float 3s ease-in-out infinite 1s; }
-.c4 { animation: float 3s ease-in-out infinite 1.5s; }
+.c1 {
+  animation: float 3s ease-in-out infinite;
+}
+.c2 {
+  animation: float 3s ease-in-out infinite 0.5s;
+}
+.c3 {
+  animation: float 3s ease-in-out infinite 1s;
+}
+.c4 {
+  animation: float 3s ease-in-out infinite 1.5s;
+}
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 /* ── Próxima cita ────────────────────────────────── */
 .proxima-cita-card {
-  background: linear-gradient(135deg, rgba(249,168,212,0.15), rgba(251,207,232,0.1));
-  border: 1px solid rgba(249,168,212,0.4);
+  background: linear-gradient(
+    135deg,
+    rgba(249, 168, 212, 0.15),
+    rgba(251, 207, 232, 0.1)
+  );
+  border: 1px solid rgba(249, 168, 212, 0.4);
   border-radius: 16px;
   padding: 1.1rem 1.4rem;
   display: flex;
@@ -196,7 +245,7 @@ const serviciosDestacados = [
 }
 
 .proxima-servicio {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.05rem;
   font-weight: 600;
   color: #fff;
@@ -205,7 +254,7 @@ const serviciosDestacados = [
 
 .proxima-info {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255, 255, 255, 0.45);
   margin: 0;
 }
 
@@ -218,12 +267,12 @@ const serviciosDestacados = [
 
 .proxima-empleada {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .proxima-badge {
-  background: rgba(249,168,212,0.2);
-  border: 1px solid rgba(249,168,212,0.4);
+  background: rgba(249, 168, 212, 0.2);
+  border: 1px solid rgba(249, 168, 212, 0.4);
   color: #f9a8d4;
   font-size: 0.7rem;
   padding: 0.2rem 0.7rem;
@@ -239,8 +288,8 @@ const serviciosDestacados = [
 }
 
 .stat-card {
-  background: rgba(249,168,212,0.07);
-  border: 1px solid rgba(249,168,212,0.2);
+  background: rgba(249, 168, 212, 0.07);
+  border: 1px solid rgba(249, 168, 212, 0.2);
   border-radius: 14px;
   padding: 1rem 1.1rem;
   display: flex;
@@ -249,13 +298,17 @@ const serviciosDestacados = [
   transition: border-color 0.2s;
 }
 
-.stat-card:hover { border-color: rgba(249,168,212,0.4); }
+.stat-card:hover {
+  border-color: rgba(249, 168, 212, 0.4);
+}
 
-.stat-emoji { font-size: 1.6rem; }
+.stat-emoji {
+  font-size: 1.6rem;
+}
 
 .stat-valor {
   display: block;
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.4rem;
   font-weight: 700;
   color: #f9a8d4;
@@ -264,13 +317,15 @@ const serviciosDestacados = [
 
 .stat-titulo {
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   margin-top: 0.2rem;
   display: block;
 }
 
 /* ── Servicios destacados ────────────────────────── */
-.seccion { margin-top: 0.5rem; }
+.seccion {
+  margin-top: 0.5rem;
+}
 
 .seccion-header {
   display: flex;
@@ -280,7 +335,7 @@ const serviciosDestacados = [
 }
 
 .seccion-titulo {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.15rem;
   font-weight: 600;
   color: #fff;
@@ -294,7 +349,9 @@ const serviciosDestacados = [
   transition: color 0.2s;
 }
 
-.ver-todos:hover { color: #f472b6; }
+.ver-todos:hover {
+  color: #f472b6;
+}
 
 .servicios-grid {
   display: grid;
@@ -303,25 +360,29 @@ const serviciosDestacados = [
 }
 
 .servicio-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(249,168,212,0.15);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(249, 168, 212, 0.15);
   border-radius: 16px;
   padding: 1.1rem;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
-  transition: border-color 0.2s, transform 0.2s;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
 }
 
 .servicio-card:hover {
-  border-color: rgba(249,168,212,0.35);
+  border-color: rgba(249, 168, 212, 0.35);
   transform: translateY(-2px);
 }
 
-.servicio-emoji { font-size: 1.8rem; }
+.servicio-emoji {
+  font-size: 1.8rem;
+}
 
 .servicio-nombre {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 0.95rem;
   font-weight: 600;
   color: #fff;
@@ -330,7 +391,7 @@ const serviciosDestacados = [
 
 .servicio-desc {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   margin: 0.2rem 0 0;
   line-height: 1.4;
 }
@@ -343,7 +404,7 @@ const serviciosDestacados = [
 }
 
 .servicio-precio {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1rem;
   font-weight: 700;
   color: #f9a8d4;
@@ -360,8 +421,10 @@ const serviciosDestacados = [
   cursor: pointer;
   text-decoration: none;
   transition: opacity 0.2s;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
 }
 
-.btn-agendar:hover { opacity: 0.85; }
+.btn-agendar:hover {
+  opacity: 0.85;
+}
 </style>
