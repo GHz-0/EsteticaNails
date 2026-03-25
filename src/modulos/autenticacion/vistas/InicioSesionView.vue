@@ -111,6 +111,11 @@
             <span class="demo-label">{{ demo.etiqueta }}</span>
           </button>
         </div>
+
+        <div class="registro-link">
+          <span>¿Aún no tienes cuenta?</span>
+          <RouterLink to="/registro">Crear cuenta</RouterLink>
+        </div>
       </div>
     </div>
   </div>
@@ -702,6 +707,22 @@ async function loginDemo(demo) {
 .demo-admin:hover {
   background: rgba(196, 181, 253, 0.18);
   transform: translateY(-2px);
+}
+
+.registro-link {
+  margin-top: 1rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+}
+
+.registro-link a {
+  color: #f9a8d4;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 /* ── Responsive ──────────────────────────────────── */

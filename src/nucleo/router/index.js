@@ -4,7 +4,15 @@ import { useAuthStore } from "@/nucleo/estado/auth";
 const rutasPublicas = [
   {
     path: "/",
-    redirect: "/login",
+    name: "inicio",
+    component: () => import("@/modulos/autenticacion/vistas/InicioView.vue"),
+    meta: { publica: true },
+  },
+  {
+    path: "/registro",
+    name: "registro",
+    component: () => import("@/modulos/autenticacion/vistas/RegistroView.vue"),
+    meta: { publica: true, soloNoAuth: true },
   },
   {
     path: "/login",
