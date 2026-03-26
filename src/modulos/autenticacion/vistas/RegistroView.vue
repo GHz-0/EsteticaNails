@@ -43,7 +43,7 @@
 <script setup>
 import { reactive, ref } from "vue";
 
-import { CRM_Estetica } from "GHz-0/EsteticaNails/src/modulos/usuario/crm.js";//importamos CRM sin molestar a la logica de aca.
+import { CRM_Estetica } from "@/modulos/usuario/crm.js";//importamos CRM sin molestar a la logica de aca.
 
 const miCrm = new CRM_Estetica();//inicializa el CRM.
 
