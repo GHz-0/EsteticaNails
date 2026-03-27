@@ -28,7 +28,7 @@
     <section class="hero">
       <div class="hero-badge">
         <span class="pulse-dot"></span>
-        Abierto hoy · Tuxtla Gutiérrez
+        Abierto hoy
       </div>
 
       <h1>
@@ -197,7 +197,7 @@
     <!-- ── FOOTER ── -->
     <footer class="footer">
       <span class="marca-small">Nails Bere</span>
-      <span>Tuxtla Gutiérrez, Chiapas · © 2025</span>
+      <span>Chiapas · © 2025</span>
     </footer>
   </div>
 </template>
@@ -334,14 +334,14 @@ const beneficios = [
 
 /* ── VARIABLES ── */
 .inicio-page {
-  --pink: #cc8ae8;
-  --pink-deep: #a05bc9;
-  --pink-soft: #f4dcff;
-  --rose: #7c4aa1;
+  --pink: #df8ecf;
+  --pink-deep: #c26eb4;
+  --pink-soft: #fce6f8;
+  --rose: #9a4f92;
   --bg: #181316;
-  --surface: rgba(255, 255, 255, 0.1);
-  --border: rgba(204, 138, 232, 0.38);
-  --border-soft: rgba(255, 255, 255, 0.18);
+  --surface: rgba(255, 255, 255, 0.06);
+  --border: rgba(223, 142, 207, 0.28);
+  --border-soft: rgba(255, 255, 255, 0.14);
   --text: #f8f2ff;
   --muted: rgba(248, 242, 255, 0.84);
 
@@ -349,9 +349,9 @@ const beneficios = [
   color: var(--text);
   background: radial-gradient(
     circle at top,
-    #2b1f38 0%,
-    #1e1828 52%,
-    #161220 100%
+    #341d31 0%,
+    #261824 52%,
+    #1b141c 100%
   );
   font-family: "DM Sans", sans-serif;
   padding: 0 1.2rem 3rem;
@@ -378,7 +378,7 @@ const beneficios = [
 .orb-1 {
   width: 520px;
   height: 520px;
-  background: radial-gradient(circle, #a05bc9, transparent 70%);
+  background: radial-gradient(circle, #be6eb0, transparent 70%);
   top: -120px;
   left: -120px;
   animation-duration: 20s;
@@ -386,7 +386,7 @@ const beneficios = [
 .orb-2 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, #7d4ca8, transparent 70%);
+  background: radial-gradient(circle, #a4589a, transparent 70%);
   top: 40%;
   right: -100px;
   animation-duration: 25s;
@@ -395,7 +395,7 @@ const beneficios = [
 .orb-3 {
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, #d9a1ef4f, transparent 70%);
+  background: radial-gradient(circle, #efb4e260, transparent 70%);
   bottom: 10%;
   left: 30%;
   animation-duration: 22s;
@@ -479,10 +479,10 @@ footer {
 }
 
 .btn-principal {
-  background: linear-gradient(135deg, #c788e6, #a05bc9, #7c4aa1);
+  background: linear-gradient(135deg, #e9a0d9, #c26eb4, #9a4f92);
   background-size: 200% 200%;
   color: #fff;
-  box-shadow: 0 0 0 0 rgba(160, 91, 201, 0);
+  box-shadow: 0 0 0 0 rgba(194, 110, 180, 0);
   animation: gradient-shift 4s ease infinite;
 }
 
@@ -498,14 +498,14 @@ footer {
 
 .btn-glow {
   box-shadow:
-    0 4px 24px rgba(160, 91, 201, 0.45),
-    0 0 0 1px rgba(204, 138, 232, 0.38);
+    0 4px 24px rgba(194, 110, 180, 0.4),
+    0 0 0 1px rgba(223, 142, 207, 0.32);
 }
 
 .btn-glow:hover {
   box-shadow:
-    0 6px 32px rgba(160, 91, 201, 0.56),
-    0 0 0 1px rgba(204, 138, 232, 0.52);
+    0 6px 32px rgba(194, 110, 180, 0.5),
+    0 0 0 1px rgba(223, 142, 207, 0.45);
   transform: translateY(-1px);
 }
 
@@ -544,8 +544,8 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(204, 138, 232, 0.2);
-  border: 1px solid rgba(204, 138, 232, 0.5);
+  background: rgba(223, 142, 207, 0.16);
+  border: 1px solid rgba(223, 142, 207, 0.38);
   border-radius: 100px;
   padding: 0.35rem 0.9rem;
   font-size: 0.8rem;
@@ -582,7 +582,7 @@ h1 {
 
 .line-accent {
   font-style: italic;
-  background: linear-gradient(135deg, #ffd9f1, #d49bed, #a05bc9);
+  background: linear-gradient(135deg, #ffd8ef, #df8ecf, #b965ab);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -642,10 +642,10 @@ h1 {
 .promo-banner {
   background: linear-gradient(
     135deg,
-    rgba(124, 74, 161, 0.34),
-    rgba(204, 138, 232, 0.16)
+    rgba(154, 79, 146, 0.24),
+    rgba(223, 142, 207, 0.11)
   );
-  border: 1px solid rgba(204, 138, 232, 0.42);
+  border: 1px solid rgba(223, 142, 207, 0.3);
   border-radius: 18px;
   padding: 1rem 1.4rem;
   display: flex;
@@ -661,12 +661,12 @@ h1 {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(204, 138, 232, 0.13), transparent);
+  background: linear-gradient(90deg, rgba(223, 142, 207, 0.09), transparent);
   pointer-events: none;
 }
 
 .promo-badge {
-  background: #8f56bb;
+  background: #b35ca6;
   color: #fff;
   font-weight: 700;
   font-size: 0.78rem;
@@ -727,7 +727,7 @@ h1 {
 }
 
 .section-tag {
-  background: rgba(204, 138, 232, 0.18);
+  background: rgba(223, 142, 207, 0.12);
   border: 1px solid var(--border);
   color: var(--pink-soft);
   font-size: 0.75rem;
@@ -764,16 +764,16 @@ h1 {
 
 .promo-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(160, 91, 201, 0.24);
+  box-shadow: 0 8px 32px rgba(194, 110, 180, 0.2);
 }
 
 .promo-destacada {
   background: linear-gradient(
     135deg,
-    rgba(124, 74, 161, 0.3),
-    rgba(204, 138, 232, 0.12)
+    rgba(154, 79, 146, 0.22),
+    rgba(223, 142, 207, 0.1)
   );
-  border-color: rgba(204, 138, 232, 0.45);
+  border-color: rgba(223, 142, 207, 0.34);
 }
 
 .promo-thumb {
@@ -860,7 +860,7 @@ h1 {
 }
 
 .card-servicio:hover {
-  border-color: rgba(204, 138, 232, 0.5);
+  border-color: rgba(223, 142, 207, 0.36);
   transform: translateY(-2px);
 }
 
@@ -873,8 +873,8 @@ h1 {
 .servicio-precio {
   font-size: 0.78rem;
   color: var(--pink-soft);
-  background: rgba(204, 138, 232, 0.18);
-  border: 1px solid rgba(204, 138, 232, 0.3);
+  background: rgba(223, 142, 207, 0.14);
+  border: 1px solid rgba(223, 142, 207, 0.24);
   border-radius: 100px;
   padding: 0.18rem 0.6rem;
   white-space: nowrap;
@@ -985,7 +985,7 @@ h1 {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a05bc9, #cd95ea);
+  background: linear-gradient(135deg, #b965ab, #e4a0d7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1052,11 +1052,11 @@ h1 {
 .cta-final {
   background: linear-gradient(
     135deg,
-    rgba(124, 74, 161, 0.38),
-    rgba(204, 138, 232, 0.13),
-    rgba(30, 24, 40, 0.2)
+    rgba(154, 79, 146, 0.28),
+    rgba(223, 142, 207, 0.1),
+    rgba(30, 24, 40, 0.16)
   );
-  border: 1px solid rgba(204, 138, 232, 0.36);
+  border: 1px solid rgba(223, 142, 207, 0.3);
   border-radius: 24px;
   padding: 2.5rem 2rem;
   display: flex;
@@ -1110,7 +1110,7 @@ h1 {
 .deco-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(204, 138, 232, 0.3);
+  border: 1px solid rgba(223, 142, 207, 0.26);
   animation: ring-spin 12s linear infinite;
 }
 
@@ -1122,7 +1122,7 @@ h1 {
 .ring-2 {
   width: 140px;
   height: 140px;
-  border-color: rgba(204, 138, 232, 0.18);
+  border-color: rgba(223, 142, 207, 0.15);
   animation-duration: 18s;
   animation-direction: reverse;
 }
