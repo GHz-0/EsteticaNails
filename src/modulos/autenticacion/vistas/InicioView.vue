@@ -1309,4 +1309,5 @@ header, section, footer, .ticker-wrap {
   .tcard-featured:hover { transform: translateY(-3px); }
   .cta-final { padding: 2.5rem 1.2rem; }
 }
+
 </style>
