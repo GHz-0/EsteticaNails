@@ -43,6 +43,10 @@
 <script setup>
 import { reactive, ref } from "vue";
 
+import { CRM_Estetica } from "@/modulos/usuario/crm.js";//importamos CRM sin molestar a la logica de aca.
+
+const miCrm = new CRM_Estetica();//inicializa el CRM.
+
 const form = reactive({
   nombre: "",
   email: "",
@@ -52,6 +56,9 @@ const form = reactive({
 const mensaje = ref("");
 
 function registrar() {
+  miCrm.registrarClienta(form.nombre, form.email, form.password);// guarda el CRM los datos sin interferir en el funcionamiento normal.
+  console.log("Clientas guardadas en el CRM:", miCrm.obtenerClientas());//para confirmar que todo funcina.
+
   mensaje.value =
     "Registro recibido. En el siguiente paso conectamos este formulario a Firebase Auth.";
   form.nombre = "";
