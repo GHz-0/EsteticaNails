@@ -223,7 +223,7 @@
     <!-- ── FOOTER ── -->
     <footer class="footer">
       <span class="footer-marca">✦ Nails Bere</span>
-      <span class="footer-copy">Chiapas · © 2025</span>
+      <span class="footer-copy">Chiapas · © 2026</span>
     </footer>
   </div>
 </template>
