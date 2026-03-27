@@ -349,10 +349,11 @@ const beneficios = [
   color: var(--text);
   background: radial-gradient(
     circle at top,
-    #341d31 0%,
-    #261824 52%,
-    #1b141c 100%
+    #3b103a 0%,
+    #1f0a26 42%,
+    #0e0412 100%
   );
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.4);
   font-family: "DM Sans", sans-serif;
   padding: 0 1.2rem 3rem;
   overflow-x: hidden;
@@ -435,6 +436,10 @@ footer {
   justify-content: space-between;
   align-items: center;
   padding: 1.4rem 0.2rem 1rem;
+  background: rgba(23, 8, 27, 0.22);
+  border: 1px solid rgba(255, 192, 227, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
 }
 
 .marca {
@@ -479,11 +484,12 @@ footer {
 }
 
 .btn-principal {
-  background: linear-gradient(135deg, #e9a0d9, #c26eb4, #9a4f92);
+  background: linear-gradient(135deg, #ff9fd8, #d8217f, #8a287f);
   background-size: 200% 200%;
   color: #fff;
-  box-shadow: 0 0 0 0 rgba(194, 110, 180, 0);
+  box-shadow: 0 8px 30px rgba(210, 54, 141, 0.32);
   animation: gradient-shift 4s ease infinite;
+  border: 1px solid rgba(255, 186, 234, 0.35);
 }
 
 @keyframes gradient-shift {
@@ -515,19 +521,19 @@ footer {
 }
 
 .btn-ghost {
-  color: rgba(255, 255, 255, 0.85);
-  border: 1px solid var(--border-soft);
-  background: transparent;
+  color: #fde7ff;
+  border: 1px solid rgba(255, 189, 236, 0.54);
+  background: rgba(255, 182, 221, 0.12);
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 182, 221, 0.28);
 }
 
 .btn-link {
-  color: rgba(255, 255, 255, 0.75);
-  border: 1px solid var(--border-soft);
-  background: rgba(255, 255, 255, 0.04);
+  color: #f7c9ec;
+  border: 1px solid rgba(255, 188, 233, 0.48);
+  background: rgba(255, 221, 245, 0.08);
 }
 
 .btn-link:hover {
