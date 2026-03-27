@@ -1,420 +1,399 @@
 <template>
   <div class="dashboard">
-
-    <!-- Header admin -->
     <div class="admin-banner">
       <div class="banner-left">
-        <p class="banner-label">🌸 Panel de administración</p>
-        <h1 class="banner-titulo">Salón Estética Belle</h1>
+        <p class="banner-label">Panel de administración</p>
+        <h1 class="banner-titulo">Resumen operativo</h1>
         <p class="banner-fecha">{{ fechaHoy }}</p>
       </div>
       <div class="banner-right">
         <div class="banner-highlight">
-          <span class="highlight-val">${{ ingresosMes }}</span>
-          <span class="highlight-lbl">Ingresos este mes</span>
-          <span class="highlight-trend">↑ 12% vs mes anterior</span>
+          <span class="highlight-val"
+            >${{ ingresosMes.toLocaleString("es-MX") }}</span
+          >
+          <span class="highlight-lbl">Ingresos estimados del mes</span>
         </div>
       </div>
     </div>
 
-    <!-- KPIs -->
     <div class="kpis-grid">
-      <div v-for="kpi in kpis" :key="kpi.titulo" class="kpi-card">
-        <div class="kpi-top">
-          <span class="kpi-icono">{{ kpi.icono }}</span>
-          <span class="kpi-trend" :class="kpi.subida ? 'up' : 'down'">
-            {{ kpi.subida ? '↑' : '↓' }} {{ kpi.trend }}
-          </span>
-        </div>
-        <div class="kpi-valor">{{ kpi.valor }}</div>
-        <div class="kpi-titulo">{{ kpi.titulo }}</div>
+      <div class="kpi-card">
+        <div class="kpi-valor">{{ citasMes }}</div>
+        <div class="kpi-titulo">Citas este mes</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-valor">{{ clientesActivos }}</div>
+        <div class="kpi-titulo">Clientes activos</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-valor">{{ serviciosActivos }}</div>
+        <div class="kpi-titulo">Servicios disponibles</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-valor">{{ cancelacionesMes }}</div>
+        <div class="kpi-titulo">Cancelaciones del mes</div>
       </div>
     </div>
 
     <div class="bottom-grid">
-      <!-- Servicios más solicitados -->
-      <section class="seccion">
-        <h2 class="seccion-titulo">🏆 Top servicios del mes</h2>
-        <div class="top-servicios">
-          <div v-for="(s, i) in topServicios" :key="s.nombre" class="top-item">
-            <span class="top-num" :class="`num-${i+1}`">#{{ i+1 }}</span>
+      <section class="seccion card">
+        <h2 class="seccion-titulo">Top servicios del mes</h2>
+        <p v-if="cargando" class="estado">Cargando...</p>
+        <p v-else-if="!topServicios.length" class="estado">
+          Aún no hay citas registradas para calcular ranking.
+        </p>
+        <ul v-else class="top-servicios">
+          <li
+            v-for="(item, idx) in topServicios"
+            :key="item.servicioId"
+            class="top-item"
+          >
+            <span class="top-num">#{{ idx + 1 }}</span>
             <div class="top-info">
-              <p class="top-nombre">{{ s.nombre }}</p>
-              <div class="top-barra-wrap">
-                <div class="top-barra" :style="{ width: s.pct + '%' }"></div>
-              </div>
+              <p class="top-nombre">{{ item.nombre }}</p>
+              <p class="top-citas">{{ item.citas }} citas</p>
             </div>
-            <div class="top-datos">
-              <span class="top-citas">{{ s.citas }} citas</span>
-              <span class="top-ingreso">{{ s.ingreso }}</span>
-            </div>
-          </div>
-        </div>
+            <span class="top-ingreso"
+              >${{ item.ingreso.toLocaleString("es-MX") }}</span
+            >
+          </li>
+        </ul>
       </section>
 
-      <!-- Actividad reciente + equipo -->
-      <div class="right-col">
-        <section class="seccion">
-          <h2 class="seccion-titulo">👩 Mi equipo hoy</h2>
-          <div class="equipo-list">
-            <div v-for="emp in equipo" :key="emp.nombre" class="equipo-item">
-              <div class="equipo-avatar">{{ emp.avatar }}</div>
-              <div class="equipo-info">
-                <p class="equipo-nombre">{{ emp.nombre }}</p>
-                <p class="equipo-esp">{{ emp.especialidad }}</p>
-              </div>
-              <div class="equipo-citas">
-                <span class="equipo-num">{{ emp.citasHoy }}</span>
-                <span class="equipo-lbl">hoy</span>
-              </div>
+      <section class="seccion card">
+        <h2 class="seccion-titulo">Actividad reciente</h2>
+        <p v-if="cargando" class="estado">Cargando...</p>
+        <p v-else-if="!actividad.length" class="estado">
+          Aún no hay actividad reciente.
+        </p>
+        <ul v-else class="actividad-list">
+          <li
+            v-for="evento in actividad"
+            :key="evento.id"
+            class="actividad-item"
+          >
+            <span class="act-icono">{{ evento.icono }}</span>
+            <div class="act-info">
+              <p class="act-desc">{{ evento.desc }}</p>
+              <p class="act-tiempo">{{ evento.tiempo }}</p>
             </div>
-          </div>
-        </section>
-
-        <section class="seccion">
-          <h2 class="seccion-titulo">🕐 Actividad reciente</h2>
-          <div class="actividad-list">
-            <div v-for="a in actividad" :key="a.id" class="actividad-item">
-              <span class="act-icono">{{ a.icono }}</span>
-              <div class="act-info">
-                <p class="act-desc">{{ a.desc }}</p>
-                <p class="act-tiempo">{{ a.tiempo }}</p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
+          </li>
+        </ul>
+      </section>
     </div>
 
+    <p v-if="error" class="error">{{ error }}</p>
   </div>
 </template>
 
 <script setup>
-const fechaHoy = new Date().toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-const ingresosMes = '24,580'
+import { computed, onMounted, ref } from "vue";
+import { collection, getDocs } from "firebase/firestore";
+import { getFirebaseDb } from "@/nucleo/firebase/client";
 
-const kpis = [
-  { titulo: 'Citas completadas', valor: '148',  trend: '8%',  subida: true,  icono: '✅' },
-  { titulo: 'Clientes activos',  valor: '63',   trend: '5%',  subida: true,  icono: '👤' },
-  { titulo: 'Ticket promedio',   valor: '$166', trend: '4%',  subida: true,  icono: '🧾' },
-  { titulo: 'Cancelaciones',     valor: '7',    trend: '2%',  subida: false, icono: '❌' },
-]
+const db = getFirebaseDb();
 
-const topServicios = [
-  { nombre: 'Corte de cabello',        citas: 48, ingreso: '$12k', pct: 100 },
-  { nombre: 'Limpieza facial',          citas: 32, ingreso: '$17.6k', pct: 67 },
-  { nombre: 'Manicure semipermanente',  citas: 28, ingreso: '$9k',  pct: 58 },
-  { nombre: 'Maquillaje social',        citas: 22, ingreso: '$9.9k', pct: 46 },
-]
+const cargando = ref(true);
+const error = ref("");
 
-const equipo = [
-  { avatar: 'AM', nombre: 'Ana Martínez',   especialidad: 'Corte & Color', citasHoy: 6 },
-  { avatar: 'SR', nombre: 'Sofía Ramírez',  especialidad: 'Facial & Maquillaje', citasHoy: 4 },
-  { avatar: 'LG', nombre: 'Laura González', especialidad: 'Uñas & Manicure', citasHoy: 5 },
-]
+const servicios = ref([]);
+const citas = ref([]);
+const usuarios = ref([]);
 
-const actividad = [
-  { id: 1, icono: '✅', desc: 'Cita confirmada — Carlos López',    tiempo: 'Hace 5 min' },
-  { id: 2, icono: '👤', desc: 'Nueva cliente registrada',          tiempo: 'Hace 20 min' },
-  { id: 3, icono: '💳', desc: 'Pago recibido — Asesoría $550',     tiempo: 'Hace 1 hora' },
-  { id: 4, icono: '🌸', desc: 'Ana completó cita de manicure',     tiempo: 'Hace 2 horas' },
-]
+const fechaHoy = new Date().toLocaleDateString("es-MX", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+onMounted(async () => {
+  try {
+    const [snapServicios, snapCitas, snapUsers] = await Promise.all([
+      getDocs(collection(db, "servicios")),
+      getDocs(collection(db, "citas")),
+      getDocs(collection(db, "users")),
+    ]);
+
+    servicios.value = snapServicios.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    }));
+    citas.value = snapCitas.docs.map((d) => ({ id: d.id, ...d.data() }));
+    usuarios.value = snapUsers.docs.map((d) => ({ id: d.id, ...d.data() }));
+  } catch (e) {
+    error.value =
+      "No se pudieron cargar métricas del panel. Revisa permisos y reglas.";
+    console.error(e);
+  } finally {
+    cargando.value = false;
+  }
+});
+
+const citasConFecha = computed(() =>
+  citas.value
+    .map((c) => {
+      const fechaObj = c?.fecha?.toDate ? c.fecha.toDate() : new Date(c.fecha);
+      return { ...c, fechaObj };
+    })
+    .filter(
+      (c) => c.fechaObj instanceof Date && !Number.isNaN(c.fechaObj.getTime()),
+    ),
+);
+
+const rangoMesActual = computed(() => {
+  const ahora = new Date();
+  return { mes: ahora.getMonth(), anio: ahora.getFullYear() };
+});
+
+const citasDelMes = computed(() =>
+  citasConFecha.value.filter(
+    (c) =>
+      c.fechaObj.getMonth() === rangoMesActual.value.mes &&
+      c.fechaObj.getFullYear() === rangoMesActual.value.anio,
+  ),
+);
+
+const citasMes = computed(() => citasDelMes.value.length);
+
+const cancelacionesMes = computed(
+  () => citasDelMes.value.filter((c) => c.estado === "cancelada").length,
+);
+
+const clientesActivos = computed(
+  () =>
+    usuarios.value.filter((u) => u.rol === "usuario" && u.estado !== "inactivo")
+      .length,
+);
+
+const serviciosActivos = computed(() => servicios.value.length);
+
+const precioServicioMap = computed(() => {
+  const m = new Map();
+  for (const s of servicios.value) m.set(s.id, Number(s.precio || 0));
+  return m;
+});
+
+const ingresosMes = computed(() => {
+  return citasDelMes.value
+    .filter((c) => c.estado !== "cancelada")
+    .reduce(
+      (acc, c) => acc + (precioServicioMap.value.get(c.servicioId) || 0),
+      0,
+    );
+});
+
+const topServicios = computed(() => {
+  const agg = new Map();
+  for (const c of citasDelMes.value.filter((x) => x.estado !== "cancelada")) {
+    const key = c.servicioId || "sin-servicio";
+    const prev = agg.get(key) || { servicioId: key, citas: 0, ingreso: 0 };
+    prev.citas += 1;
+    prev.ingreso += precioServicioMap.value.get(key) || 0;
+    agg.set(key, prev);
+  }
+
+  const nombrePorId = new Map(servicios.value.map((s) => [s.id, s.nombre]));
+
+  return [...agg.values()]
+    .map((item) => ({
+      ...item,
+      nombre: nombrePorId.get(item.servicioId) || "Servicio no encontrado",
+    }))
+    .sort((a, b) => b.citas - a.citas)
+    .slice(0, 5);
+});
+
+function tiempoRelativo(fecha) {
+  const diff = Date.now() - fecha.getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "Hace unos segundos";
+  if (min < 60) return `Hace ${min} min`;
+  const hrs = Math.floor(min / 60);
+  if (hrs < 24) return `Hace ${hrs} h`;
+  const dias = Math.floor(hrs / 24);
+  return `Hace ${dias} d`;
+}
+
+const actividad = computed(() => {
+  return citasConFecha.value
+    .slice()
+    .sort((a, b) => b.fechaObj - a.fechaObj)
+    .slice(0, 6)
+    .map((cita) => ({
+      id: cita.id,
+      icono: cita.estado === "cancelada" ? "❌" : "📅",
+      desc: `Cita ${cita.estado || "pendiente"} · ${cita.hora || "sin hora"}`,
+      tiempo: tiempoRelativo(cita.fechaObj),
+    }));
+});
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+.dashboard {
+  max-width: 1000px;
+  color: #fff;
+}
 
-.dashboard { max-width: 1000px; font-family: 'DM Sans', sans-serif; }
-
-/* ── Banner admin ────────────────────────────────── */
 .admin-banner {
   background: linear-gradient(135deg, #f9a8d4 0%, #fbcfe8 45%, #fce7f3 100%);
   border-radius: 20px;
-  padding: 1.6rem 2rem;
+  padding: 1.4rem 1.7rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
 
 .banner-label {
+  margin: 0;
   font-size: 0.78rem;
-  color: rgba(157,23,77,0.65);
-  margin: 0 0 0.3rem;
-  letter-spacing: 0.04em;
+  color: rgba(157, 23, 77, 0.7);
 }
 
 .banner-titulo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.7rem;
-  font-weight: 700;
+  margin: 0.2rem 0;
   color: #831843;
-  margin: 0 0 0.3rem;
+  font-size: 1.55rem;
 }
 
 .banner-fecha {
-  font-size: 0.78rem;
-  color: rgba(157,23,77,0.55);
   margin: 0;
+  color: rgba(157, 23, 77, 0.62);
   text-transform: capitalize;
 }
 
 .banner-highlight {
-  background: rgba(255,255,255,0.5);
-  border-radius: 14px;
-  padding: 1rem 1.4rem;
-  text-align: center;
-  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 12px;
+  padding: 0.8rem 1.1rem;
+  text-align: right;
 }
 
 .highlight-val {
-  display: block;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.6rem;
-  font-weight: 700;
   color: #9d174d;
+  font-weight: 700;
+  display: block;
 }
 
 .highlight-lbl {
-  display: block;
-  font-size: 0.72rem;
-  color: rgba(157,23,77,0.6);
-  margin: 0.1rem 0;
+  color: rgba(157, 23, 77, 0.72);
+  font-size: 0.75rem;
 }
 
-.highlight-trend {
-  display: block;
-  font-size: 0.7rem;
-  color: #be185d;
-  font-weight: 600;
-}
-
-/* ── KPIs ────────────────────────────────────────── */
 .kpis-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.85rem;
-  margin-bottom: 1.2rem;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .kpi-card {
-  background: rgba(249,168,212,0.06);
-  border: 1px solid rgba(249,168,212,0.18);
-  border-radius: 14px;
-  padding: 1rem 1.1rem;
-  transition: border-color 0.2s;
+  background: rgba(249, 168, 212, 0.08);
+  border: 1px solid rgba(249, 168, 212, 0.2);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
 }
-
-.kpi-card:hover { border-color: rgba(249,168,212,0.35); }
-
-.kpi-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.kpi-icono { font-size: 1.2rem; }
-
-.kpi-trend {
-  font-size: 0.68rem;
-  padding: 0.12rem 0.45rem;
-  border-radius: 20px;
-  font-weight: 600;
-}
-
-.up   { background: rgba(134,239,172,0.15); color: #86efac; }
-.down { background: rgba(255,100,100,0.15); color: #ff6b6b; }
 
 .kpi-valor {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 1.3rem;
   color: #f9a8d4;
+  font-weight: 700;
 }
 
 .kpi-titulo {
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.35);
-  margin-top: 0.2rem;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.6);
 }
 
-/* ── Bottom grid ─────────────────────────────────── */
 .bottom-grid {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
+  grid-template-columns: 1.2fr 1fr;
   gap: 1rem;
 }
 
-.seccion { margin-bottom: 1rem; }
+.card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(249, 168, 212, 0.15);
+  border-radius: 14px;
+  padding: 1rem;
+}
 
 .seccion-titulo {
-  font-family: 'Playfair Display', serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0 0 0.85rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.96rem;
 }
 
-/* ── Top servicios ───────────────────────────────── */
-.top-servicios {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(249,168,212,0.15);
-  border-radius: 14px;
-  padding: 1rem 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.top-item { display: flex; align-items: center; gap: 0.8rem; }
-
-.top-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  min-width: 24px;
-}
-
-.num-1 { color: #f9a8d4; }
-.num-2 { color: rgba(249,168,212,0.65); }
-.num-3 { color: rgba(249,168,212,0.45); }
-.num-4 { color: rgba(249,168,212,0.3); }
-
-.top-info { flex: 1; }
-
-.top-nombre {
-  font-size: 0.82rem;
-  color: #fff;
-  margin: 0 0 0.25rem;
-}
-
-.top-barra-wrap {
-  height: 3px;
-  background: rgba(255,255,255,0.07);
-  border-radius: 2px;
-}
-
-.top-barra {
-  height: 100%;
-  background: linear-gradient(90deg, #f472b6, #f9a8d4);
-  border-radius: 2px;
-  transition: width 0.5s ease;
-}
-
-.top-datos { text-align: right; }
-
-.top-citas {
-  display: block;
-  font-size: 0.68rem;
-  color: rgba(255,255,255,0.35);
-}
-
-.top-ingreso {
-  display: block;
-  font-family: 'Playfair Display', serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #f9a8d4;
-}
-
-/* ── Right col ───────────────────────────────────── */
-.right-col { display: flex; flex-direction: column; gap: 1rem; }
-
-/* Equipo */
-.equipo-list {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(249,168,212,0.15);
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.equipo-item {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.8rem 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  transition: background 0.15s;
-}
-
-.equipo-item:last-child { border-bottom: none; }
-.equipo-item:hover { background: rgba(249,168,212,0.04); }
-
-.equipo-avatar {
-  width: 32px;
-  height: 32px;
-  background: rgba(249,168,212,0.15);
-  border: 1px solid rgba(249,168,212,0.3);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #f9a8d4;
-  flex-shrink: 0;
-}
-
-.equipo-info { flex: 1; }
-
-.equipo-nombre {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #fff;
+.estado {
+  color: rgba(255, 255, 255, 0.65);
   margin: 0;
 }
 
-.equipo-esp {
-  font-size: 0.68rem;
-  color: rgba(255,255,255,0.35);
-  margin: 0.1rem 0 0;
-}
-
-.equipo-citas { text-align: center; }
-
-.equipo-num {
-  display: block;
-  font-family: 'Playfair Display', serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #f9a8d4;
-}
-
-.equipo-lbl {
-  font-size: 0.62rem;
-  color: rgba(255,255,255,0.3);
-}
-
-/* Actividad */
+.top-servicios,
 .actividad-list {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(249,168,212,0.15);
-  border-radius: 14px;
-  overflow: hidden;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
 }
 
+.top-item,
 .actividad-item {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.7rem 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  gap: 0.65rem;
+  padding: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
 }
 
-.actividad-item:last-child { border-bottom: none; }
+.top-num {
+  color: #f9a8d4;
+  font-weight: 700;
+  min-width: 28px;
+}
 
-.act-icono { font-size: 1rem; flex-shrink: 0; }
+.top-info {
+  flex: 1;
+}
 
+.top-nombre,
 .act-desc {
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.75);
   margin: 0;
+  font-size: 0.86rem;
 }
 
+.top-citas,
 .act-tiempo {
-  font-size: 0.68rem;
-  color: rgba(255,255,255,0.3);
-  margin: 0.1rem 0 0;
+  margin: 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.top-ingreso {
+  color: #f9a8d4;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.act-icono {
+  font-size: 1rem;
+}
+
+.error {
+  margin-top: 1rem;
+  color: #ff9696;
+}
+
+@media (max-width: 980px) {
+  .kpis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

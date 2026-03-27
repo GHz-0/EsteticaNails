@@ -29,13 +29,33 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /servicios/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /appointments/{appointmentId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.usuarioId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (
+        resource.data.usuarioId == request.auth.uid || isAdmin()
+      );
+    }
+
+    match /citas/{appointmentId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.usuarioId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (
+        resource.data.usuarioId == request.auth.uid || isAdmin()
+      );
     }
 
     match /inventory/{itemId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /inventario/{itemId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }

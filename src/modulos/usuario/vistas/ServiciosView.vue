@@ -57,7 +57,7 @@ onMounted(async () => {
 const agendar = (servicio) => {
   // Guardar servicio seleccionado en sessionStorage para usar en CitasView
   sessionStorage.setItem("servicioSeleccionado", JSON.stringify(servicio));
-  router.push("/citas");
+  router.push("/usuario/mis-citas");
 };
 </script>
 

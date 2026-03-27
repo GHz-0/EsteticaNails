@@ -7,7 +7,13 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { getFirebaseAuth, getFirebaseDb } from "@/nucleo/firebase/client";
 
 export const ROLES = {
@@ -38,6 +44,18 @@ function mapFirebaseError(err) {
     "auth/network-request-failed": "Error de red. Revisa tu conexión.",
   };
   return mensajes[code] || err?.message || "Ocurrió un error al autenticar.";
+}
+
+function normalizarEmail(email = "") {
+  return String(email).trim().toLowerCase();
+}
+
+function esCorreoAdmin(email = "") {
+  const lista = String(import.meta.env.VITE_ADMIN_EMAILS || "")
+    .split(",")
+    .map((item) => normalizarEmail(item))
+    .filter(Boolean);
+  return lista.includes(normalizarEmail(email));
 }
 
 export const useAuthStore = defineStore("auth", () => {
@@ -71,6 +89,9 @@ export const useAuthStore = defineStore("auth", () => {
     const db = getFirebaseDb();
     const ref = doc(db, "users", firebaseUser.uid);
     const snap = await getDoc(ref);
+    const rolInicial = esCorreoAdmin(firebaseUser.email)
+      ? ROLES.ADMIN
+      : ROLES.USUARIO;
 
     const nombreBase =
       firebaseUser.displayName ||
@@ -80,7 +101,7 @@ export const useAuthStore = defineStore("auth", () => {
       uid: firebaseUser.uid,
       nombre: nombreBase,
       email: firebaseUser.email,
-      rol: ROLES.USUARIO,
+      rol: rolInicial,
       avatar: iniciales(nombreBase),
       estado: "activo",
     };
@@ -95,7 +116,7 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     const data = snap.data();
-    return {
+    let perfil = {
       uid: firebaseUser.uid,
       nombre: data.nombre || nombreBase,
       email: data.email || firebaseUser.email,
@@ -103,6 +124,17 @@ export const useAuthStore = defineStore("auth", () => {
       avatar: data.avatar || iniciales(data.nombre || nombreBase),
       estado: data.estado || "activo",
     };
+
+    // Bootstrap opcional: si el correo está en VITE_ADMIN_EMAILS, se promueve a admin.
+    if (esCorreoAdmin(perfil.email) && perfil.rol !== ROLES.ADMIN) {
+      await updateDoc(ref, {
+        rol: ROLES.ADMIN,
+        updatedAt: serverTimestamp(),
+      });
+      perfil = { ...perfil, rol: ROLES.ADMIN };
+    }
+
+    return perfil;
   }
 
   async function login(email, password) {
@@ -147,7 +179,7 @@ export const useAuthStore = defineStore("auth", () => {
         uid: cred.user.uid,
         nombre,
         email,
-        rol: ROLES.USUARIO,
+        rol: esCorreoAdmin(email) ? ROLES.ADMIN : ROLES.USUARIO,
         avatar: iniciales(nombre),
         estado: "activo",
       };

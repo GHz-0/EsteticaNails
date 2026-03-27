@@ -3,12 +3,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: "AIzaSyBZQgjFNHNaVOXh-GpFWhqZu7IzGLvVU48",
+  authDomain: "nailsbere.firebaseapp.com",
+  projectId: "nailsbere",
+  storageBucket: "nailsbere.firebasestorage.app",
+  messagingSenderId: "443819455697",
+  appId: "1:443819455697:web:09ca24f597992abe6101f0",
 };
 
 function validarConfig() {

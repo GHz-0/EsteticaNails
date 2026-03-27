@@ -2,12 +2,11 @@ import { getFirebaseDb } from "./client.js";
 import {
   collection,
   getDocs,
+  getDoc,
   addDoc,
   updateDoc,
   deleteDoc,
   doc,
-  query,
-  where,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -36,9 +35,12 @@ export async function obtenerServicios() {
 export async function obtenerServicio(servicioId) {
   try {
     const servicioRef = doc(db, "servicios", servicioId);
-    const snapshot = await getDocs(collection(db, "servicios"));
-    const servicios = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-    return servicios.find((s) => s.id === servicioId) || null;
+    const snapshot = await getDoc(servicioRef);
+    if (!snapshot.exists()) return null;
+    return {
+      id: snapshot.id,
+      ...snapshot.data(),
+    };
   } catch (error) {
     console.error("Error obteniendo servicio:", error);
     return null;

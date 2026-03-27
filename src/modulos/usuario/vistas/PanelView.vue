@@ -73,53 +73,107 @@
 </template>
 
 <script setup>
+import { computed, onMounted, ref } from "vue";
 import { useAuthStore } from "@/nucleo/estado/auth";
+import { obtenerServicios } from "@/nucleo/firebase/servicios";
+import { obtenerMisCitas } from "@/nucleo/firebase/citas";
 
 const auth = useAuthStore();
 
-const proximaCita = {
-  servicio: "Corte y peinado",
-  fecha: "Miércoles 12 Mar",
-  hora: "10:00 AM",
-  empleada: "Ana Martínez",
+const servicios = ref([]);
+const citas = ref([]);
+
+const ICONOS_CATEGORIA = {
+  manos: "💅",
+  pies: "🦶",
+  diseño: "🎨",
+  extensiones: "✨",
 };
 
-const stats = [
-  { titulo: "Citas este mes", valor: "2", icono: "📅" },
-  { titulo: "Servicios usados", valor: "8", icono: "✨" },
-  { titulo: "Puntos acumulados", valor: "320", icono: "🌸" },
-];
+onMounted(async () => {
+  try {
+    const [listaServicios, listaCitas] = await Promise.all([
+      obtenerServicios(),
+      obtenerMisCitas(),
+    ]);
+    servicios.value = listaServicios;
+    citas.value = listaCitas;
+  } catch (error) {
+    console.error("Error cargando datos del panel:", error);
+  }
+});
 
-const serviciosDestacados = [
-  {
-    id: 1,
-    icono: "✂️",
-    nombre: "Corte & Peinado",
-    desc: "Corte personalizado a tu estilo",
-    precio: "$250",
-  },
-  {
-    id: 2,
-    icono: "🧖",
-    nombre: "Limpieza Facial",
-    desc: "Hidratación profunda y luminosidad",
-    precio: "$550",
-  },
-  {
-    id: 3,
-    icono: "💅",
-    nombre: "Manicure Semipermanente",
-    desc: "Hasta 3 semanas de duración",
-    precio: "$320",
-  },
-  {
-    id: 4,
-    icono: "💄",
-    nombre: "Maquillaje Social",
-    desc: "Look perfecto para cada ocasión",
-    precio: "$450",
-  },
-];
+const citasActivas = computed(() =>
+  citas.value.filter((c) => c.estado !== "cancelada"),
+);
+
+const proximaCita = computed(() => {
+  const ahora = new Date();
+  const candidatas = citasActivas.value
+    .map((cita) => {
+      const fecha =
+        cita.fecha instanceof Date ? cita.fecha : new Date(cita.fecha);
+      return { ...cita, fechaObj: fecha };
+    })
+    .filter(
+      (cita) =>
+        cita.fechaObj instanceof Date && !Number.isNaN(cita.fechaObj.getTime()),
+    )
+    .filter((cita) => cita.fechaObj >= ahora)
+    .sort((a, b) => a.fechaObj - b.fechaObj);
+
+  if (!candidatas.length) return null;
+
+  const cita = candidatas[0];
+  const servicio = servicios.value.find((s) => s.id === cita.servicioId);
+
+  return {
+    servicio: servicio?.nombre || "Servicio",
+    fecha: cita.fechaObj.toLocaleDateString("es-MX", {
+      weekday: "long",
+      day: "2-digit",
+      month: "short",
+    }),
+    hora: cita.hora || "--:--",
+    empleada: cita.empleadaNombre || "Por asignar",
+  };
+});
+
+const stats = computed(() => {
+  const hoy = new Date();
+  const citasMes = citasActivas.value.filter((cita) => {
+    const fecha =
+      cita.fecha instanceof Date ? cita.fecha : new Date(cita.fecha);
+    return (
+      fecha instanceof Date &&
+      !Number.isNaN(fecha.getTime()) &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getFullYear() === hoy.getFullYear()
+    );
+  }).length;
+
+  const serviciosUsados = new Set(
+    citasActivas.value.map((cita) => cita.servicioId).filter(Boolean),
+  ).size;
+
+  const puntos = citasActivas.value.length * 40;
+
+  return [
+    { titulo: "Citas este mes", valor: String(citasMes), icono: "📅" },
+    { titulo: "Servicios usados", valor: String(serviciosUsados), icono: "✨" },
+    { titulo: "Puntos acumulados", valor: String(puntos), icono: "🌸" },
+  ];
+});
+
+const serviciosDestacados = computed(() =>
+  servicios.value.slice(0, 4).map((s) => ({
+    id: s.id,
+    icono: ICONOS_CATEGORIA[s.categoria] || "💄",
+    nombre: s.nombre,
+    desc: s.descripcion,
+    precio: `$${s.precio}`,
+  })),
+);
 </script>
 
 <style scoped>

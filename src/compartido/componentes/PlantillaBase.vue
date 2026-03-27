@@ -251,6 +251,7 @@ function handleLogout() {
   white-space: nowrap;
   letter-spacing: 0.04em;
   background: linear-gradient(135deg, #f9a8d4, #fbcfe8);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

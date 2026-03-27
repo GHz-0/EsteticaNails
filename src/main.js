@@ -18,7 +18,7 @@ auth.inicializarAuth();
 
 // Inicializar datos de prueba cuando el usuario se autentica
 auth.$subscribe(async (mutation, state) => {
-  if (state.usuario && state.token) {
+  if (state.usuario && state.token && state.usuario.rol === "admin") {
     try {
       await inicializarServicios();
       await inicializarInventario();

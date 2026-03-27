@@ -169,19 +169,18 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   const auth = useAuthStore();
   const requiereAuth = to.matched.some((r) => r.meta.requiereAuth);
   const soloNoAuth = to.matched.some((r) => r.meta.soloNoAuth);
   const rolesPermitidos = to.matched.find((r) => r.meta.roles)?.meta.roles;
 
   if (requiereAuth && !auth.estaAutenticado)
-    return next({ name: "login", query: { redirect: to.fullPath } });
-  if (soloNoAuth && auth.estaAutenticado)
-    return next(getRutaDashboard(auth.rol));
+    return { name: "login", query: { redirect: to.fullPath } };
+  if (soloNoAuth && auth.estaAutenticado) return getRutaDashboard(auth.rol);
   if (rolesPermitidos && !rolesPermitidos.includes(auth.rol))
-    return next({ name: "sin-permiso" });
-  next();
+    return { name: "sin-permiso" };
+  return true;
 });
 
 export function getRutaDashboard(rol) {
