@@ -168,7 +168,7 @@
     <section class="section testimonios-section">
       <header class="section-header centered">
         <p class="eyebrow">Lo dicen ellas</p>
-        <h2>Clientas que nos aman</h2>
+        <h2>Clientas que nos aman.</h2>
       </header>
 
       <div class="testimonios-grid">
