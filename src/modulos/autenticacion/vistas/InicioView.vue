@@ -204,16 +204,14 @@
 
 <script setup>
 const imagenesUi = {
-  logo: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=96&q=80",
-  estrella:
-    "https://images.unsplash.com/photo-1611605698335-8b1569810432?auto=format&fit=crop&w=40&q=80",
-  cta: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=180&q=80",
+  logo: "/img/inicio/logo.jpg",
+  estrella: "/img/inicio/estrella.jpg",
+  cta: "/img/inicio/cta.jpg",
 };
 
 const promociones = [
   {
-    imagen:
-      "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?auto=format&fit=crop&w=160&q=80",
+    imagen: "/img/inicio/promo-manicure.jpg",
     titulo: "Manicure + Gel",
     desc: "Diseño incluido para nuevas clientas",
     antes: "$280",
@@ -221,8 +219,7 @@ const promociones = [
     destacada: true,
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=160&q=80",
+    imagen: "/img/inicio/promo-facial.jpg",
     titulo: "Facial Express",
     desc: "Limpieza profunda + hidratación",
     antes: "$350",
@@ -230,8 +227,7 @@ const promociones = [
     destacada: false,
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=160&q=80",
+    imagen: "/img/inicio/promo-maquillaje.jpg",
     titulo: "Maquillaje + Peinado",
     desc: "Pack eventos y graduaciones",
     antes: "$600",
@@ -239,8 +235,7 @@ const promociones = [
     destacada: false,
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=160&q=80",
+    imagen: "/img/inicio/promo-color.jpg",
     titulo: "Color completo",
     desc: "Tinte + tratamiento de brillo",
     antes: "$700",
@@ -251,48 +246,42 @@ const promociones = [
 
 const servicios = [
   {
-    imagen:
-      "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=100&q=80",
+    imagen: "/img/inicio/servicio-corte.jpg",
     titulo: "Corte y peinado",
     descripcion: "Diseño personalizado según tu tipo de rostro y estilo.",
     precio: "Desde $150",
     duracion: "45 min",
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=100&q=80",
+    imagen: "/img/inicio/servicio-color.jpg",
     titulo: "Color y tratamientos",
     descripcion: "Coloración, matices y tratamientos para recuperar brillo.",
     precio: "Desde $350",
     duracion: "90 min",
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=100&q=80",
+    imagen: "/img/inicio/servicio-unas.jpg",
     titulo: "Uñas",
     descripcion: "Manicure, gel semipermanente y diseños para toda ocasión.",
     precio: "Desde $180",
     duracion: "60 min",
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=100&q=80",
+    imagen: "/img/inicio/servicio-maquillaje.jpg",
     titulo: "Maquillaje",
     descripcion: "Maquillaje social y profesional para eventos especiales.",
     precio: "Desde $300",
     duracion: "75 min",
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=100&q=80",
+    imagen: "/img/inicio/servicio-facial.jpg",
     titulo: "Faciales",
     descripcion: "Limpieza e hidratación para una piel fresca y luminosa.",
     precio: "Desde $250",
     duracion: "50 min",
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=100&q=80",
+    imagen: "/img/inicio/servicio-paquetes.jpg",
     titulo: "Paquetes",
     descripcion: "Combina servicios y obtén mejores precios.",
     precio: "Desde $450",
@@ -323,20 +312,17 @@ const testimonios = [
 
 const beneficios = [
   {
-    imagen:
-      "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=120&q=80",
+    imagen: "/img/inicio/beneficio-personalizada.jpg",
     titulo: "Atención personalizada",
     texto: "Te asesoramos según tus objetivos y preferencias de estilo.",
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&w=120&q=80",
+    imagen: "/img/inicio/beneficio-agenda.jpg",
     titulo: "Agenda simple",
     texto: "Solicita tus citas sin complicarte y en pocos pasos.",
   },
   {
-    imagen:
-      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=120&q=80",
+    imagen: "/img/inicio/beneficio-profesionales.jpg",
     titulo: "Profesionales certificadas",
     texto: "Equipo experto en tendencias y cuidado integral.",
   },
@@ -347,28 +333,25 @@ const beneficios = [
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap");
 
 /* ── VARIABLES ── */
-:root {
-  --pink: #e5967f;
-  --pink-deep: #cc6850;
-  --pink-soft: #ffe3da;
-  --rose: #844233;
-  --bg: #181316;
-  --surface: rgba(255, 255, 255, 0.08);
-  --border: rgba(229, 150, 127, 0.35);
-  --border-soft: rgba(255, 255, 255, 0.18);
-  --text: #fff;
-  --muted: rgba(255, 255, 255, 0.75);
-}
-
-/* ── BASE ── */
 .inicio-page {
+  --pink: #cc8ae8;
+  --pink-deep: #a05bc9;
+  --pink-soft: #f4dcff;
+  --rose: #7c4aa1;
+  --bg: #181316;
+  --surface: rgba(255, 255, 255, 0.1);
+  --border: rgba(204, 138, 232, 0.38);
+  --border-soft: rgba(255, 255, 255, 0.18);
+  --text: #f8f2ff;
+  --muted: rgba(248, 242, 255, 0.84);
+
   min-height: 100vh;
   color: var(--text);
   background: radial-gradient(
     circle at top,
-    #271a1f 0%,
-    #181316 52%,
-    #141013 100%
+    #2b1f38 0%,
+    #1e1828 52%,
+    #161220 100%
   );
   font-family: "DM Sans", sans-serif;
   padding: 0 1.2rem 3rem;
@@ -395,7 +378,7 @@ const beneficios = [
 .orb-1 {
   width: 520px;
   height: 520px;
-  background: radial-gradient(circle, #a34f3c, transparent 70%);
+  background: radial-gradient(circle, #a05bc9, transparent 70%);
   top: -120px;
   left: -120px;
   animation-duration: 20s;
@@ -403,7 +386,7 @@ const beneficios = [
 .orb-2 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, #854637, transparent 70%);
+  background: radial-gradient(circle, #7d4ca8, transparent 70%);
   top: 40%;
   right: -100px;
   animation-duration: 25s;
@@ -412,7 +395,7 @@ const beneficios = [
 .orb-3 {
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, #c07f6f55, transparent 70%);
+  background: radial-gradient(circle, #d9a1ef4f, transparent 70%);
   bottom: 10%;
   left: 30%;
   animation-duration: 22s;
@@ -496,10 +479,10 @@ footer {
 }
 
 .btn-principal {
-  background: linear-gradient(135deg, #e5967f, #cc6850, #844233);
+  background: linear-gradient(135deg, #c788e6, #a05bc9, #7c4aa1);
   background-size: 200% 200%;
   color: #fff;
-  box-shadow: 0 0 0 0 rgba(204, 104, 80, 0);
+  box-shadow: 0 0 0 0 rgba(160, 91, 201, 0);
   animation: gradient-shift 4s ease infinite;
 }
 
@@ -515,14 +498,14 @@ footer {
 
 .btn-glow {
   box-shadow:
-    0 4px 24px rgba(204, 104, 80, 0.4),
-    0 0 0 1px rgba(229, 150, 127, 0.35);
+    0 4px 24px rgba(160, 91, 201, 0.45),
+    0 0 0 1px rgba(204, 138, 232, 0.38);
 }
 
 .btn-glow:hover {
   box-shadow:
-    0 6px 32px rgba(204, 104, 80, 0.58),
-    0 0 0 1px rgba(229, 150, 127, 0.5);
+    0 6px 32px rgba(160, 91, 201, 0.56),
+    0 0 0 1px rgba(204, 138, 232, 0.52);
   transform: translateY(-1px);
 }
 
@@ -561,8 +544,8 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(229, 150, 127, 0.18);
-  border: 1px solid rgba(229, 150, 127, 0.45);
+  background: rgba(204, 138, 232, 0.2);
+  border: 1px solid rgba(204, 138, 232, 0.5);
   border-radius: 100px;
   padding: 0.35rem 0.9rem;
   font-size: 0.8rem;
@@ -599,7 +582,7 @@ h1 {
 
 .line-accent {
   font-style: italic;
-  background: linear-gradient(135deg, #ffd6c6, #e5967f, #cc6850);
+  background: linear-gradient(135deg, #ffd9f1, #d49bed, #a05bc9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -659,10 +642,10 @@ h1 {
 .promo-banner {
   background: linear-gradient(
     135deg,
-    rgba(132, 66, 51, 0.35),
-    rgba(229, 150, 127, 0.15)
+    rgba(124, 74, 161, 0.34),
+    rgba(204, 138, 232, 0.16)
   );
-  border: 1px solid rgba(229, 150, 127, 0.4);
+  border: 1px solid rgba(204, 138, 232, 0.42);
   border-radius: 18px;
   padding: 1rem 1.4rem;
   display: flex;
@@ -678,12 +661,12 @@ h1 {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(229, 150, 127, 0.1), transparent);
+  background: linear-gradient(90deg, rgba(204, 138, 232, 0.13), transparent);
   pointer-events: none;
 }
 
 .promo-badge {
-  background: #b95741;
+  background: #8f56bb;
   color: #fff;
   font-weight: 700;
   font-size: 0.78rem;
@@ -744,7 +727,7 @@ h1 {
 }
 
 .section-tag {
-  background: rgba(229, 150, 127, 0.16);
+  background: rgba(204, 138, 232, 0.18);
   border: 1px solid var(--border);
   color: var(--pink-soft);
   font-size: 0.75rem;
@@ -781,16 +764,16 @@ h1 {
 
 .promo-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(204, 104, 80, 0.22);
+  box-shadow: 0 8px 32px rgba(160, 91, 201, 0.24);
 }
 
 .promo-destacada {
   background: linear-gradient(
     135deg,
-    rgba(132, 66, 51, 0.28),
-    rgba(229, 150, 127, 0.11)
+    rgba(124, 74, 161, 0.3),
+    rgba(204, 138, 232, 0.12)
   );
-  border-color: rgba(229, 150, 127, 0.45);
+  border-color: rgba(204, 138, 232, 0.45);
 }
 
 .promo-thumb {
@@ -877,7 +860,7 @@ h1 {
 }
 
 .card-servicio:hover {
-  border-color: rgba(229, 150, 127, 0.5);
+  border-color: rgba(204, 138, 232, 0.5);
   transform: translateY(-2px);
 }
 
@@ -890,8 +873,8 @@ h1 {
 .servicio-precio {
   font-size: 0.78rem;
   color: var(--pink-soft);
-  background: rgba(244, 114, 182, 0.12);
-  border: 1px solid rgba(244, 114, 182, 0.2);
+  background: rgba(204, 138, 232, 0.18);
+  border: 1px solid rgba(204, 138, 232, 0.3);
   border-radius: 100px;
   padding: 0.18rem 0.6rem;
   white-space: nowrap;
@@ -1002,7 +985,7 @@ h1 {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #be185d, #f472b6);
+  background: linear-gradient(135deg, #a05bc9, #cd95ea);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1069,11 +1052,11 @@ h1 {
 .cta-final {
   background: linear-gradient(
     135deg,
-    rgba(132, 66, 51, 0.38),
-    rgba(229, 150, 127, 0.12),
-    rgba(35, 30, 33, 0.18)
+    rgba(124, 74, 161, 0.38),
+    rgba(204, 138, 232, 0.13),
+    rgba(30, 24, 40, 0.2)
   );
-  border: 1px solid rgba(229, 150, 127, 0.35);
+  border: 1px solid rgba(204, 138, 232, 0.36);
   border-radius: 24px;
   padding: 2.5rem 2rem;
   display: flex;
@@ -1127,7 +1110,7 @@ h1 {
 .deco-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(229, 150, 127, 0.28);
+  border: 1px solid rgba(204, 138, 232, 0.3);
   animation: ring-spin 12s linear infinite;
 }
 
@@ -1139,7 +1122,7 @@ h1 {
 .ring-2 {
   width: 140px;
   height: 140px;
-  border-color: rgba(229, 150, 127, 0.16);
+  border-color: rgba(204, 138, 232, 0.18);
   animation-duration: 18s;
   animation-direction: reverse;
 }
