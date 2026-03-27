@@ -1,63 +1,247 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { getFirebaseAuth, getFirebaseDb } from "@/nucleo/firebase/client";
 
 export const ROLES = {
-    USUARIO: 'usuario',
-    EMPLEADO: 'empleado',
-    ADMIN: 'admin',
+  USUARIO: "usuario",
+  EMPLEADO: "empleado",
+  ADMIN: "admin",
+};
+
+function iniciales(nombre = "") {
+  return nombre
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() || "")
+    .join("");
 }
 
-const MOCK_USERS = [
-    { id: 1, nombre: 'Carlos López',  email: 'usuario@demo.com',  password: '123456', rol: 'usuario',  avatar: 'CL' },
-    { id: 2, nombre: 'Ana Martínez',  email: 'empleado@demo.com', password: '123456', rol: 'empleado', avatar: 'AM' },
-    { id: 3, nombre: 'Dueño Sistema', email: 'admin@demo.com',    password: '123456', rol: 'admin',    avatar: 'DS' },
-]
+function mapFirebaseError(err) {
+  const code = err?.code || "";
+  const mensajes = {
+    "auth/invalid-credential": "Credenciales incorrectas.",
+    "auth/user-not-found": "La cuenta no existe.",
+    "auth/wrong-password": "La contraseña es incorrecta.",
+    "auth/invalid-email": "Correo electrónico inválido.",
+    "auth/email-already-in-use": "Ese correo ya está registrado.",
+    "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
+    "auth/too-many-requests": "Demasiados intentos. Intenta más tarde.",
+    "auth/network-request-failed": "Error de red. Revisa tu conexión.",
+  };
+  return mensajes[code] || err?.message || "Ocurrió un error al autenticar.";
+}
 
-export const useAuthStore = defineStore('auth', () => {
-    const usuario  = ref(JSON.parse(localStorage.getItem('usuario')) || null)
-    const token    = ref(localStorage.getItem('token') || null)
-    const cargando = ref(false)
-    const error    = ref(null)
+export const useAuthStore = defineStore("auth", () => {
+  const usuario = ref(JSON.parse(localStorage.getItem("usuario") || "null"));
+  const token = ref(localStorage.getItem("token") || null);
+  const cargando = ref(false);
+  const error = ref(null);
+  const authInicializado = ref(false);
 
-    const estaAutenticado = computed(() => !!token.value && !!usuario.value)
-    const rol       = computed(() => usuario.value?.rol || null)
-    const esUsuario  = computed(() => rol.value === 'usuario')
-    const esEmpleado = computed(() => rol.value === 'empleado')
-    const esAdmin    = computed(() => rol.value === 'admin')
+  const estaAutenticado = computed(() => !!token.value && !!usuario.value);
+  const rol = computed(() => usuario.value?.rol || null);
+  const esUsuario = computed(() => rol.value === "usuario");
+  const esEmpleado = computed(() => rol.value === "empleado");
+  const esAdmin = computed(() => rol.value === "admin");
 
-    function tieneRol(...roles) { return roles.includes(rol.value) }
+  function tieneRol(...roles) {
+    return roles.includes(rol.value);
+  }
 
-    async function login(email, password) {
-        cargando.value = true
-        error.value = null
-        try {
-            await new Promise((r) => setTimeout(r, 800))
-            const encontrado = MOCK_USERS.find((u) => u.email === email && u.password === password)
-            if (!encontrado) throw new Error('Credenciales incorrectas')
-            const { password: _, ...datosUsuario } = encontrado
-            const mockToken = `mock-token-${datosUsuario.rol}-${Date.now()}`
-            usuario.value = datosUsuario
-            token.value = mockToken
-            localStorage.setItem('usuario', JSON.stringify(datosUsuario))
-            localStorage.setItem('token', mockToken)
-            return { ok: true, rol: datosUsuario.rol }
-        } catch (err) {
-            error.value = err.message
-            return { ok: false, mensaje: err.message }
-        } finally {
-            cargando.value = false
+  function persistirSesion() {
+    if (usuario.value && token.value) {
+      localStorage.setItem("usuario", JSON.stringify(usuario.value));
+      localStorage.setItem("token", token.value);
+      return;
+    }
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("token");
+  }
+
+  async function obtenerPerfilDesdeFirestore(firebaseUser) {
+    const db = getFirebaseDb();
+    const ref = doc(db, "users", firebaseUser.uid);
+    const snap = await getDoc(ref);
+
+    const nombreBase =
+      firebaseUser.displayName ||
+      firebaseUser.email?.split("@")[0] ||
+      "Usuario";
+    const perfilDefault = {
+      uid: firebaseUser.uid,
+      nombre: nombreBase,
+      email: firebaseUser.email,
+      rol: ROLES.USUARIO,
+      avatar: iniciales(nombreBase),
+      estado: "activo",
+    };
+
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        ...perfilDefault,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+      return perfilDefault;
+    }
+
+    const data = snap.data();
+    return {
+      uid: firebaseUser.uid,
+      nombre: data.nombre || nombreBase,
+      email: data.email || firebaseUser.email,
+      rol: data.rol || ROLES.USUARIO,
+      avatar: data.avatar || iniciales(data.nombre || nombreBase),
+      estado: data.estado || "activo",
+    };
+  }
+
+  async function login(email, password) {
+    cargando.value = true;
+    error.value = null;
+    try {
+      const auth = getFirebaseAuth();
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const idToken = await cred.user.getIdToken();
+      const perfil = await obtenerPerfilDesdeFirestore(cred.user);
+
+      usuario.value = {
+        id: perfil.uid,
+        nombre: perfil.nombre,
+        email: perfil.email,
+        rol: perfil.rol,
+        avatar: perfil.avatar,
+      };
+      token.value = idToken;
+      persistirSesion();
+      return { ok: true, rol: perfil.rol };
+    } catch (err) {
+      const mensaje = mapFirebaseError(err);
+      error.value = mensaje;
+      return { ok: false, mensaje };
+    } finally {
+      cargando.value = false;
+    }
+  }
+
+  async function registrar({ nombre, email, password }) {
+    cargando.value = true;
+    error.value = null;
+    try {
+      const auth = getFirebaseAuth();
+      const db = getFirebaseDb();
+
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: nombre });
+
+      const perfil = {
+        uid: cred.user.uid,
+        nombre,
+        email,
+        rol: ROLES.USUARIO,
+        avatar: iniciales(nombre),
+        estado: "activo",
+      };
+
+      await setDoc(doc(db, "users", cred.user.uid), {
+        ...perfil,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      const idToken = await cred.user.getIdToken();
+      usuario.value = {
+        id: perfil.uid,
+        nombre: perfil.nombre,
+        email: perfil.email,
+        rol: perfil.rol,
+        avatar: perfil.avatar,
+      };
+      token.value = idToken;
+      persistirSesion();
+      return { ok: true, rol: perfil.rol };
+    } catch (err) {
+      const mensaje = mapFirebaseError(err);
+      error.value = mensaje;
+      return { ok: false, mensaje };
+    } finally {
+      cargando.value = false;
+    }
+  }
+
+  async function logout() {
+    try {
+      const auth = getFirebaseAuth();
+      await signOut(auth);
+    } catch {
+      // Si falla signOut remoto, limpiamos estado local de todos modos.
+    } finally {
+      usuario.value = null;
+      token.value = null;
+      error.value = null;
+      persistirSesion();
+    }
+  }
+
+  function inicializarAuth() {
+    if (authInicializado.value) return;
+    authInicializado.value = true;
+
+    try {
+      const auth = getFirebaseAuth();
+      onAuthStateChanged(auth, async (firebaseUser) => {
+        if (!firebaseUser) {
+          usuario.value = null;
+          token.value = null;
+          persistirSesion();
+          return;
         }
+
+        const idToken = await firebaseUser.getIdToken();
+        const perfil = await obtenerPerfilDesdeFirestore(firebaseUser);
+        usuario.value = {
+          id: perfil.uid,
+          nombre: perfil.nombre,
+          email: perfil.email,
+          rol: perfil.rol,
+          avatar: perfil.avatar,
+        };
+        token.value = idToken;
+        persistirSesion();
+      });
+    } catch {
+      // Si Firebase no está configurado aún, mantenemos el estado local actual.
     }
+  }
 
-    function logout() {
-        usuario.value = null
-        token.value = null
-        error.value = null
-        localStorage.removeItem('usuario')
-        localStorage.removeItem('token')
-    }
+  function limpiarError() {
+    error.value = null;
+  }
 
-    function limpiarError() { error.value = null }
-
-    return { usuario, token, cargando, error, estaAutenticado, rol, esUsuario, esEmpleado, esAdmin, tieneRol, login, logout, limpiarError }
-})
+  return {
+    usuario,
+    token,
+    cargando,
+    error,
+    estaAutenticado,
+    rol,
+    esUsuario,
+    esEmpleado,
+    esAdmin,
+    tieneRol,
+    login,
+    registrar,
+    logout,
+    inicializarAuth,
+    limpiarError,
+  };
+});

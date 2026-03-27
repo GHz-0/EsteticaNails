@@ -27,9 +27,12 @@
           />
         </label>
 
-        <button type="submit" class="btn-principal">Registrarme</button>
+        <button type="submit" class="btn-principal" :disabled="auth.cargando">
+          {{ auth.cargando ? "Creando cuenta..." : "Registrarme" }}
+        </button>
       </form>
 
+      <p v-if="auth.error" class="mensaje">{{ auth.error }}</p>
       <p v-if="mensaje" class="mensaje">{{ mensaje }}</p>
 
       <div class="links">
@@ -42,10 +45,12 @@
 
 <script setup>
 import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/nucleo/estado/auth";
+import { getRutaDashboard } from "@/nucleo/router";
 
-import { CRM_Estetica } from "@/modulos/usuario/crm.js";//importamos CRM sin molestar a la logica de aca.
-
-const miCrm = new CRM_Estetica();//inicializa el CRM.
+const router = useRouter();
+const auth = useAuthStore();
 
 const form = reactive({
   nombre: "",
@@ -55,15 +60,26 @@ const form = reactive({
 
 const mensaje = ref("");
 
-function registrar() {
-  miCrm.registrarClienta(form.nombre, form.email, form.password);// guarda el CRM los datos sin interferir en el funcionamiento normal.
-  console.log("Clientas guardadas en el CRM:", miCrm.obtenerClientas());//para confirmar que todo funcina.
+async function registrar() {
+  auth.limpiarError();
+  const resultado = await auth.registrar({
+    nombre: form.nombre,
+    email: form.email,
+    password: form.password,
+  });
 
-  mensaje.value =
-    "Registro recibido. En el siguiente paso conectamos este formulario a Firebase Auth.";
+  if (!resultado.ok) {
+    mensaje.value = resultado.mensaje;
+    return;
+  }
+
+  mensaje.value = "Cuenta creada correctamente. Redirigiendo...";
   form.nombre = "";
   form.email = "";
   form.password = "";
+  setTimeout(() => {
+    router.push(getRutaDashboard(resultado.rol));
+  }, 600);
 }
 </script>
 
