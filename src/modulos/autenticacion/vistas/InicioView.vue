@@ -13,7 +13,7 @@
     <!-- ── TOPBAR ── -->
     <header class="topbar">
       <div class="marca">
-        <span class="marca-icon">◈</span>
+        <img class="marca-logo" :src="imagenesUi.logo" alt="Logo Nails Bere" />
         <span>Nails Bere</span>
       </div>
       <nav class="acciones-top">
@@ -42,7 +42,7 @@
 
       <div class="hero-acciones">
         <RouterLink to="/registro" class="btn-principal btn-glow">
-          <span>✦</span> Agendar cita
+          Agendar cita
         </RouterLink>
         <RouterLink to="/login" class="btn-ghost">Ya tengo cuenta →</RouterLink>
       </div>
@@ -68,7 +68,7 @@
 
     <!-- ── PROMO BANNER ── -->
     <section class="promo-banner">
-      <div class="promo-badge">🔥 Oferta limitada</div>
+      <div class="promo-badge">Oferta limitada</div>
       <div class="promo-content">
         <p class="promo-titulo">¡Manicure + Facial a precio especial!</p>
         <p class="promo-sub">
@@ -91,7 +91,7 @@
           class="promo-card"
           :class="promo.destacada ? 'promo-destacada' : ''"
         >
-          <div class="promo-emoji">{{ promo.icono }}</div>
+          <img class="promo-thumb" :src="promo.imagen" :alt="promo.titulo" />
           <div class="promo-info">
             <p class="promo-card-titulo">{{ promo.titulo }}</p>
             <p class="promo-card-desc">{{ promo.desc }}</p>
@@ -100,7 +100,7 @@
             <span class="precio-antes">{{ promo.antes }}</span>
             <span class="precio-ahora">{{ promo.ahora }}</span>
           </div>
-          <div v-if="promo.destacada" class="promo-hot-tag">⚡ Popular</div>
+          <div v-if="promo.destacada" class="promo-hot-tag">Popular</div>
         </article>
       </div>
     </section>
@@ -118,13 +118,17 @@
           class="card-servicio"
         >
           <div class="card-top">
-            <div class="icono">{{ servicio.icono }}</div>
+            <img
+              class="servicio-thumb"
+              :src="servicio.imagen"
+              :alt="servicio.titulo"
+            />
             <span class="servicio-precio">{{ servicio.precio }}</span>
           </div>
           <h3>{{ servicio.titulo }}</h3>
           <p>{{ servicio.descripcion }}</p>
           <div class="card-footer">
-            <span class="duracion">⏱ {{ servicio.duracion }}</span>
+            <span class="duracion">Duración: {{ servicio.duracion }}</span>
             <span class="card-link">Ver más →</span>
           </div>
         </article>
@@ -142,7 +146,14 @@
           :key="t.nombre"
           class="testimonio-card"
         >
-          <div class="estrellas">★★★★★</div>
+          <div class="estrellas">
+            <img
+              class="star-icon"
+              :src="imagenesUi.estrella"
+              alt="Calificación alta"
+            />
+            <span>5.0 de 5</span>
+          </div>
           <p class="testimonio-texto">"{{ t.texto }}"</p>
           <div class="testimonio-autor">
             <div class="avatar">{{ t.nombre[0] }}</div>
@@ -158,7 +169,7 @@
     <!-- ── BENEFICIOS ── -->
     <section class="beneficios">
       <div class="beneficio" v-for="item in beneficios" :key="item.titulo">
-        <div class="beneficio-icono">{{ item.icono }}</div>
+        <img class="beneficio-img" :src="item.imagen" :alt="item.titulo" />
         <h4>{{ item.titulo }}</h4>
         <p>{{ item.texto }}</p>
       </div>
@@ -173,28 +184,36 @@
           Regístrate gratis y accede a precios exclusivos para nuevas clientas.
         </p>
         <RouterLink to="/registro" class="btn-principal btn-glow btn-lg">
-          <span>✦</span> Crear mi cuenta gratis
+          Crear mi cuenta gratis
         </RouterLink>
       </div>
       <div class="cta-deco">
         <span class="deco-ring ring-1"></span>
         <span class="deco-ring ring-2"></span>
-        <span class="deco-emoji">💅</span>
+        <img class="deco-img" :src="imagenesUi.cta" alt="Detalle de manicura" />
       </div>
     </section>
 
     <!-- ── FOOTER ── -->
     <footer class="footer">
-      <span class="marca-small">◈ Nails Bere</span>
+      <span class="marca-small">Nails Bere</span>
       <span>Tuxtla Gutiérrez, Chiapas · © 2025</span>
     </footer>
   </div>
 </template>
 
 <script setup>
+const imagenesUi = {
+  logo: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=96&q=80",
+  estrella:
+    "https://images.unsplash.com/photo-1611605698335-8b1569810432?auto=format&fit=crop&w=40&q=80",
+  cta: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=180&q=80",
+};
+
 const promociones = [
   {
-    icono: "💅✨",
+    imagen:
+      "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?auto=format&fit=crop&w=160&q=80",
     titulo: "Manicure + Gel",
     desc: "Diseño incluido para nuevas clientas",
     antes: "$280",
@@ -202,7 +221,8 @@ const promociones = [
     destacada: true,
   },
   {
-    icono: "🌸",
+    imagen:
+      "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=160&q=80",
     titulo: "Facial Express",
     desc: "Limpieza profunda + hidratación",
     antes: "$350",
@@ -210,7 +230,8 @@ const promociones = [
     destacada: false,
   },
   {
-    icono: "💄🎨",
+    imagen:
+      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=160&q=80",
     titulo: "Maquillaje + Peinado",
     desc: "Pack eventos y graduaciones",
     antes: "$600",
@@ -218,7 +239,8 @@ const promociones = [
     destacada: false,
   },
   {
-    icono: "🌈",
+    imagen:
+      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=160&q=80",
     titulo: "Color completo",
     desc: "Tinte + tratamiento de brillo",
     antes: "$700",
@@ -229,42 +251,48 @@ const promociones = [
 
 const servicios = [
   {
-    icono: "✂️",
+    imagen:
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=100&q=80",
     titulo: "Corte y peinado",
     descripcion: "Diseño personalizado según tu tipo de rostro y estilo.",
     precio: "Desde $150",
     duracion: "45 min",
   },
   {
-    icono: "🎨",
+    imagen:
+      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=100&q=80",
     titulo: "Color y tratamientos",
     descripcion: "Coloración, matices y tratamientos para recuperar brillo.",
     precio: "Desde $350",
     duracion: "90 min",
   },
   {
-    icono: "💅",
+    imagen:
+      "https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=100&q=80",
     titulo: "Uñas",
     descripcion: "Manicure, gel semipermanente y diseños para toda ocasión.",
     precio: "Desde $180",
     duracion: "60 min",
   },
   {
-    icono: "💄",
+    imagen:
+      "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=100&q=80",
     titulo: "Maquillaje",
     descripcion: "Maquillaje social y profesional para eventos especiales.",
     precio: "Desde $300",
     duracion: "75 min",
   },
   {
-    icono: "🧖",
+    imagen:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=100&q=80",
     titulo: "Faciales",
     descripcion: "Limpieza e hidratación para una piel fresca y luminosa.",
     precio: "Desde $250",
     duracion: "50 min",
   },
   {
-    icono: "🌸",
+    imagen:
+      "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=100&q=80",
     titulo: "Paquetes",
     descripcion: "Combina servicios y obtén mejores precios.",
     precio: "Desde $450",
@@ -295,17 +323,20 @@ const testimonios = [
 
 const beneficios = [
   {
-    icono: "🎯",
+    imagen:
+      "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=120&q=80",
     titulo: "Atención personalizada",
     texto: "Te asesoramos según tus objetivos y preferencias de estilo.",
   },
   {
-    icono: "📅",
+    imagen:
+      "https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&w=120&q=80",
     titulo: "Agenda simple",
     texto: "Solicita tus citas sin complicarte y en pocos pasos.",
   },
   {
-    icono: "🏅",
+    imagen:
+      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=120&q=80",
     titulo: "Profesionales certificadas",
     texto: "Equipo experto en tendencias y cuidado integral.",
   },
@@ -317,23 +348,28 @@ const beneficios = [
 
 /* ── VARIABLES ── */
 :root {
-  --pink: #f472b6;
-  --pink-deep: #ec4899;
-  --pink-soft: #fbcfe8;
-  --rose: #be185d;
-  --bg: #0c070d;
-  --surface: rgba(255, 255, 255, 0.04);
-  --border: rgba(249, 168, 212, 0.18);
-  --border-soft: rgba(255, 255, 255, 0.1);
+  --pink: #e5967f;
+  --pink-deep: #cc6850;
+  --pink-soft: #ffe3da;
+  --rose: #844233;
+  --bg: #181316;
+  --surface: rgba(255, 255, 255, 0.08);
+  --border: rgba(229, 150, 127, 0.35);
+  --border-soft: rgba(255, 255, 255, 0.18);
   --text: #fff;
-  --muted: rgba(255, 255, 255, 0.6);
+  --muted: rgba(255, 255, 255, 0.75);
 }
 
 /* ── BASE ── */
 .inicio-page {
   min-height: 100vh;
   color: var(--text);
-  background: #0c070d;
+  background: radial-gradient(
+    circle at top,
+    #271a1f 0%,
+    #181316 52%,
+    #141013 100%
+  );
   font-family: "DM Sans", sans-serif;
   padding: 0 1.2rem 3rem;
   overflow-x: hidden;
@@ -359,7 +395,7 @@ const beneficios = [
 .orb-1 {
   width: 520px;
   height: 520px;
-  background: radial-gradient(circle, #be185d, transparent 70%);
+  background: radial-gradient(circle, #a34f3c, transparent 70%);
   top: -120px;
   left: -120px;
   animation-duration: 20s;
@@ -367,7 +403,7 @@ const beneficios = [
 .orb-2 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, #9d174d, transparent 70%);
+  background: radial-gradient(circle, #854637, transparent 70%);
   top: 40%;
   right: -100px;
   animation-duration: 25s;
@@ -376,7 +412,7 @@ const beneficios = [
 .orb-3 {
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, #7c3aed44, transparent 70%);
+  background: radial-gradient(circle, #c07f6f55, transparent 70%);
   bottom: 10%;
   left: 30%;
   animation-duration: 22s;
@@ -429,9 +465,13 @@ footer {
   letter-spacing: 0.01em;
 }
 
-.marca-icon {
-  color: var(--pink);
-  font-size: 1.5rem;
+.marca-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .acciones-top {
@@ -456,10 +496,10 @@ footer {
 }
 
 .btn-principal {
-  background: linear-gradient(135deg, #f472b6, #ec4899, #be185d);
+  background: linear-gradient(135deg, #e5967f, #cc6850, #844233);
   background-size: 200% 200%;
   color: #fff;
-  box-shadow: 0 0 0 0 rgba(236, 72, 153, 0);
+  box-shadow: 0 0 0 0 rgba(204, 104, 80, 0);
   animation: gradient-shift 4s ease infinite;
 }
 
@@ -475,14 +515,14 @@ footer {
 
 .btn-glow {
   box-shadow:
-    0 4px 24px rgba(236, 72, 153, 0.4),
-    0 0 0 1px rgba(244, 114, 182, 0.3);
+    0 4px 24px rgba(204, 104, 80, 0.4),
+    0 0 0 1px rgba(229, 150, 127, 0.35);
 }
 
 .btn-glow:hover {
   box-shadow:
-    0 6px 32px rgba(236, 72, 153, 0.6),
-    0 0 0 1px rgba(244, 114, 182, 0.5);
+    0 6px 32px rgba(204, 104, 80, 0.58),
+    0 0 0 1px rgba(229, 150, 127, 0.5);
   transform: translateY(-1px);
 }
 
@@ -521,8 +561,8 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(244, 114, 182, 0.12);
-  border: 1px solid rgba(244, 114, 182, 0.3);
+  background: rgba(229, 150, 127, 0.18);
+  border: 1px solid rgba(229, 150, 127, 0.45);
   border-radius: 100px;
   padding: 0.35rem 0.9rem;
   font-size: 0.8rem;
@@ -559,7 +599,7 @@ h1 {
 
 .line-accent {
   font-style: italic;
-  background: linear-gradient(135deg, #f9a8d4, #f472b6, #ec4899);
+  background: linear-gradient(135deg, #ffd6c6, #e5967f, #cc6850);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -619,10 +659,10 @@ h1 {
 .promo-banner {
   background: linear-gradient(
     135deg,
-    rgba(190, 24, 93, 0.25),
-    rgba(244, 114, 182, 0.12)
+    rgba(132, 66, 51, 0.35),
+    rgba(229, 150, 127, 0.15)
   );
-  border: 1px solid rgba(244, 114, 182, 0.35);
+  border: 1px solid rgba(229, 150, 127, 0.4);
   border-radius: 18px;
   padding: 1rem 1.4rem;
   display: flex;
@@ -638,12 +678,12 @@ h1 {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(244, 114, 182, 0.08), transparent);
+  background: linear-gradient(90deg, rgba(229, 150, 127, 0.1), transparent);
   pointer-events: none;
 }
 
 .promo-badge {
-  background: var(--pink-deep);
+  background: #b95741;
   color: #fff;
   font-weight: 700;
   font-size: 0.78rem;
@@ -704,7 +744,7 @@ h1 {
 }
 
 .section-tag {
-  background: rgba(244, 114, 182, 0.12);
+  background: rgba(229, 150, 127, 0.16);
   border: 1px solid var(--border);
   color: var(--pink-soft);
   font-size: 0.75rem;
@@ -741,22 +781,25 @@ h1 {
 
 .promo-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(236, 72, 153, 0.18);
+  box-shadow: 0 8px 32px rgba(204, 104, 80, 0.22);
 }
 
 .promo-destacada {
   background: linear-gradient(
     135deg,
-    rgba(190, 24, 93, 0.18),
-    rgba(244, 114, 182, 0.08)
+    rgba(132, 66, 51, 0.28),
+    rgba(229, 150, 127, 0.11)
   );
-  border-color: rgba(244, 114, 182, 0.4);
+  border-color: rgba(229, 150, 127, 0.45);
 }
 
-.promo-emoji {
-  font-size: 1.8rem;
-  line-height: 1;
+.promo-thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  object-fit: cover;
   flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .promo-info {
@@ -834,7 +877,7 @@ h1 {
 }
 
 .card-servicio:hover {
-  border-color: rgba(244, 114, 182, 0.45);
+  border-color: rgba(229, 150, 127, 0.5);
   transform: translateY(-2px);
 }
 
@@ -842,10 +885,6 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-}
-
-.icono {
-  font-size: 1.6rem;
 }
 
 .servicio-precio {
@@ -856,6 +895,14 @@ h1 {
   border-radius: 100px;
   padding: 0.18rem 0.6rem;
   white-space: nowrap;
+}
+
+.servicio-thumb {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .card-servicio h3 {
@@ -921,9 +968,19 @@ h1 {
 }
 
 .estrellas {
-  color: #f59e0b;
-  font-size: 0.88rem;
-  letter-spacing: 0.08em;
+  color: #ffd089;
+  font-size: 0.84rem;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.star-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .testimonio-texto {
@@ -986,8 +1043,12 @@ h1 {
   border-color: var(--border);
 }
 
-.beneficio-icono {
-  font-size: 1.5rem;
+.beneficio-img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 0.6rem;
 }
 
@@ -1008,11 +1069,11 @@ h1 {
 .cta-final {
   background: linear-gradient(
     135deg,
-    rgba(190, 24, 93, 0.2),
-    rgba(244, 114, 182, 0.1),
-    rgba(124, 58, 237, 0.08)
+    rgba(132, 66, 51, 0.38),
+    rgba(229, 150, 127, 0.12),
+    rgba(35, 30, 33, 0.18)
   );
-  border: 1px solid rgba(244, 114, 182, 0.3);
+  border: 1px solid rgba(229, 150, 127, 0.35);
   border-radius: 24px;
   padding: 2.5rem 2rem;
   display: flex;
@@ -1066,7 +1127,7 @@ h1 {
 .deco-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(244, 114, 182, 0.25);
+  border: 1px solid rgba(229, 150, 127, 0.28);
   animation: ring-spin 12s linear infinite;
 }
 
@@ -1078,7 +1139,7 @@ h1 {
 .ring-2 {
   width: 140px;
   height: 140px;
-  border-color: rgba(244, 114, 182, 0.12);
+  border-color: rgba(229, 150, 127, 0.16);
   animation-duration: 18s;
   animation-direction: reverse;
 }
@@ -1092,8 +1153,13 @@ h1 {
   }
 }
 
-.deco-emoji {
-  font-size: 3rem;
+.deco-img {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
   animation: float 4s ease-in-out infinite;
 }
 
