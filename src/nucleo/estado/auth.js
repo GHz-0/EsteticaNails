@@ -1,6 +1,24 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+// 1. IMPORTAMOS FIREBASE
+import { initializeApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+// 2. TUS LLAVES SECRETAS (Pídele este bloque a tu jefe)
+const firebaseConfig = {
+  apiKey: "LLAVE_DEL_JEFE_AQUI",
+  authDomain: "estetica-nails.firebaseapp.com",
+  projectId: "estetica-nails",
+  storageBucket: "estetica-nails.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456:web:abcdef"
+};
+
+// Inicializamos Firebase
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+
 export const ROLES = {
     USUARIO: 'usuario',
     EMPLEADO: 'empleado',
@@ -27,6 +45,38 @@ export const useAuthStore = defineStore('auth', () => {
 
     function tieneRol(...roles) { return roles.includes(rol.value) }
 
+    // 3. NUEVA FUNCIÓN: REGISTRAR CON FIREBASE
+    async function registrar(email, password, nombre) {
+        cargando.value = true
+        error.value = null
+        try {
+            // Mandamos los datos a la nube de Firebase
+            const credencial = await createUserWithEmailAndPassword(auth, email, password)
+            
+            // Creamos el perfil localmente para que inicie sesión de inmediato
+            const nuevoUsuario = {
+                id: credencial.user.uid,
+                nombre: nombre,
+                email: email,
+                rol: 'usuario', // Por defecto es una clienta normal
+                avatar: nombre.substring(0, 2).toUpperCase()
+            }
+
+            usuario.value = nuevoUsuario
+            token.value = credencial.user.accessToken
+            localStorage.setItem('usuario', JSON.stringify(nuevoUsuario))
+            localStorage.setItem('token', token.value)
+
+            return { ok: true }
+        } catch (err) {
+            error.value = err.message
+            return { ok: false, mensaje: err.message }
+        } finally {
+            cargando.value = false
+        }
+    }
+
+    // Tu login original se queda igualito
     async function login(email, password) {
         cargando.value = true
         error.value = null
@@ -59,5 +109,9 @@ export const useAuthStore = defineStore('auth', () => {
 
     function limpiarError() { error.value = null }
 
-    return { usuario, token, cargando, error, estaAutenticado, rol, esUsuario, esEmpleado, esAdmin, tieneRol, login, logout, limpiarError }
+    // 4. EXPORTAMOS LA NUEVA FUNCIÓN AQUÍ AL FINAL
+    return { 
+        usuario, token, cargando, error, estaAutenticado, rol, esUsuario, esEmpleado, esAdmin, 
+        tieneRol, login, logout, limpiarError, registrar // <--- ¡Agregamos 'registrar' aquí!
+    }
 })
