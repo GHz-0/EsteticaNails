@@ -333,6 +333,7 @@ async function loginDemo(demo) {
   margin: 0;
   line-height: 1;
   background: linear-gradient(135deg, #fce7f3, #f9a8d4, #ec4899);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: 0.02em;
