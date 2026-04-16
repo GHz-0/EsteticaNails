@@ -45,7 +45,7 @@ npm run dev
 - `auth.js`: login real con Firebase Auth y lectura de rol desde `users/{uid}`.
 - `main.js`: inicializa sesión persistente con `onAuthStateChanged`.
 
-## 7) Semilla manual inicial sugerida
+## 7). Semilla manual inicial sugerida
 
 Crea estos documentos en Firestore:
 
