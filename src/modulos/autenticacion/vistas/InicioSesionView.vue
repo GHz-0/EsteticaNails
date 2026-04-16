@@ -138,29 +138,6 @@ const cardCargada = ref(false);
 
 const servicios = ["✂️ Corte", "💅 Uñas", "🧖 Facial", "💄 Maquillaje"];
 
-const demoUsers = [
-  {
-    rol: "usuario",
-    etiqueta: "Cliente",
-    icono: "👤",
-    email: "usuario@demo.com",
-    password: "123456",
-  },
-  {
-    rol: "empleado",
-    etiqueta: "Empleada",
-    icono: "💇",
-    email: "empleado@demo.com",
-    password: "123456",
-  },
-  {
-    rol: "admin",
-    etiqueta: "Administrador",
-    icono: "🔑",
-    email: "admin@demo.com",
-    password: "123456",
-  },
-];
 
 onMounted(() => {
   setTimeout(() => {
