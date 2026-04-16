@@ -95,23 +95,6 @@
           </button>
         </form>
 
-        <!-- Divider -->
-        <div class="divider"><span>o acceso rápido demo</span></div>
-
-        <!-- Botones demo -->
-        <div class="demo-buttons">
-          <button
-            v-for="demo in demoUsers"
-            :key="demo.rol"
-            class="demo-btn"
-            :class="`demo-${demo.rol}`"
-            @click="loginDemo(demo)"
-          >
-            <span class="demo-icon">{{ demo.icono }}</span>
-            <span class="demo-label">{{ demo.etiqueta }}</span>
-          </button>
-        </div>
-
         <div class="registro-link">
           <span>¿Aún no tienes cuenta?</span>
           <RouterLink to="/registro">Crear cuenta</RouterLink>
@@ -138,7 +121,6 @@ const cardCargada = ref(false);
 
 const servicios = ["✂️ Corte", "💅 Uñas", "🧖 Facial", "💄 Maquillaje"];
 
-
 onMounted(() => {
   setTimeout(() => {
     cardCargada.value = true;
@@ -161,17 +143,18 @@ function petalStyle(i) {
 
 async function handleLogin() {
   auth.limpiarError();
+
+  // Validar campos
+  if (!form.email.trim() || !form.password.trim()) {
+    auth.error = "Completa email y contraseña";
+    return;
+  }
+
   const resultado = await auth.login(form.email, form.password);
   if (resultado.ok) {
     const redirect = route.query.redirect || getRutaDashboard(resultado.rol);
     router.push(redirect);
   }
-}
-
-async function loginDemo(demo) {
-  form.email = demo.email;
-  form.password = demo.password;
-  await handleLogin();
 }
 </script>
 
@@ -333,6 +316,7 @@ async function loginDemo(demo) {
   margin: 0;
   line-height: 1;
   background: linear-gradient(135deg, #fce7f3, #f9a8d4, #ec4899);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: 0.02em;
