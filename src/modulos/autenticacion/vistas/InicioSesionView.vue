@@ -612,64 +612,6 @@ async function handleLogin() {
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* ── Demo buttons ────────────────────────────────── */
-.demo-buttons {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.demo-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.7rem 0.5rem;
-  border-radius: 12px;
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: "DM Sans", sans-serif;
-}
-
-.demo-icon {
-  font-size: 1.2rem;
-}
-.demo-label {
-  font-size: 0.7rem;
-  font-weight: 500;
-}
-
-.demo-usuario {
-  background: rgba(249, 168, 212, 0.08);
-  border-color: rgba(249, 168, 212, 0.25);
-  color: #f9a8d4;
-}
-.demo-usuario:hover {
-  background: rgba(249, 168, 212, 0.18);
-  transform: translateY(-2px);
-}
-
-.demo-empleado {
-  background: rgba(253, 186, 116, 0.08);
-  border-color: rgba(253, 186, 116, 0.25);
-  color: #fdba74;
-}
-.demo-empleado:hover {
-  background: rgba(253, 186, 116, 0.18);
-  transform: translateY(-2px);
-}
-
-.demo-admin {
-  background: rgba(196, 181, 253, 0.08);
-  border-color: rgba(196, 181, 253, 0.25);
-  color: #c4b5fd;
-}
-.demo-admin:hover {
-  background: rgba(196, 181, 253, 0.18);
-  transform: translateY(-2px);
-}
-
 .registro-link {
   margin-top: 1rem;
   text-align: center;
