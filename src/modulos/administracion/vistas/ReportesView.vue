@@ -1,27 +1,34 @@
 <template>
   <div class="mx-auto w-full max-w-[1440px] px-3 pb-5 pt-4 sm:px-5 lg:px-7">
     <header
-      class="mb-4 rounded-3xl border border-fuchsia-200/15 bg-slate-950/60 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl sm:px-5"
+      class="relative mb-4 overflow-hidden rounded-[1.75rem] border border-fuchsia-100/12 bg-[rgba(6,8,14,0.84)] px-4 py-4 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:px-5"
     >
+      <span
+        class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ead7a1]/70 to-transparent"
+      />
+      <span
+        class="pointer-events-none absolute -right-20 top-[-4rem] h-40 w-40 rounded-full bg-fuchsia-400/10 blur-3xl"
+      />
+
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p
-            class="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-200/70"
+            class="mb-1 text-xs font-semibold uppercase tracking-[0.28em] text-[#ead7a1]/80"
           >
-            Centro de Analitica
+            Salón Intelligence
           </p>
           <h1
-            class="font-display text-2xl font-semibold tracking-tight text-fuchsia-50 sm:text-3xl"
+            class="font-display text-[2.15rem] font-semibold leading-none tracking-tight text-fuchsia-50 sm:text-[2.85rem]"
           >
             Panel de Reportes
           </h1>
-          <p class="mt-1 text-sm text-slate-300">
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-300/90">
             {{ resumenPeriodo }}
           </p>
         </div>
 
         <button
-          class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-pink-500/25 transition-all hover:-translate-y-0.5 hover:shadow-pink-500/35 disabled:cursor-not-allowed disabled:opacity-70"
+          class="inline-flex items-center justify-center rounded-full border border-[#ead7a1]/25 bg-gradient-to-r from-fuchsia-400/18 via-pink-400/18 to-[#ead7a1]/12 px-4 py-2 text-sm font-semibold text-fuchsia-50 shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:border-[#ead7a1]/45 hover:bg-fuchsia-300/18 disabled:cursor-not-allowed disabled:opacity-70"
           :disabled="cargando"
           @click="cargarDatos"
         >
@@ -35,10 +42,10 @@
             v-for="preset in presetsFechas"
             :key="preset.valor"
             :class="[
-              'rounded-xl border px-3 py-2 text-xs font-semibold tracking-wide transition-all sm:text-sm',
+              'rounded-full border px-3 py-2 text-xs font-semibold tracking-wide transition-all sm:text-sm',
               tipoFecha === preset.valor
-                ? 'border-fuchsia-300/70 bg-fuchsia-400/20 text-fuchsia-100 shadow-md shadow-fuchsia-500/20'
-                : 'border-fuchsia-100/15 bg-slate-900/55 text-slate-300 hover:border-fuchsia-200/40 hover:text-fuchsia-100',
+                ? 'border-[#ead7a1]/55 bg-[#ead7a1]/12 text-[#f6e7bc] shadow-[0_0_0_1px_rgba(234,215,161,0.12)]'
+                : 'border-fuchsia-100/10 bg-white/5 text-slate-300 hover:border-fuchsia-200/30 hover:text-fuchsia-50',
             ]"
             @click="cambiarFecha(preset.valor)"
           >
@@ -48,14 +55,14 @@
 
         <div
           v-if="tipoFecha === 'personalizado'"
-          class="grid gap-2 rounded-2xl border border-fuchsia-100/15 bg-slate-900/50 p-2 sm:grid-cols-2"
+          class="grid gap-2 rounded-2xl border border-fuchsia-100/10 bg-white/5 p-2 sm:grid-cols-2"
         >
           <label class="grid gap-1 text-xs font-medium text-slate-300">
             Desde
             <input
               v-model.lazy="fechaPersonalizada.inicio"
               type="date"
-              class="rounded-lg border border-fuchsia-200/20 bg-slate-950/70 px-2 py-1.5 text-sm text-slate-100 outline-none transition focus:border-fuchsia-300/60 focus:ring-2 focus:ring-fuchsia-400/25"
+              class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
             />
           </label>
           <label class="grid gap-1 text-xs font-medium text-slate-300">
@@ -63,7 +70,7 @@
             <input
               v-model.lazy="fechaPersonalizada.fin"
               type="date"
-              class="rounded-lg border border-fuchsia-200/20 bg-slate-950/70 px-2 py-1.5 text-sm text-slate-100 outline-none transition focus:border-fuchsia-300/60 focus:ring-2 focus:ring-fuchsia-400/25"
+              class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
             />
           </label>
         </div>

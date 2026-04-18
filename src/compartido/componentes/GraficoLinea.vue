@@ -1,6 +1,6 @@
 <template>
   <article
-    class="overflow-hidden rounded-2xl border border-fuchsia-200/15 bg-slate-950/55 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] backdrop-blur-xl"
+    class="overflow-hidden rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.32)] backdrop-blur-xl"
   >
     <header
       class="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"
@@ -17,7 +17,7 @@
 
     <div
       v-if="cargando"
-      class="grid min-h-36 place-items-center rounded-xl border border-fuchsia-100/10 bg-slate-900/45 text-sm font-medium text-slate-300"
+      class="grid min-h-36 place-items-center rounded-xl border border-fuchsia-100/10 bg-white/5 text-sm font-medium text-slate-300"
     >
       ⏳ Cargando gráfica...
     </div>
@@ -29,7 +29,7 @@
     </div>
     <div
       v-else-if="!datos || datos.length === 0"
-      class="grid min-h-36 place-items-center rounded-xl border border-fuchsia-100/10 bg-slate-900/45 text-sm font-medium text-slate-300"
+      class="grid min-h-36 place-items-center rounded-xl border border-fuchsia-100/10 bg-white/5 text-sm font-medium text-slate-300"
     >
       ℹ️ Sin datos para graficar
     </div>
@@ -41,6 +41,24 @@
       preserveAspectRatio="xMidYMid meet"
     >
       <defs>
+        <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f9a8d4" stop-opacity="0.32" />
+          <stop offset="58%" stop-color="#f472b6" stop-opacity="0.12" />
+          <stop offset="100%" stop-color="#ead7a1" stop-opacity="0.02" />
+        </linearGradient>
+        <linearGradient id="lineGlow" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#f5d0fe" />
+          <stop offset="50%" stop-color="#f9a8d4" />
+          <stop offset="100%" stop-color="#ead7a1" />
+        </linearGradient>
+        <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="6" result="blur" />
+          <feColorMatrix
+            in="blur"
+            type="matrix"
+            values="1 0 0 0 0.95 0 1 0 0 0.58 0 0 1 0 0.77 0 0 0 0.45 0"
+          />
+        </filter>
         <pattern id="grid" width="80" height="30" patternUnits="userSpaceOnUse">
           <path
             d="M 80 0 L 0 0 0 30"
@@ -50,14 +68,16 @@
           />
         </pattern>
       </defs>
+
       <rect width="800" height="300" fill="url(#grid)" />
+      <rect width="800" height="300" fill="rgba(3,5,10,0.18)" />
 
       <line
         x1="60"
         y1="10"
         x2="60"
         y2="250"
-        stroke="rgba(255,255,255,0.15)"
+        stroke="rgba(234,215,161,0.16)"
         stroke-width="2"
       />
       <line
@@ -65,15 +85,29 @@
         y1="250"
         x2="780"
         y2="250"
-        stroke="rgba(255,255,255,0.15)"
+        stroke="rgba(234,215,161,0.16)"
         stroke-width="2"
       />
+
+      <path :d="areaPath" fill="url(#areaFill)" />
 
       <polyline
         :points="puntosLinea"
         fill="none"
-        stroke="#f9a8d4"
-        stroke-width="2.5"
+        stroke="#ffffff"
+        stroke-opacity="0.18"
+        stroke-width="6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        filter="url(#softGlow)"
+      />
+      <polyline
+        :points="puntosLinea"
+        fill="none"
+        stroke="url(#lineGlow)"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       />
 
       <circle
@@ -81,8 +115,10 @@
         :key="i"
         :cx="punto.x"
         :cy="punto.y"
-        r="4"
-        fill="#f9a8d4"
+        r="5"
+        fill="#0b1020"
+        stroke="#f9a8d4"
+        stroke-width="2"
       />
 
       <text
@@ -92,7 +128,7 @@
         :y="270"
         text-anchor="middle"
         font-size="11"
-        fill="rgba(255,255,255,0.5)"
+        fill="rgba(245,208,254,0.55)"
         class="[dominant-baseline:hanging]"
       >
         {{ etiqueta.texto }}
@@ -105,7 +141,7 @@
         :y="valor.y + 5"
         text-anchor="end"
         font-size="11"
-        fill="rgba(255,255,255,0.5)"
+        fill="rgba(245,208,254,0.55)"
       >
         {{ valor.texto }}
       </text>
@@ -113,23 +149,22 @@
       <rect
         v-for="(punto, i) in puntos"
         :key="`hover-${i}`"
-        :x="punto.x - 30"
-        :y="punto.y - 40"
-        width="60"
-        height="30"
-        fill="rgba(0,0,0,0.8)"
-        rx="4"
-        class="transition-opacity duration-200"
+        :x="punto.x - 32"
+        :y="punto.y - 42"
+        width="64"
+        height="32"
+        fill="rgba(6,8,14,0.92)"
+        rx="6"
         style="opacity: 0; pointer-events: none"
       />
       <text
         v-for="(punto, i) in puntos"
         :key="`tooltip-text-${i}`"
         :x="punto.x"
-        :y="punto.y - 20"
+        :y="punto.y - 21"
         text-anchor="middle"
         font-size="10"
-        fill="#f9a8d4"
+        fill="#f6e7bc"
         font-weight="600"
         style="opacity: 0; pointer-events: none"
       >
@@ -143,31 +178,12 @@
 import { computed } from "vue";
 
 const props = defineProps({
-  titulo: {
-    type: String,
-    required: true,
-  },
-  subtitulo: {
-    type: String,
-    default: null,
-  },
-  datos: {
-    type: Array,
-    default: () => [],
-  },
-  cargando: {
-    type: Boolean,
-    default: false,
-  },
-  error: {
-    type: String,
-    default: null,
-  },
-  formato: {
-    type: String,
-    enum: ["numero", "moneda"],
-    default: "moneda",
-  },
+  titulo: { type: String, required: true },
+  subtitulo: { type: String, default: null },
+  datos: { type: Array, default: () => [] },
+  cargando: { type: Boolean, default: false },
+  error: { type: String, default: null },
+  formato: { type: String, enum: ["numero", "moneda"], default: "moneda" },
 });
 
 function formatearValor(valor) {
@@ -182,11 +198,8 @@ const minMax = computed(() => {
   const valores = props.datos.map((d) => d.valor || 0);
   const min = Math.min(...valores);
   const max = Math.max(...valores);
-  const padding = (max - min) * 0.15 || 100;
-  return {
-    min: Math.max(0, min - padding),
-    max: max + padding,
-  };
+  const padding = (max - min) * 0.18 || 80;
+  return { min: Math.max(0, min - padding), max: max + padding };
 });
 
 const puntos = computed(() => {
@@ -194,9 +207,8 @@ const puntos = computed(() => {
 
   const margenIzq = 60;
   const margenDer = 20;
-  const margenArr = 10;
+  const margenArr = 14;
   const margenAb = 50;
-
   const ancho = 800 - margenIzq - margenDer;
   const alto = 300 - margenArr - margenAb;
   const escalaX = ancho / (props.datos.length - 1 || 1);
@@ -212,6 +224,15 @@ const puntos = computed(() => {
 const puntosLinea = computed(() =>
   puntos.value.map((p) => `${p.x},${p.y}`).join(" "),
 );
+
+const areaPath = computed(() => {
+  if (!puntos.value.length) return "";
+  const baseY = 250;
+  const start = `M 60,${baseY} L ${puntos.value[0].x},${puntos.value[0].y}`;
+  const body = puntos.value.map((p) => `L ${p.x},${p.y}`).join(" ");
+  const end = `L ${puntos.value[puntos.value.length - 1].x},${baseY} Z`;
+  return `${start} ${body} ${end}`;
+});
 
 const etiquetasX = computed(() => {
   if (!props.datos || props.datos.length === 0) return [];
@@ -230,7 +251,7 @@ const etiquetasX = computed(() => {
       }
       return null;
     })
-    .filter((x) => x);
+    .filter(Boolean);
 });
 
 const etiquetasY = computed(() => {
@@ -244,13 +265,9 @@ const etiquetasY = computed(() => {
 
   const etiquetas = [];
   for (let v = inicio; v <= max; v += paso) {
-    const y = 10 + (300 - 60) - ((v - min) / (rango || 1)) * (300 - 60);
-    etiquetas.push({
-      y,
-      texto: formatearValor(v),
-    });
+    const y = 14 + (300 - 64) - ((v - min) / (rango || 1)) * (300 - 64);
+    etiquetas.push({ y, texto: formatearValor(v) });
   }
-
   return etiquetas;
 });
 </script>
