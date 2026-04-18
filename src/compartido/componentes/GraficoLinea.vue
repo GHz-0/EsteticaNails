@@ -1,23 +1,45 @@
 <template>
-  <div class="grafico-contenedor">
-    <div class="grafico-header">
-      <h3>{{ titulo }}</h3>
-      <p v-if="subtitulo" class="subtitulo">{{ subtitulo }}</p>
-    </div>
+  <article
+    class="overflow-hidden rounded-2xl border border-fuchsia-200/15 bg-slate-950/55 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] backdrop-blur-xl"
+  >
+    <header
+      class="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <h3
+        class="font-display text-base font-semibold tracking-tight text-fuchsia-50"
+      >
+        {{ titulo }}
+      </h3>
+      <p v-if="subtitulo" class="text-xs font-medium text-slate-400">
+        {{ subtitulo }}
+      </p>
+    </header>
 
-    <div v-if="cargando" class="estado">⏳ Cargando gráfica...</div>
-    <div v-else-if="error" class="estado error">❌ {{ error }}</div>
-    <div v-else-if="!datos || datos.length === 0" class="estado">
+    <div
+      v-if="cargando"
+      class="grid min-h-36 place-items-center rounded-xl border border-fuchsia-100/10 bg-slate-900/45 text-sm font-medium text-slate-300"
+    >
+      ⏳ Cargando gráfica...
+    </div>
+    <div
+      v-else-if="error"
+      class="grid min-h-36 place-items-center rounded-xl border border-rose-300/30 bg-rose-500/10 px-3 text-center text-sm text-rose-100"
+    >
+      ❌ {{ error }}
+    </div>
+    <div
+      v-else-if="!datos || datos.length === 0"
+      class="grid min-h-36 place-items-center rounded-xl border border-fuchsia-100/10 bg-slate-900/45 text-sm font-medium text-slate-300"
+    >
       ℹ️ Sin datos para graficar
     </div>
 
     <svg
       v-else
-      class="grafico-svg"
+      class="mt-2 block min-h-[220px] w-full"
       viewBox="0 0 800 300"
       preserveAspectRatio="xMidYMid meet"
     >
-      <!-- Grid de fondo -->
       <defs>
         <pattern id="grid" width="80" height="30" patternUnits="userSpaceOnUse">
           <path
@@ -30,7 +52,6 @@
       </defs>
       <rect width="800" height="300" fill="url(#grid)" />
 
-      <!-- Ejes -->
       <line
         x1="60"
         y1="10"
@@ -48,7 +69,6 @@
         stroke-width="2"
       />
 
-      <!-- Puntos y línea -->
       <polyline
         :points="puntosLinea"
         fill="none"
@@ -56,7 +76,6 @@
         stroke-width="2.5"
       />
 
-      <!-- Puntos (círculos) -->
       <circle
         v-for="(punto, i) in puntos"
         :key="i"
@@ -66,7 +85,6 @@
         fill="#f9a8d4"
       />
 
-      <!-- Etiquetas eje X -->
       <text
         v-for="(etiqueta, i) in etiquetasX"
         :key="`x-${i}`"
@@ -75,12 +93,11 @@
         text-anchor="middle"
         font-size="11"
         fill="rgba(255,255,255,0.5)"
-        class="etiqueta-x"
+        class="[dominant-baseline:hanging]"
       >
         {{ etiqueta.texto }}
       </text>
 
-      <!-- Etiquetas eje Y (valores) -->
       <text
         v-for="(valor, i) in etiquetasY"
         :key="`y-${i}`"
@@ -93,7 +110,6 @@
         {{ valor.texto }}
       </text>
 
-      <!-- Tooltips en hover -->
       <rect
         v-for="(punto, i) in puntos"
         :key="`hover-${i}`"
@@ -103,7 +119,7 @@
         height="30"
         fill="rgba(0,0,0,0.8)"
         rx="4"
-        class="tooltip"
+        class="transition-opacity duration-200"
         style="opacity: 0; pointer-events: none"
       />
       <text
@@ -115,13 +131,12 @@
         font-size="10"
         fill="#f9a8d4"
         font-weight="600"
-        class="tooltip-text"
         style="opacity: 0; pointer-events: none"
       >
         {{ formatearValor(datos[i].valor) }}
       </text>
     </svg>
-  </div>
+  </article>
 </template>
 
 <script setup>
@@ -139,10 +154,6 @@ const props = defineProps({
   datos: {
     type: Array,
     default: () => [],
-    // Ej: [
-    //   { fecha: "2026-04-01", valor: 1500 },
-    //   { fecha: "2026-04-02", valor: 2300 },
-    // ]
   },
   cargando: {
     type: Boolean,
@@ -161,9 +172,9 @@ const props = defineProps({
 
 function formatearValor(valor) {
   if (props.formato === "moneda") {
-    return `$${valor.toLocaleString("es-MX", { maximumFractionDigits: 0 })}`;
+    return `$${Number(valor).toLocaleString("es-MX", { maximumFractionDigits: 0 })}`;
   }
-  return valor.toString();
+  return String(valor);
 }
 
 const minMax = computed(() => {
@@ -198,9 +209,9 @@ const puntos = computed(() => {
   });
 });
 
-const puntosLinea = computed(() => {
-  return puntos.value.map((p) => `${p.x},${p.y}`).join(" ");
-});
+const puntosLinea = computed(() =>
+  puntos.value.map((p) => `${p.x},${p.y}`).join(" "),
+);
 
 const etiquetasX = computed(() => {
   if (!props.datos || props.datos.length === 0) return [];
@@ -208,15 +219,13 @@ const etiquetasX = computed(() => {
   const margenIzq = 60;
   const ancho = 800 - margenIzq - 20;
   const escalaX = ancho / (props.datos.length - 1 || 1);
-
-  // Mostrar cada 3ro o cada 5to si hay muchos puntos
   const paso = props.datos.length > 14 ? 5 : props.datos.length > 7 ? 3 : 1;
 
   return props.datos
     .map((d, i) => {
       if (i % paso === 0 || i === props.datos.length - 1) {
         const x = margenIzq + i * escalaX;
-        const fechaPart = d.fecha ? d.fecha.substring(5) : i; // MM-DD o número
+        const fechaPart = d.fecha ? d.fecha.substring(5) : String(i);
         return { x, texto: fechaPart };
       }
       return null;
@@ -227,75 +236,21 @@ const etiquetasX = computed(() => {
 const etiquetasY = computed(() => {
   const { min, max } = minMax.value;
   const rango = max - min;
-  const paso = Math.pow(10, Math.floor(Math.log10(rango / 4)));
+  const paso = Math.max(
+    1,
+    Math.pow(10, Math.floor(Math.log10(rango / 4 || 1))),
+  );
   const inicio = Math.ceil(min / paso) * paso;
 
   const etiquetas = [];
   for (let v = inicio; v <= max; v += paso) {
-    const y = 10 + (300 - 60) - ((v - min) / rango) * (300 - 60);
+    const y = 10 + (300 - 60) - ((v - min) / (rango || 1)) * (300 - 60);
     etiquetas.push({
       y,
       texto: formatearValor(v),
     });
   }
+
   return etiquetas;
 });
 </script>
-
-<style scoped>
-.grafico-contenedor {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 1rem;
-  color: #fff;
-}
-
-.grafico-header h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.grafico-header .subtitulo {
-  margin: 0;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.estado {
-  padding: 1.5rem;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.estado.error {
-  color: #ff8f8f;
-}
-
-.grafico-svg {
-  width: 100%;
-  height: auto;
-  min-height: 250px;
-  margin-top: 0.8rem;
-  display: block;
-}
-
-.etiqueta-x {
-  dominant-baseline: hanging;
-}
-
-.tooltip {
-  transition: opacity 0.2s ease;
-}
-
-.grafico-svg circle:hover + .tooltip {
-  opacity: 1;
-}
-
-@media (max-width: 768px) {
-  .grafico-svg {
-    min-height: 200px;
-  }
-}
-</style>

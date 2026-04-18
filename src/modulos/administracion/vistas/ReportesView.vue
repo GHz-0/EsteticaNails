@@ -1,45 +1,87 @@
 <template>
-  <div class="reportes-dashboard">
-    <!-- Filtros globales -->
-    <div class="filtros-seccion">
-      <div class="filtros-botones">
+  <div class="mx-auto w-full max-w-[1440px] px-3 pb-5 pt-4 sm:px-5 lg:px-7">
+    <header
+      class="mb-4 rounded-3xl border border-fuchsia-200/15 bg-slate-950/60 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl sm:px-5"
+    >
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p
+            class="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-200/70"
+          >
+            Centro de Analitica
+          </p>
+          <h1
+            class="font-display text-2xl font-semibold tracking-tight text-fuchsia-50 sm:text-3xl"
+          >
+            Panel de Reportes
+          </h1>
+          <p class="mt-1 text-sm text-slate-300">
+            {{ resumenPeriodo }}
+          </p>
+        </div>
+
         <button
-          v-for="preset in presetsFechas"
-          :key="preset.valor"
-          :class="{ activo: tipoFecha === preset.valor }"
-          class="btn-filtro"
-          @click="cambiarFecha(preset.valor)"
+          class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-pink-500/25 transition-all hover:-translate-y-0.5 hover:shadow-pink-500/35 disabled:cursor-not-allowed disabled:opacity-70"
+          :disabled="cargando"
+          @click="cargarDatos"
         >
-          {{ preset.label }}
+          {{ cargando ? "Actualizando..." : "Actualizar panel" }}
         </button>
       </div>
 
-      <div v-if="tipoFecha === 'personalizado'" class="filtro-rango">
-        <label
-          >Desde:
-          <input v-model.lazy="fechaPersonalizada.inicio" type="date" />
-        </label>
-        <label
-          >Hasta:
-          <input v-model.lazy="fechaPersonalizada.fin" type="date" />
-        </label>
-      </div>
+      <div class="mt-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="preset in presetsFechas"
+            :key="preset.valor"
+            :class="[
+              'rounded-xl border px-3 py-2 text-xs font-semibold tracking-wide transition-all sm:text-sm',
+              tipoFecha === preset.valor
+                ? 'border-fuchsia-300/70 bg-fuchsia-400/20 text-fuchsia-100 shadow-md shadow-fuchsia-500/20'
+                : 'border-fuchsia-100/15 bg-slate-900/55 text-slate-300 hover:border-fuchsia-200/40 hover:text-fuchsia-100',
+            ]"
+            @click="cambiarFecha(preset.valor)"
+          >
+            {{ preset.label }}
+          </button>
+        </div>
 
-      <button class="btn-actualizar" :disabled="cargando" @click="cargarDatos">
-        {{ cargando ? "Cargando..." : "Actualizar" }}
-      </button>
+        <div
+          v-if="tipoFecha === 'personalizado'"
+          class="grid gap-2 rounded-2xl border border-fuchsia-100/15 bg-slate-900/50 p-2 sm:grid-cols-2"
+        >
+          <label class="grid gap-1 text-xs font-medium text-slate-300">
+            Desde
+            <input
+              v-model.lazy="fechaPersonalizada.inicio"
+              type="date"
+              class="rounded-lg border border-fuchsia-200/20 bg-slate-950/70 px-2 py-1.5 text-sm text-slate-100 outline-none transition focus:border-fuchsia-300/60 focus:ring-2 focus:ring-fuchsia-400/25"
+            />
+          </label>
+          <label class="grid gap-1 text-xs font-medium text-slate-300">
+            Hasta
+            <input
+              v-model.lazy="fechaPersonalizada.fin"
+              type="date"
+              class="rounded-lg border border-fuchsia-200/20 bg-slate-950/70 px-2 py-1.5 text-sm text-slate-100 outline-none transition focus:border-fuchsia-300/60 focus:ring-2 focus:ring-fuchsia-400/25"
+            />
+          </label>
+        </div>
+      </div>
+    </header>
+
+    <div
+      v-if="error"
+      class="mb-4 rounded-2xl border border-rose-300/35 bg-rose-500/10 px-4 py-3 text-sm font-medium text-rose-100"
+    >
+      ❌ {{ error }}
     </div>
 
-    <!-- Mensaje de error general -->
-    <div v-if="error" class="error-banner">❌ {{ error }}</div>
-
-    <!-- KPIs Grid -->
-    <div class="kpis-grid">
+    <section class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       <TarjetaMetrica
         titulo="Total Citas"
         :valor="kpis.totalCitas"
         :icono="cargando ? '⏳' : '📅'"
-        :cargando="cargando"
       />
       <TarjetaMetrica
         titulo="Cancelaciones"
@@ -67,13 +109,12 @@
         :valor="kpis.stockCritico"
         :icono="cargando ? '⏳' : '⚠️'"
       />
-    </div>
+    </section>
 
-    <!-- Gráfica de ingresos -->
-    <section class="seccion">
+    <section class="mb-4">
       <GraficoLinea
-        titulo="Ingresos por Período"
-        subtitulo="Distribución diaria de ingresos estimados"
+        titulo="Ingresos por período"
+        subtitulo="Comportamiento diario de ingresos estimados"
         :datos="serieIngresos"
         :cargando="cargando"
         :error="error"
@@ -81,67 +122,43 @@
       />
     </section>
 
-    <!-- Tablas de operación -->
-    <div class="tablas-grid">
-      <!-- Top Clientes -->
-      <section class="seccion">
-        <TablaReporte
-          titulo="Top 10 Clientes"
-          subtitulo="Ordenados por gasto total"
-          :columnas="colClientesTab"
-          :datos="topClientes"
-          :cargando="cargando"
-          :error="error"
-        />
-      </section>
+    <section class="grid grid-cols-1 gap-3 xl:grid-cols-2">
+      <TablaReporte
+        titulo="Top 10 Clientes"
+        subtitulo="Ordenados por gasto total"
+        :columnas="colClientesTab"
+        :datos="topClientes"
+        :cargando="cargando"
+        :error="error"
+      />
 
-      <!-- Top Servicios -->
-      <section class="seccion">
-        <TablaReporte
-          titulo="Top 10 Servicios"
-          subtitulo="Servicios más vendidos en el período"
-          :columnas="colServiciosTab"
-          :datos="topServicios"
-          :cargando="cargando"
-          :error="error"
-        />
-      </section>
-    </div>
+      <TablaReporte
+        titulo="Top 10 Servicios"
+        subtitulo="Servicios más vendidos en el período"
+        :columnas="colServiciosTab"
+        :datos="topServicios"
+        :cargando="cargando"
+        :error="error"
+      />
 
-    <div class="tablas-grid">
-      <!-- Stock Crítico -->
-      <section class="seccion">
-        <TablaReporte
-          titulo="Productos Críticos"
-          subtitulo="Stock bajo (menor a 5 unidades)"
-          :columnas="colInventarioTab"
-          :datos="productosCriticos"
-          :cargando="cargando"
-          :error="error"
-        />
-      </section>
+      <TablaReporte
+        titulo="Productos Críticos"
+        subtitulo="Stock bajo (menor a 5 unidades)"
+        :columnas="colInventarioTab"
+        :datos="productosCriticos"
+        :cargando="cargando"
+        :error="error"
+      />
 
-      <!-- Eficiencia Empleados -->
-      <section class="seccion">
-        <TablaReporte
-          titulo="Eficiencia de Empleados"
-          subtitulo="Tasa de completación de citas"
-          :columnas="colEmpleadosTab"
-          :datos="eficienciaEmpleados"
-          :cargando="cargando"
-          :error="error"
-        />
-      </section>
-    </div>
-
-    <!-- Pie de página con info del período -->
-    <div class="info-periodo">
-      <p>
-        Mostrando datos desde
-        <strong>{{ formatearFecha(periodoActual.inicio) }}</strong> hasta
-        <strong>{{ formatearFecha(periodoActual.fin) }}</strong>
-      </p>
-    </div>
+      <TablaReporte
+        titulo="Eficiencia de Empleados"
+        subtitulo="Tasa de completación de citas"
+        :columnas="colEmpleadosTab"
+        :datos="eficienciaEmpleados"
+        :cargando="cargando"
+        :error="error"
+      />
+    </section>
   </div>
 </template>
 
@@ -237,6 +254,10 @@ const colEmpleadosTab = [
   },
 ];
 
+const resumenPeriodo = computed(() => {
+  return `Datos desde ${formatearFecha(periodoActual.value.inicio)} hasta ${formatearFecha(periodoActual.value.fin)}`;
+});
+
 // Métodos
 function formatearFecha(fecha) {
   return new Date(fecha).toLocaleDateString("es-MX");
@@ -304,165 +325,3 @@ async function cargarDatos() {
 // Cargar datos al montar
 onMounted(cargarDatos);
 </script>
-
-<style scoped>
-.reportes-dashboard {
-  color: #fff;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Filtros */
-.filtros-seccion {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(249, 168, 212, 0.2);
-  border-radius: 12px;
-}
-
-.filtros-botones {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.btn-filtro {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(249, 168, 212, 0.2);
-  color: rgba(255, 255, 255, 0.6);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-}
-
-.btn-filtro:hover {
-  border-color: rgba(249, 168, 212, 0.4);
-  color: #f9a8d4;
-}
-
-.btn-filtro.activo {
-  background: linear-gradient(135deg, #f472b6, #ec4899);
-  border-color: #ec4899;
-  color: #fff;
-}
-
-.filtro-rango {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.85rem;
-}
-
-.filtro-rango label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.filtro-rango input {
-  padding: 0.4rem 0.6rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(249, 168, 212, 0.3);
-  border-radius: 6px;
-  color: #fff;
-  font-size: 0.8rem;
-}
-
-.btn-actualizar {
-  background: linear-gradient(135deg, #f472b6, #ec4899);
-  border: none;
-  color: #fff;
-  padding: 0.5rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.btn-actualizar:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
-}
-
-.btn-actualizar:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Error banner */
-.error-banner {
-  background: rgba(255, 100, 100, 0.1);
-  border: 1px solid rgba(255, 100, 100, 0.3);
-  border-radius: 10px;
-  padding: 1rem;
-  color: #fca5a5;
-  margin-bottom: 1rem;
-}
-
-/* KPIs Grid */
-.kpis-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-/* Secciones y tablas */
-.seccion {
-  margin-bottom: 1.5rem;
-}
-
-.tablas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Info del período */
-.info-periodo {
-  padding: 0.8rem;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.85rem;
-  margin-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .tablas-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .filtro-rango {
-    flex-direction: column;
-    width: 100%;
-  }
-}
-
-@media (max-width: 640px) {
-  .kpis-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .filtros-seccion {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filtros-botones {
-    width: 100%;
-  }
-
-  .btn-filtro {
-    flex: 1;
-  }
-}
-</style>

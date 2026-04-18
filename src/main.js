@@ -6,6 +6,7 @@ import { useAuthStore } from "@/nucleo/estado/auth";
 import { inicializarServicios } from "@/nucleo/firebase/servicios.js";
 import { inicializarInventario } from "@/nucleo/firebase/inventario.js";
 import { inicializarCitas } from "@/nucleo/firebase/citas.js";
+import "./styles.css";
 
 const app = createApp(App);
 const pinia = createPinia();
