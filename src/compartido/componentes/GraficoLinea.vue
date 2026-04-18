@@ -193,13 +193,42 @@ function formatearValor(valor) {
   return String(valor);
 }
 
-const minMax = computed(() => {
-  if (!props.datos || props.datos.length === 0) return { min: 0, max: 100 };
-  const valores = props.datos.map((d) => d.valor || 0);
-  const min = Math.min(...valores);
-  const max = Math.max(...valores);
-  const padding = (max - min) * 0.18 || 80;
-  return { min: Math.max(0, min - padding), max: max + padding };
+function niceNumber(value, round) {
+  if (value <= 0) return 1;
+
+  const exponent = Math.floor(Math.log10(value));
+  const fraction = value / Math.pow(10, exponent);
+  let niceFraction;
+
+  if (round) {
+    if (fraction < 1.5) niceFraction = 1;
+    else if (fraction < 3) niceFraction = 2;
+    else if (fraction < 7) niceFraction = 5;
+    else niceFraction = 10;
+  } else {
+    if (fraction <= 1) niceFraction = 1;
+    else if (fraction <= 2) niceFraction = 2;
+    else if (fraction <= 5) niceFraction = 5;
+    else niceFraction = 10;
+  }
+
+  return niceFraction * Math.pow(10, exponent);
+}
+
+const escalaGrafico = computed(() => {
+  if (!props.datos || props.datos.length === 0) {
+    return { min: 0, max: 100, step: 20 };
+  }
+
+  const valores = props.datos.map((d) => Number(d.valor) || 0);
+  const maxValor = Math.max(...valores, 0);
+  const minValor = Math.min(...valores, 0);
+  const rango = Math.max(1, maxValor - minValor);
+  const step = niceNumber(rango / 4, true);
+  const min = minValor < 0 ? Math.floor(minValor / step) * step : 0;
+  const max = Math.ceil(maxValor / step) * step;
+
+  return { min, max, step };
 });
 
 const puntos = computed(() => {
@@ -212,11 +241,13 @@ const puntos = computed(() => {
   const ancho = 800 - margenIzq - margenDer;
   const alto = 300 - margenArr - margenAb;
   const escalaX = ancho / (props.datos.length - 1 || 1);
-  const escalaY = alto / (minMax.value.max - minMax.value.min || 1);
+  const escalaY =
+    alto / (escalaGrafico.value.max - escalaGrafico.value.min || 1);
 
   return props.datos.map((d, i) => {
     const x = margenIzq + i * escalaX;
-    const y = margenArr + alto - (d.valor - minMax.value.min) * escalaY;
+    const y =
+      margenArr + alto - (Number(d.valor) - escalaGrafico.value.min) * escalaY;
     return { x, y };
   });
 });
@@ -255,17 +286,13 @@ const etiquetasX = computed(() => {
 });
 
 const etiquetasY = computed(() => {
-  const { min, max } = minMax.value;
-  const rango = max - min;
-  const paso = Math.max(
-    1,
-    Math.pow(10, Math.floor(Math.log10(rango / 4 || 1))),
-  );
-  const inicio = Math.ceil(min / paso) * paso;
+  const { min, max, step } = escalaGrafico.value;
+  const rango = max - min || 1;
+  const inicio = Math.ceil(min / step) * step;
 
   const etiquetas = [];
-  for (let v = inicio; v <= max; v += paso) {
-    const y = 14 + (300 - 64) - ((v - min) / (rango || 1)) * (300 - 64);
+  for (let v = inicio; v <= max; v += step) {
+    const y = 14 + (300 - 64) - ((v - min) / rango) * (300 - 64);
     etiquetas.push({ y, texto: formatearValor(v) });
   }
   return etiquetas;
