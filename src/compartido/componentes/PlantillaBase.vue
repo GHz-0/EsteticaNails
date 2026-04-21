@@ -3,15 +3,13 @@
     <!-- Sidebar -->
     <aside class="sidebar" :class="{ collapsed: sidebarColapsado }">
       <div class="sidebar-header">
-        <div class="sidebar-brand">
+        <button
+          class="sidebar-brand"
+          @click="sidebarColapsado = !sidebarColapsado"
+          title="Minimizar/Expandir"
+        >
           <span class="brand-icon">◈</span>
           <span class="brand-text">Nails Bere</span>
-        </div>
-        <button
-          class="collapse-btn"
-          @click="sidebarColapsado = !sidebarColapsado"
-        >
-          {{ sidebarColapsado ? "→" : "←" }}
         </button>
       </div>
 
@@ -205,8 +203,8 @@ function handleLogout() {
 
 /* ── Sidebar ─────────────────────────────────────── */
 .sidebar {
-  width: 260px;
-  min-width: 260px;
+  width: 220px;
+  min-width: 220px;
   background: linear-gradient(
     180deg,
     rgba(12, 13, 21, 0.94) 0%,
@@ -237,8 +235,8 @@ function handleLogout() {
 }
 
 .sidebar.collapsed {
-  width: 88px;
-  min-width: 88px;
+  width: 76px;
+  min-width: 76px;
 }
 
 .sidebar-header {
@@ -496,14 +494,21 @@ function handleLogout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.9rem 1.5rem;
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid rgba(249, 168, 212, 0.08);
-  background: rgba(255, 255, 255, 0.015);
-  backdrop-filter: blur(8px);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.01)
+    ),
+    rgba(6, 8, 14, 0.7);
+  backdrop-filter: blur(16px);
   position: sticky;
   top: 0;
   z-index: 10;
   animation: slideDown 0.4s ease both;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
 }
 
 @keyframes slideDown {
@@ -518,10 +523,18 @@ function handleLogout() {
 }
 
 .page-title {
-  font-family: "Syne", sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
-  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 215, 161, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #f8f5ee;
+  letter-spacing: 0.02em;
 }
 
 .top-bar-right {
@@ -531,8 +544,12 @@ function handleLogout() {
 }
 
 .current-time {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.82rem;
+  color: rgba(245, 208, 254, 0.52);
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(249, 168, 212, 0.08);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 /* ── Perfil btn ──────────────────────────────────── */
@@ -543,22 +560,27 @@ function handleLogout() {
 .perfil-btn {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: none;
+  gap: 0.55rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(249, 168, 212, 0.08);
   cursor: pointer;
-  padding: 0.2rem;
-  border-radius: 30px;
-  transition: background 0.2s;
+  padding: 0.35rem 0.45rem 0.35rem 0.35rem;
+  border-radius: 999px;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
 }
 
 .perfil-btn:hover {
   background: rgba(249, 168, 212, 0.08);
+  border-color: rgba(234, 215, 161, 0.16);
+  transform: translateY(-1px);
 }
 
 .perfil-avatar {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -573,7 +595,7 @@ function handleLogout() {
 
 .perfil-btn:hover .perfil-avatar {
   transform: scale(1.08);
-  box-shadow: 0 0 12px rgba(249, 168, 212, 0.4);
+  box-shadow: 0 0 14px rgba(249, 168, 212, 0.32);
 }
 
 .avatar-usuario,
@@ -585,8 +607,9 @@ function handleLogout() {
 
 .perfil-chevron {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.52);
   transition: transform 0.25s;
+  padding-right: 0.15rem;
 }
 
 .perfil-chevron.rotado {
@@ -598,12 +621,18 @@ function handleLogout() {
   position: absolute;
   top: calc(100% + 0.6rem);
   right: 0;
-  width: 220px;
-  background: #1a1a24;
-  border: 1px solid rgba(249, 168, 212, 0.2);
-  border-radius: 14px;
-  padding: 0.5rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  width: 240px;
+  background: linear-gradient(
+    180deg,
+    rgba(18, 19, 27, 0.98),
+    rgba(8, 9, 15, 0.98)
+  );
+  border: 1px solid rgba(234, 215, 161, 0.12);
+  border-radius: 18px;
+  padding: 0.55rem;
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
   z-index: 100;
 }
 
@@ -611,7 +640,7 @@ function handleLogout() {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  padding: 0.6rem 0.7rem;
+  padding: 0.7rem 0.75rem 0.75rem;
 }
 
 .dropdown-avatar {
@@ -625,14 +654,14 @@ function handleLogout() {
   font-weight: 700;
   background: rgba(249, 168, 212, 0.15);
   color: #f9a8d4;
-  border: 1px solid rgba(249, 168, 212, 0.3);
+  border: 1px solid rgba(234, 215, 161, 0.18);
   flex-shrink: 0;
 }
 
 .dropdown-nombre {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #fff;
+  color: #f8f5ee;
   margin: 0 0 0.2rem;
   white-space: nowrap;
   overflow: hidden;
@@ -648,8 +677,8 @@ function handleLogout() {
 .badge-usuario,
 .badge-empleado,
 .badge-admin {
-  background: rgba(249, 168, 212, 0.15);
-  color: #f9a8d4;
+  background: rgba(234, 215, 161, 0.12);
+  color: #f6e7bc;
 }
 
 .dropdown-divider {
@@ -662,8 +691,8 @@ function handleLogout() {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.55rem 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
+  padding: 0.62rem 0.75rem;
+  color: rgba(255, 255, 255, 0.68);
   text-decoration: none;
   font-size: 0.82rem;
   border-radius: 8px;
@@ -680,7 +709,7 @@ function handleLogout() {
 
 .dropdown-item:hover {
   background: rgba(249, 168, 212, 0.08);
-  color: #fff;
+  color: #f8f5ee;
 }
 
 .logout-item:hover {

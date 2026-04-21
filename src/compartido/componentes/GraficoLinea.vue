@@ -141,13 +141,36 @@
         :y="valor.y + 5"
         text-anchor="end"
         font-size="11"
+        font-weight="600"
         fill="rgba(245,208,254,0.55)"
       >
         {{ valor.texto }}
       </text>
 
+      <g v-for="(punto, i) in puntosConValor" :key="`label-${i}`">
+        <rect
+          :x="Math.max(0, punto.x - 36)"
+          :y="Math.max(18, punto.y - 34)"
+          width="72"
+          height="18"
+          rx="9"
+          fill="rgba(6,8,14,0.84)"
+          stroke="rgba(234,215,161,0.18)"
+        />
+        <text
+          :x="punto.x"
+          :y="Math.max(31, punto.y - 21)"
+          text-anchor="middle"
+          font-size="10"
+          font-weight="800"
+          fill="#f6e7bc"
+        >
+          {{ formatearValor(punto.valor) }}
+        </text>
+      </g>
+
       <rect
-        v-for="(punto, i) in puntos"
+        v-for="(punto, i) in puntosConValor"
         :key="`hover-${i}`"
         :x="punto.x - 32"
         :y="punto.y - 42"
@@ -158,7 +181,7 @@
         style="opacity: 0; pointer-events: none"
       />
       <text
-        v-for="(punto, i) in puntos"
+        v-for="(punto, i) in puntosConValor"
         :key="`tooltip-text-${i}`"
         :x="punto.x"
         :y="punto.y - 21"
@@ -168,7 +191,7 @@
         font-weight="600"
         style="opacity: 0; pointer-events: none"
       >
-        {{ formatearValor(datos[i].valor) }}
+        {{ formatearValor(punto.valor) }}
       </text>
     </svg>
   </article>
@@ -181,10 +204,19 @@ const props = defineProps({
   titulo: { type: String, required: true },
   subtitulo: { type: String, default: null },
   datos: { type: Array, default: () => [] },
+  modoEtiquetas: {
+    type: String,
+    default: "relevantes",
+    validator: (value) => ["relevantes", "todos"].includes(value),
+  },
   cargando: { type: Boolean, default: false },
   error: { type: String, default: null },
   formato: { type: String, enum: ["numero", "moneda"], default: "moneda" },
 });
+
+function getValorDato(dato) {
+  return Number(dato?.valor ?? dato?.ingreso ?? 0) || 0;
+}
 
 function formatearValor(valor) {
   if (props.formato === "moneda") {
@@ -220,7 +252,7 @@ const escalaGrafico = computed(() => {
     return { min: 0, max: 100, step: 20 };
   }
 
-  const valores = props.datos.map((d) => Number(d.valor) || 0);
+  const valores = props.datos.map((d) => getValorDato(d));
   const maxValor = Math.max(...valores, 0);
   const minValor = Math.min(...valores, 0);
   const rango = Math.max(1, maxValor - minValor);
@@ -247,7 +279,7 @@ const puntos = computed(() => {
   return props.datos.map((d, i) => {
     const x = margenIzq + i * escalaX;
     const y =
-      margenArr + alto - (Number(d.valor) - escalaGrafico.value.min) * escalaY;
+      margenArr + alto - (getValorDato(d) - escalaGrafico.value.min) * escalaY;
     return { x, y };
   });
 });
@@ -296,5 +328,18 @@ const etiquetasY = computed(() => {
     etiquetas.push({ y, texto: formatearValor(v) });
   }
   return etiquetas;
+});
+
+const puntosConValor = computed(() => {
+  const puntosMapeados = puntos.value.map((punto, i) => ({
+    ...punto,
+    valor: getValorDato(props.datos?.[i]),
+  }));
+
+  if (props.modoEtiquetas === "todos") {
+    return puntosMapeados;
+  }
+
+  return puntosMapeados.filter((punto) => punto.valor > 0);
 });
 </script>

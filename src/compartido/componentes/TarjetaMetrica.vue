@@ -14,7 +14,7 @@
           {{ titulo }}
         </p>
         <p
-          class="font-display truncate text-2xl font-semibold text-fuchsia-100 lg:text-3xl"
+          class="font-ingresos-libre truncate text-2xl font-semibold text-fuchsia-100 lg:text-3xl"
         >
           {{ formatearValor(valor) }}
         </p>

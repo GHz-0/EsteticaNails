@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@600;700&family=Libre+Baskerville:wght@400;700&family=Spectral:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -33,4 +33,28 @@ body {
 
 .font-display {
   font-family: "Cormorant Garamond", serif;
+}
+
+.font-ingresos-playfair {
+  font-family: "Playfair Display", serif;
+}
+
+.font-ingresos-manrope {
+  font-family: "Manrope", sans-serif;
+}
+
+.font-ingresos-libre {
+  font-family: "Libre Baskerville", serif;
+}
+
+.font-ingresos-spectral {
+  font-family: "Spectral", serif;
+}
+
+.font-ingresos-lora {
+  font-family: "Lora", serif;
+}
+
+.font-ingresos-eb {
+  font-family: "EB Garamond", serif;
 }

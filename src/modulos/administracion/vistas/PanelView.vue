@@ -1,88 +1,232 @@
 <template>
-  <div class="dashboard">
-    <div class="admin-banner">
-      <div class="banner-left">
-        <p class="banner-label">Panel de administración</p>
-        <h1 class="banner-titulo">Resumen operativo</h1>
-        <p class="banner-fecha">{{ fechaHoy }}</p>
-      </div>
-      <div class="banner-right">
-        <div class="banner-highlight">
-          <span class="highlight-val"
-            >${{ ingresosMes.toLocaleString("es-MX") }}</span
+  <div class="mx-auto w-full max-w-[940px] px-3 pb-5 pt-4 sm:px-4 lg:px-5">
+    <section
+      class="relative mb-4 overflow-hidden rounded-[1.75rem] border border-fuchsia-100/12 bg-[rgba(6,8,14,0.84)] px-4 py-4 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:px-5"
+    >
+      <span
+        class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ead7a1]/70 to-transparent"
+      />
+      <span
+        class="pointer-events-none absolute -right-20 top-[-4rem] h-40 w-40 rounded-full bg-fuchsia-400/10 blur-3xl"
+      />
+
+      <div class="grid gap-4 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+        <div>
+          <p
+            class="mb-1 text-xs font-semibold uppercase tracking-[0.28em] text-[#ead7a1]/80"
           >
-          <span class="highlight-lbl">Ingresos estimados del mes</span>
+            Panel de administracion
+          </p>
+          <h1
+            class="font-display text-[2.05rem] font-semibold leading-none tracking-tight text-fuchsia-50 sm:text-[2.6rem]"
+          >
+            Resumen operativo
+          </h1>
+          <p
+            class="mt-2 max-w-2xl text-sm capitalize leading-6 text-slate-300/90"
+          >
+            {{ fechaHoy }}
+          </p>
+        </div>
+
+        <div
+          class="rounded-2xl border border-[#ead7a1]/20 bg-gradient-to-br from-[#ead7a1]/18 via-fuchsia-300/12 to-fuchsia-400/5 px-5 py-4 shadow-[0_14px_40px_rgba(0,0,0,0.24)]"
+        >
+          <div class="flex items-center gap-4">
+            <p
+              :class="fontIngresosClass"
+              class="text-[1.84rem] font-semibold leading-none tracking-tight text-[#f6e7bc] sm:text-[2.18rem]"
+            >
+              ${{ ingresosMes.toLocaleString("es-MX") }}
+            </p>
+            <p
+              class="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#ead7a1]/80"
+            >
+              Ingresos estimados<br />del mes
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="kpis-grid">
-      <div class="kpi-card">
-        <div class="kpi-valor">{{ citasMes }}</div>
-        <div class="kpi-titulo">Citas este mes</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-valor">{{ clientesActivos }}</div>
-        <div class="kpi-titulo">Clientes activos</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-valor">{{ serviciosActivos }}</div>
-        <div class="kpi-titulo">Servicios disponibles</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-valor">{{ cancelacionesMes }}</div>
-        <div class="kpi-titulo">Cancelaciones del mes</div>
-      </div>
-    </div>
-
-    <div class="bottom-grid">
-      <section class="seccion card">
-        <h2 class="seccion-titulo">Top servicios del mes</h2>
-        <p v-if="cargando" class="estado">Cargando...</p>
-        <p v-else-if="!topServicios.length" class="estado">
-          Aún no hay citas registradas para calcular ranking.
+    <section class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <article
+        class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-4 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl flex items-center justify-between gap-3"
+      >
+        <p class="text-[1.5rem] font-semibold text-fuchsia-100 flex-shrink-0">
+          {{ citasMes }}
         </p>
-        <ul v-else class="top-servicios">
+        <p
+          class="text-xs uppercase tracking-[0.12em] text-slate-400 text-right"
+        >
+          Citas este mes
+        </p>
+      </article>
+
+      <article
+        class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-4 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl flex items-center justify-between gap-3"
+      >
+        <p class="text-[1.5rem] font-semibold text-fuchsia-100 flex-shrink-0">
+          {{ clientesActivos }}
+        </p>
+        <p
+          class="text-xs uppercase tracking-[0.12em] text-slate-400 text-right"
+        >
+          Clientes activos
+        </p>
+      </article>
+
+      <article
+        class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-4 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl flex items-center justify-between gap-3"
+      >
+        <p class="text-[1.5rem] font-semibold text-fuchsia-100 flex-shrink-0">
+          {{ serviciosActivos }}
+        </p>
+        <p
+          class="text-xs uppercase tracking-[0.12em] text-slate-400 text-right"
+        >
+          Servicios disponibles
+        </p>
+      </article>
+
+      <article
+        class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-4 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl flex items-center justify-between gap-3"
+      >
+        <p class="text-[1.5rem] font-semibold text-fuchsia-100 flex-shrink-0">
+          {{ cancelacionesMes }}
+        </p>
+        <p
+          class="text-xs uppercase tracking-[0.12em] text-slate-400 text-right"
+        >
+          Cancelaciones del mes
+        </p>
+      </article>
+    </section>
+
+    <section class="grid grid-cols-1 gap-3 xl:grid-cols-[1fr_1fr_1fr]">
+      <!-- Top Servicios -->
+      <article
+        class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-4 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl"
+      >
+        <h2 class="font-display text-[1.1rem] font-semibold text-fuchsia-50">
+          Top servicios
+        </h2>
+
+        <p v-if="cargando" class="mt-3 text-xs text-slate-300">Cargando...</p>
+        <p v-else-if="!topServicios.length" class="mt-3 text-xs text-slate-300">
+          Sin citas aún.
+        </p>
+
+        <ul v-else class="mt-3 space-y-2">
           <li
             v-for="(item, idx) in topServicios"
             :key="item.servicioId"
-            class="top-item"
+            class="flex items-center gap-2 rounded-lg border border-fuchsia-100/10 bg-white/5 px-2.5 py-2"
           >
-            <span class="top-num">#{{ idx + 1 }}</span>
-            <div class="top-info">
-              <p class="top-nombre">{{ item.nombre }}</p>
-              <p class="top-citas">{{ item.citas }} citas</p>
-            </div>
-            <span class="top-ingreso"
-              >${{ item.ingreso.toLocaleString("es-MX") }}</span
+            <span
+              class="grid h-7 w-7 place-items-center rounded-full border border-[#ead7a1]/30 bg-[#ead7a1]/10 text-[0.65rem] font-bold text-[#f6e7bc]"
             >
+              {{ idx + 1 }}
+            </span>
+
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-xs font-semibold text-fuchsia-50">
+                {{ item.nombre }}
+              </p>
+              <p class="text-[0.7rem] text-slate-400">{{ item.citas }} citas</p>
+            </div>
+
+            <span class="text-xs font-bold text-[#f6e7bc]">
+              ${{ item.ingreso.toLocaleString("es-MX") }}
+            </span>
           </li>
         </ul>
-      </section>
+      </article>
 
-      <section class="seccion card">
-        <h2 class="seccion-titulo">Actividad reciente</h2>
-        <p v-if="cargando" class="estado">Cargando...</p>
-        <p v-else-if="!actividad.length" class="estado">
-          Aún no hay actividad reciente.
+      <!-- Clientes Destacados -->
+      <article
+        class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-4 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl"
+      >
+        <h2 class="font-display text-[1.1rem] font-semibold text-fuchsia-50">
+          Clientes top
+        </h2>
+
+        <p v-if="cargando" class="mt-3 text-xs text-slate-300">Cargando...</p>
+        <p v-else-if="!topClientes.length" class="mt-3 text-xs text-slate-300">
+          Sin clientes aún.
         </p>
-        <ul v-else class="actividad-list">
+
+        <ul v-else class="mt-3 space-y-2">
           <li
-            v-for="evento in actividad"
-            :key="evento.id"
-            class="actividad-item"
+            v-for="(cliente, idx) in topClientes"
+            :key="cliente.id"
+            class="rounded-lg border border-fuchsia-100/10 bg-white/5 px-2.5 py-2"
           >
-            <span class="act-icono">{{ evento.icono }}</span>
-            <div class="act-info">
-              <p class="act-desc">{{ evento.desc }}</p>
-              <p class="act-tiempo">{{ evento.tiempo }}</p>
+            <div class="flex items-center justify-between">
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-xs font-semibold text-fuchsia-50">
+                  {{ cliente.nombre }}
+                </p>
+                <p class="text-[0.7rem] text-slate-400">
+                  {{ cliente.citasCount }} citas
+                </p>
+              </div>
+              <span
+                class="ml-1 text-xs font-bold text-[#ead7a1]"
+                :title="`Puntuación: ${cliente.score || 0}`"
+              >
+                ⭐ {{ cliente.score || 0 }}
+              </span>
             </div>
           </li>
         </ul>
-      </section>
-    </div>
+      </article>
 
-    <p v-if="error" class="error">{{ error }}</p>
+      <!-- Citas Pendientes -->
+      <article
+        class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-4 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl"
+      >
+        <h2 class="font-display text-[1.1rem] font-semibold text-fuchsia-50">
+          Citas recientes
+        </h2>
+
+        <p v-if="cargando" class="mt-3 text-xs text-slate-300">Cargando...</p>
+        <p
+          v-else-if="!citasPendientes.length"
+          class="mt-3 text-xs text-slate-300"
+        >
+          Sin citas recientes.
+        </p>
+
+        <ul v-else class="mt-3 space-y-2">
+          <li
+            v-for="cita in citasPendientes"
+            :key="cita.id"
+            class="rounded-lg border border-fuchsia-100/10 bg-white/5 px-2.5 py-2"
+          >
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <p class="truncate text-xs font-semibold text-fuchsia-50">
+                {{ cita.servicioNombre }} <span class="text-slate-400">·</span>
+                {{ cita.clienteNombre }}
+              </p>
+              <span class="flex-shrink-0 text-sm">
+                {{ cita.estado === "cancelada" ? "❌" : "✓" }}
+              </span>
+            </div>
+            <p class="text-[0.7rem] text-slate-400">
+              {{ cita.empleadoNombre }} · {{ cita.fechaHora }}
+            </p>
+          </li>
+        </ul>
+      </article>
+    </section>
+
+    <p
+      v-if="error"
+      class="mt-4 rounded-xl border border-rose-300/30 bg-rose-500/10 px-4 py-3 text-sm font-medium text-rose-100"
+    >
+      {{ error }}
+    </p>
   </div>
 </template>
 
@@ -106,6 +250,18 @@ const fechaHoy = new Date().toLocaleDateString("es-MX", {
   month: "long",
   year: "numeric",
 });
+
+const FUENTE_INGRESOS = "libre";
+const FONT_INGRESOS = {
+  cormorant: "font-display",
+  playfair: "font-ingresos-playfair",
+  manrope: "font-ingresos-manrope",
+  libre: "font-ingresos-libre",
+  spectral: "font-ingresos-spectral",
+  lora: "font-ingresos-lora",
+  eb: "font-ingresos-eb",
+};
+const fontIngresosClass = FONT_INGRESOS[FUENTE_INGRESOS] || "font-display";
 
 onMounted(async () => {
   try {
@@ -201,7 +357,7 @@ const topServicios = computed(() => {
       nombre: nombrePorId.get(item.servicioId) || "Servicio no encontrado",
     }))
     .sort((a, b) => b.citas - a.citas)
-    .slice(0, 5);
+    .slice(0, 3);
 });
 
 function tiempoRelativo(fecha) {
@@ -215,185 +371,64 @@ function tiempoRelativo(fecha) {
   return `Hace ${dias} d`;
 }
 
-const actividad = computed(() => {
+const citasPendientes = computed(() => {
+  const userMap = new Map(usuarios.value.map((u) => [u.id, u]));
+  const servicioMap = new Map(servicios.value.map((s) => [s.id, s.nombre]));
+
   return citasConFecha.value
     .slice()
     .sort((a, b) => b.fechaObj - a.fechaObj)
-    .slice(0, 6)
-    .map((cita) => ({
-      id: cita.id,
-      icono: cita.estado === "cancelada" ? "❌" : "📅",
-      desc: `Cita ${cita.estado || "pendiente"} · ${cita.hora || "sin hora"}`,
-      tiempo: tiempoRelativo(cita.fechaObj),
-    }));
+    .slice(0, 3)
+    .map((cita) => {
+      const usuario = userMap.get(cita.usuarioId);
+      const empleado = cita.empleadoId ? userMap.get(cita.empleadoId) : null;
+
+      // Formato de fecha y hora
+      const fechaFormato = cita.fechaObj.toLocaleDateString("es-MX", {
+        month: "short",
+        day: "numeric",
+      });
+      const horaFormato = cita.hora || "sin hora";
+
+      return {
+        id: cita.id,
+        estado: cita.estado,
+        servicioNombre:
+          servicioMap.get(cita.servicioId) || "Servicio no encontrado",
+        clienteNombre: usuario?.nombre || "Cliente desconocido",
+        empleadoNombre: empleado?.nombre || "Empleado asignado",
+        fechaHora: `${fechaFormato} · ${horaFormato}`,
+      };
+    });
+});
+
+const topClientes = computed(() => {
+  const agg = new Map();
+  const userMap = new Map(usuarios.value.map((u) => [u.id, u]));
+
+  // Contar citas por cliente
+  for (const c of citasDelMes.value.filter((x) => x.estado !== "cancelada")) {
+    const userId = c.usuarioId;
+    const prev = agg.get(userId) || {
+      id: userId,
+      citasCount: 0,
+      score: 0,
+    };
+    prev.citasCount += 1;
+    agg.set(userId, prev);
+  }
+
+  // Agregar datos del usuario (nombre, puntaje)
+  return [...agg.values()]
+    .map((item) => {
+      const usuario = userMap.get(item.id);
+      return {
+        ...item,
+        nombre: usuario?.nombre || "Cliente desconocido",
+        score: usuario?.score || usuario?.rating || 0,
+      };
+    })
+    .sort((a, b) => b.citasCount - a.citasCount)
+    .slice(0, 3);
 });
 </script>
-
-<style scoped>
-.dashboard {
-  max-width: 1000px;
-  color: #fff;
-}
-
-.admin-banner {
-  background: linear-gradient(135deg, #f9a8d4 0%, #fbcfe8 45%, #fce7f3 100%);
-  border-radius: 20px;
-  padding: 1.4rem 1.7rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.banner-label {
-  margin: 0;
-  font-size: 0.78rem;
-  color: rgba(157, 23, 77, 0.7);
-}
-
-.banner-titulo {
-  margin: 0.2rem 0;
-  color: #831843;
-  font-size: 1.55rem;
-}
-
-.banner-fecha {
-  margin: 0;
-  color: rgba(157, 23, 77, 0.62);
-  text-transform: capitalize;
-}
-
-.banner-highlight {
-  background: rgba(255, 255, 255, 0.55);
-  border-radius: 12px;
-  padding: 0.8rem 1.1rem;
-  text-align: right;
-}
-
-.highlight-val {
-  color: #9d174d;
-  font-weight: 700;
-  display: block;
-}
-
-.highlight-lbl {
-  color: rgba(157, 23, 77, 0.72);
-  font-size: 0.75rem;
-}
-
-.kpis-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.8rem;
-  margin-bottom: 1rem;
-}
-
-.kpi-card {
-  background: rgba(249, 168, 212, 0.08);
-  border: 1px solid rgba(249, 168, 212, 0.2);
-  border-radius: 12px;
-  padding: 0.9rem 1rem;
-}
-
-.kpi-valor {
-  font-size: 1.3rem;
-  color: #f9a8d4;
-  font-weight: 700;
-}
-
-.kpi-titulo {
-  font-size: 0.76rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 1rem;
-}
-
-.card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(249, 168, 212, 0.15);
-  border-radius: 14px;
-  padding: 1rem;
-}
-
-.seccion-titulo {
-  margin: 0 0 0.75rem;
-  font-size: 0.96rem;
-}
-
-.estado {
-  color: rgba(255, 255, 255, 0.65);
-  margin: 0;
-}
-
-.top-servicios,
-.actividad-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
-.top-item,
-.actividad-item {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.6rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-}
-
-.top-num {
-  color: #f9a8d4;
-  font-weight: 700;
-  min-width: 28px;
-}
-
-.top-info {
-  flex: 1;
-}
-
-.top-nombre,
-.act-desc {
-  margin: 0;
-  font-size: 0.86rem;
-}
-
-.top-citas,
-.act-tiempo {
-  margin: 0;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.top-ingreso {
-  color: #f9a8d4;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.act-icono {
-  font-size: 1rem;
-}
-
-.error {
-  margin-top: 1rem;
-  color: #ff9696;
-}
-
-@media (max-width: 980px) {
-  .kpis-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .bottom-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

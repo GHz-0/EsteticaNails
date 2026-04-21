@@ -1,95 +1,312 @@
 <template>
-  <section class="servicios-admin">
-    <header class="cabecera">
-      <h2>Gestión de Servicios</h2>
-      <p>Administra catálogo, precios y duración.</p>
+  <section class="mx-auto w-full max-w-[940px] px-3 pb-5 pt-4 sm:px-4 lg:px-5">
+    <header
+      class="relative mb-4 overflow-hidden rounded-[1.75rem] border border-fuchsia-100/12 bg-[rgba(6,8,14,0.84)] px-4 py-4 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:px-5"
+    >
+      <span
+        class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ead7a1]/70 to-transparent"
+      />
+      <span
+        class="pointer-events-none absolute -right-20 top-[-4rem] h-40 w-40 rounded-full bg-fuchsia-400/10 blur-3xl"
+      />
+
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p
+            class="mb-1 text-xs font-semibold uppercase tracking-[0.28em] text-[#ead7a1]/80"
+          >
+            Catalogo de servicios
+          </p>
+          <h1
+            class="font-display text-[2.05rem] font-semibold leading-none tracking-tight text-fuchsia-50 sm:text-[2.6rem]"
+          >
+            Gestion de Servicios
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-300/90">
+            Administra categoria, precio, duracion y descripcion con una vista
+            limpia y completa.
+          </p>
+        </div>
+
+        <div class="grid gap-2 sm:grid-cols-2">
+          <div
+            class="rounded-2xl border border-fuchsia-100/12 bg-white/5 px-4 py-3 text-right"
+          >
+            <p
+              class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-slate-400"
+            >
+              Total servicios
+            </p>
+            <p
+              class="font-ingresos-libre text-[1.3rem] font-semibold text-fuchsia-100"
+            >
+              {{ totalServicios }}
+            </p>
+          </div>
+          <div
+            class="rounded-2xl border border-fuchsia-100/12 bg-white/5 px-4 py-3 text-right"
+          >
+            <p
+              class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-slate-400"
+            >
+              Precio promedio
+            </p>
+            <p
+              class="font-ingresos-libre text-[1.3rem] font-semibold text-[#f6e7bc]"
+            >
+              {{ formatoMoneda(precioPromedio) }}
+            </p>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <div class="grid">
-      <article class="panel formulario-panel">
-        <h3>{{ editandoId ? "Editar servicio" : "Nuevo servicio" }}</h3>
+    <section class="grid grid-cols-1 gap-3 xl:grid-cols-[0.95fr_1.25fr]">
+      <article
+        class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-3.5 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl"
+      >
+        <div
+          class="mb-2.5 rounded-xl border border-fuchsia-100/12 bg-white/5 px-3 py-3"
+        >
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p
+                class="text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-slate-400"
+              >
+                Registro y Edición
+              </p>
+              <h2
+                class="mt-1 font-display text-[1.05rem] font-semibold text-fuchsia-50"
+              >
+                {{ editandoId ? "Editar servicio" : "Nuevo servicio" }}
+              </h2>
+              <p class="mt-1 text-[0.72rem] leading-5 text-slate-300/85">
+                {{
+                  formularioAbierto
+                    ? "Registra aqui un nuevo servicio o edita uno existente y guarda los cambios."
+                    : "Registra aqui un nuevo servicio o edita uno existente desde la lista."
+                }}
+              </p>
+            </div>
 
-        <form class="formulario" @submit.prevent="guardarServicio">
-          <label>
-            Nombre
-            <input
-              v-model.trim="form.nombre"
-              type="text"
-              required
-              maxlength="80"
-            />
-          </label>
+            <span
+              class="rounded-full border border-[#ead7a1]/30 bg-[#ead7a1]/10 px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-[#f6e7bc]"
+            >
+              {{ editandoId ? "Edicion" : "Alta" }}
+            </span>
+          </div>
 
-          <label>
-            Categoría
-            <select v-model="form.categoria" required>
-              <option value="manos">Manos</option>
-              <option value="pies">Pies</option>
-              <option value="diseño">Diseño</option>
-              <option value="extensiones">Extensiones</option>
-              <option value="otros">Otros</option>
-            </select>
-          </label>
-
-          <label>
-            Precio (MXN)
-            <input
-              v-model.number="form.precio"
-              type="number"
-              min="1"
-              step="1"
-              required
-            />
-          </label>
-
-          <label>
-            Duración (min)
-            <input
-              v-model.number="form.duracion"
-              type="number"
-              min="5"
-              step="5"
-              required
-            />
-          </label>
-
-          <label class="full">
-            Descripción
-            <textarea
-              v-model.trim="form.descripcion"
-              rows="4"
-              maxlength="280"
-              required
-            ></textarea>
-          </label>
-
-          <p v-if="error" class="mensaje error">{{ error }}</p>
-          <p v-if="ok" class="mensaje ok">{{ ok }}</p>
-
-          <div class="acciones">
-            <button type="submit" class="btn principal" :disabled="guardando">
+          <div class="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-full border border-[#ead7a1]/25 bg-gradient-to-r from-fuchsia-400/20 via-pink-400/18 to-[#ead7a1]/14 px-3.5 py-1.5 text-[0.7rem] font-semibold tracking-wide text-fuchsia-50 shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:border-[#ead7a1]/45"
+              @click="toggleFormularioServicio"
+            >
               {{
-                guardando ? "Guardando..." : editandoId ? "Actualizar" : "Crear"
+                formularioAbierto
+                  ? "Ocultar formulario"
+                  : editandoId
+                    ? "Continuar edicion"
+                    : "Agregar servicio"
               }}
             </button>
+
             <button
-              v-if="editandoId"
               type="button"
-              class="btn secundario"
-              :disabled="guardando"
-              @click="cancelarEdicion"
+              class="inline-flex items-center justify-center rounded-full border border-fuchsia-100/16 bg-white/5 px-3.5 py-1.5 text-[0.7rem] font-semibold tracking-wide text-slate-100 transition-all hover:border-fuchsia-200/35 hover:text-fuchsia-50"
+              :disabled="!servicios.length"
+              @click="toggleSelectorEdicion"
             >
-              Cancelar edición
+              {{
+                selectorEdicionAbierto ? "Cerrar selector" : "Editar servicio"
+              }}
             </button>
           </div>
-        </form>
+
+          <div
+            v-if="selectorEdicionAbierto"
+            class="mt-2 rounded-xl border border-fuchsia-100/12 bg-slate-950/55 p-2.5"
+          >
+            <label
+              class="grid gap-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-slate-400"
+            >
+              Elegir servicio
+              <select
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-[0.8rem] text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+                :value="servicioEdicionId"
+                :disabled="!servicios.length"
+                @change="alElegirServicioEdicion"
+              >
+                <option value="" disabled>Selecciona un servicio</option>
+                <option
+                  v-for="servicio in servicios"
+                  :key="servicio.id"
+                  :value="servicio.id"
+                >
+                  {{ servicio.nombre }} ·
+                  {{ etiquetaCategoria(servicio.categoria) }}
+                </option>
+              </select>
+            </label>
+            <p class="mt-1.5 text-[0.68rem] leading-5 text-slate-400">
+              Al elegir uno, se cargará en el formulario para editarlo.
+            </p>
+          </div>
+
+          <div class="mt-2 grid grid-cols-2 gap-1.5">
+            <div
+              class="rounded-lg border border-fuchsia-100/12 bg-slate-950/50 px-2.5 py-2"
+            >
+              <p
+                class="text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-slate-400"
+              >
+                En catalogo
+              </p>
+              <p
+                class="mt-0.5 font-ingresos-libre text-[0.98rem] text-fuchsia-100"
+              >
+                {{ totalServicios }}
+              </p>
+            </div>
+            <div
+              class="rounded-lg border border-fuchsia-100/12 bg-slate-950/50 px-2.5 py-2"
+            >
+              <p
+                class="text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-slate-400"
+              >
+                Visibles
+              </p>
+              <p
+                class="mt-0.5 font-ingresos-libre text-[0.98rem] text-[#f6e7bc]"
+              >
+                {{ serviciosFiltrados.length }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <Transition
+          @before-enter="antesEntrarFormulario"
+          @enter="entrarFormulario"
+          @before-leave="antesSalirFormulario"
+          @leave="salirFormulario"
+        >
+          <form
+            v-if="formularioAbierto"
+            class="grid gap-2 overflow-hidden sm:grid-cols-2"
+            @submit.prevent="guardarServicio"
+          >
+            <label class="grid gap-1 text-xs font-medium text-slate-300">
+              Nombre
+              <input
+                v-model.trim="form.nombre"
+                type="text"
+                required
+                maxlength="80"
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              />
+            </label>
+
+            <label class="grid gap-1 text-xs font-medium text-slate-300">
+              Categoria
+              <select
+                v-model="form.categoria"
+                required
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              >
+                <option v-for="cat in categorias" :key="cat" :value="cat">
+                  {{ etiquetaCategoria(cat) }}
+                </option>
+              </select>
+            </label>
+
+            <label class="grid gap-1 text-xs font-medium text-slate-300">
+              Precio (MXN)
+              <input
+                v-model.number="form.precio"
+                type="number"
+                min="1"
+                step="1"
+                required
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              />
+            </label>
+
+            <label class="grid gap-1 text-xs font-medium text-slate-300">
+              Duracion (min)
+              <input
+                v-model.number="form.duracion"
+                type="number"
+                min="5"
+                step="5"
+                required
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              />
+            </label>
+
+            <label
+              class="grid gap-1 text-xs font-medium text-slate-300 sm:col-span-2"
+            >
+              Descripcion
+              <textarea
+                v-model.trim="form.descripcion"
+                rows="3"
+                maxlength="280"
+                required
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              ></textarea>
+            </label>
+
+            <p
+              v-if="error"
+              class="sm:col-span-2 rounded-xl border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100"
+            >
+              {{ error }}
+            </p>
+            <p
+              v-if="ok"
+              class="sm:col-span-2 rounded-xl border border-emerald-300/30 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-100"
+            >
+              {{ ok }}
+            </p>
+
+            <div class="sm:col-span-2 flex flex-wrap gap-2 pt-1">
+              <button
+                type="submit"
+                class="inline-flex items-center justify-center rounded-full border border-[#ead7a1]/25 bg-gradient-to-r from-fuchsia-400/20 via-pink-400/18 to-[#ead7a1]/14 px-4 py-1.5 text-[0.72rem] font-semibold tracking-wide text-fuchsia-50 shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:border-[#ead7a1]/45 disabled:cursor-not-allowed disabled:opacity-70"
+                :disabled="guardando"
+              >
+                {{
+                  guardando
+                    ? "Guardando..."
+                    : editandoId
+                      ? "Actualizar"
+                      : "Crear"
+                }}
+              </button>
+              <button
+                v-if="editandoId"
+                type="button"
+                class="rounded-full border border-fuchsia-100/18 bg-white/5 px-4 py-1.5 text-[0.72rem] font-semibold tracking-wide text-slate-200 transition-all hover:border-fuchsia-200/40 hover:text-fuchsia-50"
+                :disabled="guardando"
+                @click="cancelarEdicion"
+              >
+                Cancelar edicion
+              </button>
+            </div>
+          </form>
+        </Transition>
       </article>
 
-      <article class="panel lista-panel">
-        <div class="lista-header">
-          <h3>Servicios registrados</h3>
+      <article
+        class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-3.5 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl"
+      >
+        <div class="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+          <h2 class="font-display text-[1.1rem] font-semibold text-fuchsia-50">
+            Servicios registrados
+          </h2>
           <button
-            class="btn secundario"
+            class="rounded-full border border-fuchsia-100/18 bg-white/5 px-3 py-1.5 text-[0.72rem] font-semibold tracking-wide text-slate-200 transition-all hover:border-fuchsia-200/40 hover:text-fuchsia-50 disabled:cursor-not-allowed disabled:opacity-70"
             :disabled="cargando"
             @click="cargarServicios"
           >
@@ -97,46 +314,105 @@
           </button>
         </div>
 
-        <p v-if="cargando" class="estado">Cargando servicios...</p>
-        <p v-else-if="!servicios.length" class="estado">
+        <div class="mb-2.5 grid gap-1.5 sm:grid-cols-[1fr_180px]">
+          <input
+            v-model.trim="filtroTexto"
+            type="text"
+            placeholder="Buscar por nombre..."
+            class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-[0.82rem] text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+          />
+          <select
+            v-model="filtroCategoria"
+            class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-[0.82rem] text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+          >
+            <option value="todas">Todas las categorias</option>
+            <option v-for="cat in categorias" :key="cat" :value="cat">
+              {{ etiquetaCategoria(cat) }}
+            </option>
+          </select>
+        </div>
+
+        <p v-if="cargando" class="text-xs text-slate-300">
+          Cargando servicios...
+        </p>
+        <p v-else-if="!servicios.length" class="text-xs text-slate-300">
           No hay servicios registrados.
         </p>
+        <p
+          v-else-if="!serviciosFiltrados.length"
+          class="text-xs text-slate-300"
+        >
+          No hay resultados con los filtros aplicados.
+        </p>
 
-        <ul v-else class="lista">
-          <li v-for="servicio in servicios" :key="servicio.id" class="item">
-            <div class="info">
-              <h4>{{ servicio.nombre }}</h4>
-              <p>{{ servicio.descripcion }}</p>
-              <div class="chips">
-                <span class="chip">{{ servicio.categoria }}</span>
-                <span class="chip">${{ servicio.precio }}</span>
-                <span class="chip">{{ servicio.duracion }} min</span>
+        <ul v-else class="space-y-1.5">
+          <li
+            v-for="servicio in serviciosFiltrados"
+            :key="servicio.id"
+            role="button"
+            tabindex="0"
+            class="rounded-xl border border-fuchsia-100/12 bg-white/5 px-2.5 py-2.5 transition-all hover:border-fuchsia-200/35 hover:bg-white/7"
+            @click="editar(servicio)"
+            @keydown.enter.prevent="editar(servicio)"
+            @keydown.space.prevent="editar(servicio)"
+          >
+            <div class="flex flex-wrap items-start justify-between gap-1.5">
+              <div class="min-w-0 flex-1">
+                <h3
+                  class="truncate text-[0.82rem] font-semibold text-fuchsia-50"
+                >
+                  {{ servicio.nombre }}
+                </h3>
+                <p class="mt-0.5 text-[0.72rem] leading-4 text-slate-300/90">
+                  {{ servicio.descripcion }}
+                </p>
+              </div>
+
+              <div class="flex gap-1">
+                <button
+                  class="rounded-lg border border-rose-300/30 bg-rose-500/10 px-2 py-1 text-[0.68rem] font-semibold text-rose-100 transition-all hover:border-rose-300/50"
+                  @click.stop="eliminar(servicio)"
+                >
+                  Eliminar
+                </button>
               </div>
             </div>
 
-            <div class="item-acciones">
-              <button class="btn pequeno" @click="editar(servicio)">
-                Editar
-              </button>
-              <button class="btn pequeno peligro" @click="eliminar(servicio)">
-                Eliminar
-              </button>
+            <div class="mt-1.5 flex flex-wrap gap-1">
+              <span
+                class="rounded-full border border-fuchsia-100/15 bg-fuchsia-400/10 px-2 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.1em] text-fuchsia-200"
+              >
+                {{ etiquetaCategoria(servicio.categoria) }}
+              </span>
+              <span
+                class="rounded-full border border-[#ead7a1]/25 bg-[#ead7a1]/10 px-2 py-1 text-[0.66rem] font-semibold text-[#f6e7bc]"
+              >
+                {{ formatoMoneda(servicio.precio) }}
+              </span>
+              <span
+                class="rounded-full border border-slate-300/20 bg-slate-800/35 px-2 py-1 text-[0.66rem] font-semibold text-slate-200"
+              >
+                {{ servicio.duracion }} min
+              </span>
             </div>
           </li>
         </ul>
       </article>
-    </div>
+    </section>
   </section>
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import {
   actualizarServicio,
   crearServicio,
   eliminarServicio,
+  limpiarDuplicadosServicios,
   obtenerServicios,
 } from "@/nucleo/firebase/servicios";
+
+const categorias = ["manos", "pies", "diseño", "extensiones", "otros"];
 
 const cargando = ref(false);
 const guardando = ref(false);
@@ -144,6 +420,12 @@ const servicios = ref([]);
 const editandoId = ref(null);
 const error = ref("");
 const ok = ref("");
+const filtroTexto = ref("");
+const filtroCategoria = ref("todas");
+const duplicadosDepurados = ref(false);
+const formularioAbierto = ref(false);
+const selectorEdicionAbierto = ref(false);
+const servicioEdicionId = ref("");
 
 const formVacio = () => ({
   nombre: "",
@@ -155,6 +437,44 @@ const formVacio = () => ({
 
 const form = ref(formVacio());
 
+const serviciosFiltrados = computed(() => {
+  const texto = filtroTexto.value.trim().toLowerCase();
+  return servicios.value.filter((servicio) => {
+    const coincideTexto =
+      !texto || (servicio.nombre || "").toLowerCase().includes(texto);
+    const coincideCategoria =
+      filtroCategoria.value === "todas" ||
+      servicio.categoria === filtroCategoria.value;
+    return coincideTexto && coincideCategoria;
+  });
+});
+
+const totalServicios = computed(() => servicios.value.length);
+
+const precioPromedio = computed(() => {
+  if (!servicios.value.length) return 0;
+  const total = servicios.value.reduce(
+    (acc, item) => acc + Number(item.precio || 0),
+    0,
+  );
+  return Math.round(total / servicios.value.length);
+});
+
+function etiquetaCategoria(categoria) {
+  const etiquetas = {
+    manos: "Manos",
+    pies: "Pies",
+    diseño: "Diseño",
+    extensiones: "Extensiones",
+    otros: "Otros",
+  };
+  return etiquetas[categoria] || "Otros";
+}
+
+function formatoMoneda(valor) {
+  return `$${Number(valor || 0).toLocaleString("es-MX")}`;
+}
+
 function limpiarMensajes() {
   error.value = "";
   ok.value = "";
@@ -162,7 +482,7 @@ function limpiarMensajes() {
 
 function validarFormulario() {
   if (!form.value.nombre || !form.value.descripcion) {
-    error.value = "Completa nombre y descripción.";
+    error.value = "Completa nombre y descripcion.";
     return false;
   }
   if (!Number.isFinite(form.value.precio) || form.value.precio <= 0) {
@@ -170,7 +490,7 @@ function validarFormulario() {
     return false;
   }
   if (!Number.isFinite(form.value.duracion) || form.value.duracion <= 0) {
-    error.value = "La duración debe ser mayor a 0.";
+    error.value = "La duracion debe ser mayor a 0.";
     return false;
   }
   return true;
@@ -180,6 +500,14 @@ async function cargarServicios() {
   cargando.value = true;
   limpiarMensajes();
   try {
+    if (!duplicadosDepurados.value) {
+      const resultado = await limpiarDuplicadosServicios();
+      duplicadosDepurados.value = true;
+      if (resultado.eliminados > 0) {
+        ok.value = `Se limpiaron ${resultado.eliminados} servicios duplicados.`;
+      }
+    }
+
     servicios.value = await obtenerServicios();
   } catch (e) {
     error.value = "No se pudieron cargar los servicios.";
@@ -192,9 +520,15 @@ async function cargarServicios() {
 function editar(servicio) {
   limpiarMensajes();
   editandoId.value = servicio.id;
+  formularioAbierto.value = true;
+  selectorEdicionAbierto.value = false;
+  servicioEdicionId.value = servicio.id;
+  ok.value = "Editando servicio desde el formulario.";
   form.value = {
     nombre: servicio.nombre || "",
-    categoria: servicio.categoria || "otros",
+    categoria: categorias.includes(servicio.categoria)
+      ? servicio.categoria
+      : "otros",
     precio: Number(servicio.precio || 0),
     duracion: Number(servicio.duracion || 0),
     descripcion: servicio.descripcion || "",
@@ -203,8 +537,43 @@ function editar(servicio) {
 
 function cancelarEdicion() {
   editandoId.value = null;
+  formularioAbierto.value = false;
   form.value = formVacio();
+  servicioEdicionId.value = "";
   limpiarMensajes();
+}
+
+function toggleFormularioServicio() {
+  if (editandoId.value) {
+    formularioAbierto.value = true;
+    return;
+  }
+
+  selectorEdicionAbierto.value = false;
+
+  formularioAbierto.value = !formularioAbierto.value;
+
+  if (!formularioAbierto.value) {
+    form.value = formVacio();
+    limpiarMensajes();
+  }
+}
+
+function toggleSelectorEdicion() {
+  selectorEdicionAbierto.value = !selectorEdicionAbierto.value;
+  if (selectorEdicionAbierto.value) {
+    formularioAbierto.value = false;
+  } else {
+    servicioEdicionId.value = "";
+  }
+}
+
+function alElegirServicioEdicion(evento) {
+  const id = evento.target.value;
+  const servicio = servicios.value.find((item) => item.id === id);
+  if (!servicio) return;
+
+  editar(servicio);
 }
 
 async function guardarServicio() {
@@ -231,7 +600,12 @@ async function guardarServicio() {
     cancelarEdicion();
     await cargarServicios();
   } catch (e) {
-    error.value = "No se pudo guardar el servicio. Verifica permisos de admin.";
+    if (e?.code === "DUPLICATE_SERVICE") {
+      error.value = "Ya existe un servicio con ese nombre y categoria.";
+    } else {
+      error.value =
+        "No se pudo guardar el servicio. Verifica permisos de admin.";
+    }
     console.error(e);
   } finally {
     guardando.value = false;
@@ -241,7 +615,7 @@ async function guardarServicio() {
 async function eliminar(servicio) {
   limpiarMensajes();
   const confirmar = window.confirm(
-    `¿Eliminar el servicio "${servicio.nombre}"? Esta acción no se puede deshacer.`,
+    `¿Eliminar el servicio "${servicio.nombre}"? Esta accion no se puede deshacer.`,
   );
   if (!confirmar) return;
 
@@ -258,187 +632,55 @@ async function eliminar(servicio) {
 }
 
 onMounted(cargarServicios);
+
+function antesEntrarFormulario(elemento) {
+  elemento.style.height = "0";
+  elemento.style.opacity = "0";
+  elemento.style.transform = "translateY(-8px) scale(0.99)";
+  elemento.style.overflow = "hidden";
+}
+
+function entrarFormulario(elemento, completar) {
+  requestAnimationFrame(() => {
+    elemento.style.transition =
+      "height 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease, transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
+    elemento.style.height = `${elemento.scrollHeight}px`;
+    elemento.style.opacity = "1";
+    elemento.style.transform = "translateY(0) scale(1)";
+
+    const alTerminar = () => {
+      elemento.style.height = "auto";
+      elemento.style.overflow = "visible";
+      elemento.removeEventListener("transitionend", alTerminar);
+      completar();
+    };
+
+    elemento.addEventListener("transitionend", alTerminar);
+  });
+}
+
+function antesSalirFormulario(elemento) {
+  elemento.style.height = `${elemento.scrollHeight}px`;
+  elemento.style.opacity = "1";
+  elemento.style.transform = "translateY(0) scale(1)";
+  elemento.style.overflow = "hidden";
+}
+
+function salirFormulario(elemento, completar) {
+  requestAnimationFrame(() => {
+    elemento.style.transition =
+      "height 260ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease, transform 260ms cubic-bezier(0.22, 1, 0.36, 1)";
+    void elemento.offsetHeight;
+    elemento.style.height = "0";
+    elemento.style.opacity = "0";
+    elemento.style.transform = "translateY(-8px) scale(0.99)";
+
+    const alTerminar = () => {
+      elemento.removeEventListener("transitionend", alTerminar);
+      completar();
+    };
+
+    elemento.addEventListener("transitionend", alTerminar);
+  });
+}
 </script>
-
-<style scoped>
-.servicios-admin {
-  color: #fff;
-}
-
-.cabecera h2 {
-  margin: 0;
-  font-family: "Syne", sans-serif;
-  font-size: 1.6rem;
-}
-
-.cabecera p {
-  margin: 0.35rem 0 1.25rem;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1.3fr;
-  gap: 1rem;
-}
-
-.panel {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 1rem;
-}
-
-.panel h3 {
-  margin: 0 0 0.9rem;
-  font-size: 1rem;
-}
-
-.formulario {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-}
-
-input,
-select,
-textarea {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 9px;
-  padding: 0.6rem 0.7rem;
-  background: rgba(0, 0, 0, 0.28);
-  color: #fff;
-}
-
-textarea {
-  resize: vertical;
-}
-
-.full {
-  grid-column: 1 / -1;
-}
-
-.mensaje {
-  grid-column: 1 / -1;
-  margin: 0;
-  font-size: 0.85rem;
-}
-
-.mensaje.error {
-  color: #ff8f8f;
-}
-
-.mensaje.ok {
-  color: #79f2bf;
-}
-
-.acciones {
-  grid-column: 1 / -1;
-  display: flex;
-  gap: 0.6rem;
-}
-
-.btn {
-  border: 0;
-  border-radius: 9px;
-  padding: 0.55rem 0.9rem;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.btn.principal {
-  background: linear-gradient(135deg, #ec64b0, #d946ef);
-  color: #fff;
-}
-
-.btn.secundario {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-.btn.pequeno {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  padding: 0.45rem 0.7rem;
-  font-size: 0.8rem;
-}
-
-.btn.peligro {
-  background: rgba(255, 105, 105, 0.2);
-  color: #ffb2b2;
-}
-
-.lista-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.8rem;
-}
-
-.estado {
-  color: rgba(255, 255, 255, 0.65);
-  margin: 0.3rem 0;
-}
-
-.lista {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
-.item {
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 11px;
-  padding: 0.8rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 0.8rem;
-}
-
-.info h4 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.info p {
-  margin: 0.3rem 0 0.55rem;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.88rem;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.chip {
-  font-size: 0.75rem;
-  padding: 0.22rem 0.5rem;
-  border-radius: 999px;
-  border: 1px solid rgba(236, 100, 176, 0.45);
-  color: #f9a8d4;
-}
-
-.item-acciones {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-
-@media (max-width: 960px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

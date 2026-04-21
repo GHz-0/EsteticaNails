@@ -15,7 +15,7 @@
           <p
             class="mb-1 text-xs font-semibold uppercase tracking-[0.28em] text-[#ead7a1]/80"
           >
-            Salón Intelligence
+            Analiticas Nails bere
           </p>
           <h1
             class="font-display text-[2.15rem] font-semibold leading-none tracking-tight text-fuchsia-50 sm:text-[2.85rem]"
@@ -84,6 +84,48 @@
       ❌ {{ error }}
     </div>
 
+    <section
+      class="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-fuchsia-100/10 bg-white/5 px-3 py-3"
+    >
+      <div>
+        <p
+          class="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-[#ead7a1]/75"
+        >
+          Etiquetas de valores
+        </p>
+        <p class="mt-1 text-sm text-slate-300">
+          Elige si deseas ver solo valores relevantes o todos los valores.
+        </p>
+      </div>
+
+      <div
+        class="flex rounded-full border border-fuchsia-100/10 bg-slate-950/60 p-1"
+      >
+        <button
+          class="rounded-full px-3 py-1.5 text-xs font-semibold transition-all"
+          :class="
+            modoEtiquetas === 'relevantes'
+              ? 'bg-[#ead7a1]/15 text-[#f6e7bc]'
+              : 'text-slate-300 hover:text-fuchsia-50'
+          "
+          @click="modoEtiquetas = 'relevantes'"
+        >
+          Solo relevantes
+        </button>
+        <button
+          class="rounded-full px-3 py-1.5 text-xs font-semibold transition-all"
+          :class="
+            modoEtiquetas === 'todos'
+              ? 'bg-[#ead7a1]/15 text-[#f6e7bc]'
+              : 'text-slate-300 hover:text-fuchsia-50'
+          "
+          @click="modoEtiquetas = 'todos'"
+        >
+          Todos los valores
+        </button>
+      </div>
+    </section>
+
     <section class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       <TarjetaMetrica
         titulo="Total Citas"
@@ -121,8 +163,9 @@
     <section class="mb-4">
       <GraficoLinea
         titulo="Ingresos por período"
-        subtitulo="Comportamiento diario de ingresos estimados"
-        :datos="serieIngresos"
+        subtitulo="Comparación continua de la tendencia diaria"
+        :datos="serieIngresosVisual"
+        :modo-etiquetas="modoEtiquetas"
         :cargando="cargando"
         :error="error"
         formato="moneda"
@@ -210,15 +253,25 @@ const topClientes = ref([]);
 const topServicios = ref([]);
 const productosCriticos = ref([]);
 const eficienciaEmpleados = ref([]);
+const modoEtiquetas = ref("relevantes");
 
 // Presets de fechas
 const presetsFechas = [
   { valor: "hoy", label: "Hoy" },
-  { valor: "7-dias", label: "Últimos 7 días" },
-  { valor: "30-dias", label: "Últimos 30 días" },
+  { valor: "7-dias", label: "Esta semana" },
   { valor: "mes-actual", label: "Este mes" },
   { valor: "personalizado", label: "Personalizado" },
 ];
+
+const serieIngresosVisual = computed(() => {
+  const serie = Array.isArray(serieIngresos.value) ? serieIngresos.value : [];
+
+  if (tipoFecha.value !== "mes-actual") {
+    return serie;
+  }
+
+  return serie.filter((dato) => Number(dato?.valor ?? dato?.ingreso ?? 0) > 0);
+});
 
 // Definición de columnas para tablas
 const colClientesTab = [
