@@ -1,75 +1,151 @@
 <template>
-  <div class="dashboard">
-    <!-- Banner del salón -->
-    <div class="salon-banner">
-      <div class="banner-overlay">
-        <div class="banner-content">
-          <p class="banner-saludo">Bienvenida de vuelta,</p>
-          <h1 class="banner-nombre">
-            {{ auth.usuario?.nombre?.split(" ")[0] }} ✨
+  <main class="mx-auto w-full max-w-[1180px] px-3 pb-8 pt-4 sm:px-4 lg:px-5">
+    <section
+      class="relative overflow-hidden rounded-[1.75rem] border border-fuchsia-100/12 bg-[rgba(6,8,14,0.82)] shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl"
+    >
+      <img
+        src="/img/inicio/cta.jpg"
+        alt=""
+        class="absolute inset-0 h-full w-full object-cover opacity-28"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-[#05060b] via-[#05060b]/82 to-[#05060b]/44" />
+      <div class="relative grid gap-6 px-5 py-7 sm:px-7 lg:grid-cols-[1fr_310px] lg:items-end">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.28em] text-[#ead7a1]/85">
+            Bienvenida de vuelta
+          </p>
+          <h1 class="font-display mt-2 text-[2.4rem] font-semibold leading-none text-fuchsia-50 sm:text-[3.4rem]">
+            {{ nombreCorto }}
           </h1>
-          <p class="banner-sub">¿Qué servicio te gustaría hoy?</p>
-        </div>
-        <div class="banner-deco">
-          <span class="deco-circle c1">💄</span>
-          <span class="deco-circle c2">✂️</span>
-          <span class="deco-circle c3">💅</span>
-          <span class="deco-circle c4">🌸</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Próxima cita destacada -->
-    <div v-if="proximaCita" class="proxima-cita-card">
-      <div class="proxima-left">
-        <span class="proxima-label">📅 Tu próxima cita</span>
-        <p class="proxima-servicio">{{ proximaCita.servicio }}</p>
-        <p class="proxima-info">
-          {{ proximaCita.fecha }} · {{ proximaCita.hora }}
-        </p>
-      </div>
-      <div class="proxima-right">
-        <span class="proxima-empleada">👩 {{ proximaCita.empleada }}</span>
-        <span class="proxima-badge">Confirmada</span>
-      </div>
-    </div>
-
-    <!-- Tarjetas resumen -->
-    <div class="stats-grid">
-      <div v-for="stat in stats" :key="stat.titulo" class="stat-card">
-        <div class="stat-emoji">{{ stat.icono }}</div>
-        <div class="stat-data">
-          <span class="stat-valor">{{ stat.valor }}</span>
-          <span class="stat-titulo">{{ stat.titulo }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Servicios recomendados -->
-    <section class="seccion">
-      <div class="seccion-header">
-        <h2 class="seccion-titulo">🌸 Servicios para ti</h2>
-        <RouterLink to="/usuario/servicios" class="ver-todos"
-          >Ver todos →</RouterLink
-        >
-      </div>
-      <div class="servicios-grid">
-        <div v-for="s in serviciosDestacados" :key="s.id" class="servicio-card">
-          <div class="servicio-emoji">{{ s.icono }}</div>
-          <div class="servicio-body">
-            <h3 class="servicio-nombre">{{ s.nombre }}</h3>
-            <p class="servicio-desc">{{ s.desc }}</p>
-            <div class="servicio-footer">
-              <span class="servicio-precio">{{ s.precio }}</span>
-              <RouterLink to="/usuario/servicios" class="btn-agendar"
-                >Agendar</RouterLink
-              >
-            </div>
+          <p class="mt-3 max-w-xl text-sm leading-6 text-fuchsia-100/72">
+            Agenda tu proxima cita, revisa tus servicios favoritos y mantente al dia con Nails Bere.
+          </p>
+          <div class="mt-5 flex flex-wrap gap-2">
+            <RouterLink
+              to="/usuario/servicios"
+              class="rounded-full border border-[#ead7a1]/25 bg-gradient-to-r from-fuchsia-300/24 via-pink-400/22 to-[#ead7a1]/18 px-5 py-2.5 text-sm font-bold text-fuchsia-50 shadow-lg shadow-black/25 transition hover:-translate-y-0.5 hover:border-[#ead7a1]/45"
+            >
+              Explorar servicios
+            </RouterLink>
+            <RouterLink
+              to="/usuario/mis-citas"
+              class="rounded-full border border-fuchsia-100/14 bg-white/5 px-5 py-2.5 text-sm font-bold text-fuchsia-100/80 transition hover:border-fuchsia-200/35 hover:text-fuchsia-50"
+            >
+              Mis citas
+            </RouterLink>
           </div>
         </div>
+
+        <article
+          class="rounded-[1.35rem] border border-fuchsia-100/12 bg-slate-950/62 p-4 shadow-[0_18px_45px_rgba(0,0,0,0.28)]"
+        >
+          <p class="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[#ead7a1]/75">
+            Proxima cita
+          </p>
+          <div v-if="proximaCita" class="mt-3">
+            <h2 class="font-display text-[1.4rem] font-semibold text-fuchsia-50">
+              {{ proximaCita.servicio }}
+            </h2>
+            <p class="mt-2 text-sm text-fuchsia-100/65">
+              {{ proximaCita.fecha }} · {{ proximaCita.hora }}
+            </p>
+            <p class="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-fuchsia-100/42">
+              {{ proximaCita.empleada }}
+            </p>
+            <span
+              class="mt-4 inline-flex rounded-full border border-emerald-300/25 bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-100"
+            >
+              Confirmada
+            </span>
+          </div>
+          <div v-else class="mt-3">
+            <h2 class="font-display text-[1.35rem] font-semibold text-fuchsia-50">
+              Sin citas pendientes
+            </h2>
+            <p class="mt-2 text-sm leading-6 text-fuchsia-100/58">
+              Elige un servicio y reserva el horario que mejor te quede.
+            </p>
+          </div>
+        </article>
       </div>
     </section>
-  </div>
+
+    <section class="mt-4 grid gap-3 sm:grid-cols-3">
+      <article
+        v-for="stat in stats"
+        :key="stat.titulo"
+        class="rounded-[1.25rem] border border-fuchsia-100/10 bg-white/[0.035] p-4 shadow-[0_18px_45px_rgba(0,0,0,0.2)] backdrop-blur-xl"
+      >
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-xs font-bold uppercase tracking-[0.16em] text-fuchsia-100/48">
+            {{ stat.titulo }}
+          </p>
+          <span class="grid h-9 w-9 place-items-center rounded-full border border-[#ead7a1]/22 bg-[#ead7a1]/10 text-[#f6e7bc]">
+            {{ stat.icono }}
+          </span>
+        </div>
+        <p class="font-ingresos-libre mt-3 text-[1.8rem] font-bold leading-none text-fuchsia-50">
+          {{ stat.valor }}
+        </p>
+      </article>
+    </section>
+
+    <section class="mt-6">
+      <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#ead7a1]/80">
+            Recomendados
+          </p>
+          <h2 class="font-display mt-1 text-[2rem] font-semibold leading-none text-fuchsia-50">
+            Servicios para ti
+          </h2>
+        </div>
+        <RouterLink
+          to="/usuario/servicios"
+          class="text-sm font-bold text-fuchsia-100/70 transition hover:text-[#f6e7bc]"
+        >
+          Ver todos
+        </RouterLink>
+      </div>
+
+      <div v-if="!serviciosDestacados.length" class="rounded-[1.25rem] border border-fuchsia-100/10 bg-white/[0.035] p-6 text-sm text-fuchsia-100/58">
+        Aun no hay servicios disponibles.
+      </div>
+
+      <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <article
+          v-for="servicio in serviciosDestacados"
+          :key="servicio.id"
+          class="overflow-hidden rounded-[1.25rem] border border-fuchsia-100/10 bg-white/[0.035] shadow-[0_18px_45px_rgba(0,0,0,0.2)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-fuchsia-200/28"
+        >
+          <img
+            :src="imagenServicio(servicio)"
+            :alt="servicio.nombre"
+            class="h-36 w-full object-cover"
+          />
+          <div class="p-4">
+            <h3 class="font-display text-[1.25rem] font-semibold text-fuchsia-50">
+              {{ servicio.nombre }}
+            </h3>
+            <p class="mt-2 line-clamp-2 text-sm leading-6 text-fuchsia-100/52">
+              {{ servicio.descripcion || "Atencion personalizada en Nails Bere." }}
+            </p>
+            <div class="mt-4 flex items-center justify-between gap-3">
+              <span class="font-ingresos-libre text-lg font-bold text-[#f6e7bc]">
+                {{ formatoMoneda(servicio.precio) }}
+              </span>
+              <RouterLink
+                to="/usuario/servicios"
+                class="rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-3 py-1.5 text-xs font-bold text-fuchsia-50 transition hover:border-[#ead7a1]/40"
+              >
+                Agendar
+              </RouterLink>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script setup>
@@ -79,16 +155,12 @@ import { obtenerServicios } from "@/nucleo/firebase/servicios";
 import { obtenerMisCitas } from "@/nucleo/firebase/citas";
 
 const auth = useAuthStore();
-
 const servicios = ref([]);
 const citas = ref([]);
 
-const ICONOS_CATEGORIA = {
-  manos: "💅",
-  pies: "🦶",
-  diseño: "🎨",
-  extensiones: "✨",
-};
+const nombreCorto = computed(
+  () => auth.usuario?.nombre?.split(" ")[0] || "Clienta",
+);
 
 onMounted(async () => {
   try {
@@ -104,28 +176,24 @@ onMounted(async () => {
 });
 
 const citasActivas = computed(() =>
-  citas.value.filter((c) => c.estado !== "cancelada"),
+  citas.value.filter((cita) => cita.estado !== "cancelada"),
 );
 
 const proximaCita = computed(() => {
   const ahora = new Date();
   const candidatas = citasActivas.value
     .map((cita) => {
-      const fecha =
-        cita.fecha instanceof Date ? cita.fecha : new Date(cita.fecha);
+      const fecha = cita.fecha instanceof Date ? cita.fecha : new Date(cita.fecha);
       return { ...cita, fechaObj: fecha };
     })
-    .filter(
-      (cita) =>
-        cita.fechaObj instanceof Date && !Number.isNaN(cita.fechaObj.getTime()),
-    )
+    .filter((cita) => cita.fechaObj instanceof Date && !Number.isNaN(cita.fechaObj.getTime()))
     .filter((cita) => cita.fechaObj >= ahora)
     .sort((a, b) => a.fechaObj - b.fechaObj);
 
   if (!candidatas.length) return null;
 
   const cita = candidatas[0];
-  const servicio = servicios.value.find((s) => s.id === cita.servicioId);
+  const servicio = servicios.value.find((item) => item.id === cita.servicioId);
 
   return {
     servicio: servicio?.nombre || "Servicio",
@@ -142,8 +210,7 @@ const proximaCita = computed(() => {
 const stats = computed(() => {
   const hoy = new Date();
   const citasMes = citasActivas.value.filter((cita) => {
-    const fecha =
-      cita.fecha instanceof Date ? cita.fecha : new Date(cita.fecha);
+    const fecha = cita.fecha instanceof Date ? cita.fecha : new Date(cita.fecha);
     return (
       fecha instanceof Date &&
       !Number.isNaN(fecha.getTime()) &&
@@ -156,329 +223,42 @@ const stats = computed(() => {
     citasActivas.value.map((cita) => cita.servicioId).filter(Boolean),
   ).size;
 
-  const puntos = citasActivas.value.length * 40;
-
   return [
-    { titulo: "Citas este mes", valor: String(citasMes), icono: "📅" },
-    { titulo: "Servicios usados", valor: String(serviciosUsados), icono: "✨" },
-    { titulo: "Puntos acumulados", valor: String(puntos), icono: "🌸" },
+    { titulo: "Citas este mes", valor: String(citasMes), icono: "◷" },
+    { titulo: "Servicios usados", valor: String(serviciosUsados), icono: "✦" },
+    { titulo: "Puntos acumulados", valor: String(citasActivas.value.length * 40), icono: "◇" },
   ];
 });
 
-const serviciosDestacados = computed(() =>
-  servicios.value.slice(0, 4).map((s) => ({
-    id: s.id,
-    icono: ICONOS_CATEGORIA[s.categoria] || "💄",
-    nombre: s.nombre,
-    desc: s.descripcion,
-    precio: `$${s.precio}`,
-  })),
-);
+const serviciosDestacados = computed(() => servicios.value.slice(0, 4));
+
+function formatoMoneda(valor) {
+  return `$${Number(valor || 0).toLocaleString("es-MX")}`;
+}
+
+function normalizarCategoria(categoria = "") {
+  return String(categoria)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function imagenPorCategoria(categoria = "") {
+  const valor = normalizarCategoria(categoria);
+  const imagenes = {
+    manos: "/img/inicio/servicio-unas.jpg",
+    pies: "/img/inicio/promo-manicure.jpg",
+    facial: "/img/inicio/servicio-facial.jpg",
+    cabello: "/img/inicio/servicio-color.jpg",
+    eventos: "/img/inicio/servicio-maquillaje.jpg",
+    diseno: "/img/inicio/promo-manicure.jpg",
+    extensiones: "/img/inicio/servicio-unas.jpg",
+  };
+  return imagenes[valor] || "/img/inicio/cta.jpg";
+}
+
+function imagenServicio(servicio) {
+  return servicio?.imagenUrl || imagenPorCategoria(servicio?.categoria);
+}
 </script>
-
-<style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap");
-
-.dashboard {
-  max-width: 960px;
-  font-family: "DM Sans", sans-serif;
-}
-
-/* ── Banner ─────────────────────────────────────── */
-.salon-banner {
-  border-radius: 20px;
-  overflow: hidden;
-  margin-bottom: 1.2rem;
-  background: linear-gradient(
-    135deg,
-    #f9a8d4 0%,
-    #fbcfe8 40%,
-    #fce7f3 70%,
-    #fdf2f8 100%
-  );
-  position: relative;
-  min-height: 160px;
-}
-
-.banner-overlay {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem 2rem;
-  position: relative;
-  z-index: 1;
-}
-
-.banner-saludo {
-  font-size: 0.85rem;
-  color: rgba(157, 23, 77, 0.7);
-  margin: 0 0 0.2rem;
-  letter-spacing: 0.03em;
-}
-
-.banner-nombre {
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #831843;
-  margin: 0 0 0.4rem;
-  line-height: 1.1;
-}
-
-.banner-sub {
-  font-size: 0.88rem;
-  color: rgba(157, 23, 77, 0.6);
-  margin: 0;
-}
-
-.banner-deco {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  position: relative;
-}
-
-.deco-circle {
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-.c1 {
-  animation: float 3s ease-in-out infinite;
-}
-.c2 {
-  animation: float 3s ease-in-out infinite 0.5s;
-}
-.c3 {
-  animation: float 3s ease-in-out infinite 1s;
-}
-.c4 {
-  animation: float 3s ease-in-out infinite 1.5s;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
-/* ── Próxima cita ────────────────────────────────── */
-.proxima-cita-card {
-  background: linear-gradient(
-    135deg,
-    rgba(249, 168, 212, 0.15),
-    rgba(251, 207, 232, 0.1)
-  );
-  border: 1px solid rgba(249, 168, 212, 0.4);
-  border-radius: 16px;
-  padding: 1.1rem 1.4rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.2rem;
-}
-
-.proxima-label {
-  font-size: 0.72rem;
-  color: #f472b6;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0 0 0.3rem;
-}
-
-.proxima-servicio {
-  font-family: "Playfair Display", serif;
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0 0 0.2rem;
-}
-
-.proxima-info {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.45);
-  margin: 0;
-}
-
-.proxima-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.4rem;
-}
-
-.proxima-empleada {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.proxima-badge {
-  background: rgba(249, 168, 212, 0.2);
-  border: 1px solid rgba(249, 168, 212, 0.4);
-  color: #f9a8d4;
-  font-size: 0.7rem;
-  padding: 0.2rem 0.7rem;
-  border-radius: 20px;
-}
-
-/* ── Stats ───────────────────────────────────────── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.85rem;
-  margin-bottom: 1.5rem;
-}
-
-.stat-card {
-  background: rgba(249, 168, 212, 0.07);
-  border: 1px solid rgba(249, 168, 212, 0.2);
-  border-radius: 14px;
-  padding: 1rem 1.1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  transition: border-color 0.2s;
-}
-
-.stat-card:hover {
-  border-color: rgba(249, 168, 212, 0.4);
-}
-
-.stat-emoji {
-  font-size: 1.6rem;
-}
-
-.stat-valor {
-  display: block;
-  font-family: "Playfair Display", serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #f9a8d4;
-  line-height: 1;
-}
-
-.stat-titulo {
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin-top: 0.2rem;
-  display: block;
-}
-
-/* ── Servicios destacados ────────────────────────── */
-.seccion {
-  margin-top: 0.5rem;
-}
-
-.seccion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.seccion-titulo {
-  font-family: "Playfair Display", serif;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-}
-
-.ver-todos {
-  font-size: 0.8rem;
-  color: #f9a8d4;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.ver-todos:hover {
-  color: #f472b6;
-}
-
-.servicios-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 0.85rem;
-}
-
-.servicio-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(249, 168, 212, 0.15);
-  border-radius: 16px;
-  padding: 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  transition:
-    border-color 0.2s,
-    transform 0.2s;
-}
-
-.servicio-card:hover {
-  border-color: rgba(249, 168, 212, 0.35);
-  transform: translateY(-2px);
-}
-
-.servicio-emoji {
-  font-size: 1.8rem;
-}
-
-.servicio-nombre {
-  font-family: "Playfair Display", serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-}
-
-.servicio-desc {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin: 0.2rem 0 0;
-  line-height: 1.4;
-}
-
-.servicio-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-}
-
-.servicio-precio {
-  font-family: "Playfair Display", serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #f9a8d4;
-}
-
-.btn-agendar {
-  background: linear-gradient(135deg, #f472b6, #ec4899);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.35rem 0.85rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: opacity 0.2s;
-  font-family: "DM Sans", sans-serif;
-}
-
-.btn-agendar:hover {
-  opacity: 0.85;
-}
-</style>

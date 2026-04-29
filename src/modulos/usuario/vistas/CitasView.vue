@@ -1,107 +1,236 @@
 <template>
-  <div class="citas-container">
-    <div class="citas-content">
-      <h2>Mis Citas</h2>
+  <main class="mx-auto w-full max-w-[1180px] px-3 pb-8 pt-4 sm:px-4 lg:px-5">
+    <header
+      class="relative overflow-hidden rounded-[1.75rem] border border-fuchsia-100/12 bg-[rgba(6,8,14,0.84)] px-5 py-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:px-7"
+    >
+      <span class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ead7a1]/70 to-transparent" />
+      <div class="relative flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.28em] text-[#ead7a1]/80">
+            Agenda Nails Bere
+          </p>
+          <h1 class="font-display mt-1 text-[2.35rem] font-semibold leading-none text-fuchsia-50 sm:text-[3rem]">
+            Mis citas
+          </h1>
+          <p class="mt-3 max-w-2xl text-sm leading-6 text-fuchsia-100/64">
+            Reserva un horario, revisa tus citas activas y cancela cuando necesites ajustar tu agenda.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-2 sm:min-w-[260px]">
+          <div class="rounded-2xl border border-fuchsia-100/12 bg-white/5 px-4 py-3 text-right">
+            <p class="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-fuchsia-100/45">
+              Activas
+            </p>
+            <p class="font-ingresos-libre text-[1.5rem] font-bold text-fuchsia-50">
+              {{ citasActivas }}
+            </p>
+          </div>
+          <div class="rounded-2xl border border-[#ead7a1]/18 bg-[#ead7a1]/8 px-4 py-3 text-right">
+            <p class="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[#ead7a1]/65">
+              Servicios
+            </p>
+            <p class="font-ingresos-libre text-[1.5rem] font-bold text-[#f6e7bc]">
+              {{ servicios.length }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
 
-      <!-- Formulario de nueva cita -->
-      <div class="nueva-cita-section">
-        <h3>Agendar Nueva Cita</h3>
-        <form @submit.prevent="crearNuevaCita" class="cita-form">
-          <div class="form-group">
-            <label>Servicio *</label>
-            <select v-model="nuevaCita.servicioId" required>
+    <section class="mt-4 grid gap-4 xl:grid-cols-[0.95fr_1.25fr]">
+      <article
+        class="rounded-[1.4rem] border border-fuchsia-100/10 bg-white/[0.035] p-4 shadow-[0_20px_55px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:p-5"
+      >
+        <div class="mb-4">
+          <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#ead7a1]/75">
+            Nueva reserva
+          </p>
+          <h2 class="font-display mt-1 text-[1.7rem] font-semibold text-fuchsia-50">
+            Agendar cita
+          </h2>
+        </div>
+
+        <form class="grid gap-3" @submit.prevent="crearNuevaCita">
+          <label class="grid gap-1 text-xs font-semibold text-fuchsia-100/70">
+            Servicio *
+            <select
+              v-model="nuevaCita.servicioId"
+              required
+              class="min-h-11 rounded-xl border border-fuchsia-200/15 bg-slate-950/70 px-3 text-sm text-fuchsia-50 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+            >
               <option value="">Selecciona un servicio</option>
               <option
                 v-for="servicio in servicios"
                 :key="servicio.id"
                 :value="servicio.id"
               >
-                {{ servicio.nombre }} - ${{ servicio.precio }}
+                {{ servicio.nombre }} - {{ formatoMoneda(servicio.precio) }}
               </option>
             </select>
+          </label>
+
+          <div
+            v-if="servicioSeleccionado"
+            class="grid gap-3 rounded-2xl border border-fuchsia-100/10 bg-slate-950/45 p-3 sm:grid-cols-[96px_1fr]"
+          >
+            <img
+              :src="imagenServicio(servicioSeleccionado)"
+              :alt="servicioSeleccionado.nombre"
+              class="h-24 w-full rounded-xl object-cover"
+            />
+            <div>
+              <h3 class="font-display text-[1.2rem] font-semibold text-fuchsia-50">
+                {{ servicioSeleccionado.nombre }}
+              </h3>
+              <p class="mt-1 text-sm text-fuchsia-100/55">
+                {{ servicioSeleccionado.descripcion || "Servicio personalizado en Nails Bere." }}
+              </p>
+              <p class="mt-2 font-ingresos-libre text-lg font-bold text-[#f6e7bc]">
+                {{ formatoMoneda(servicioSeleccionado.precio) }}
+              </p>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>Fecha *</label>
-            <input v-model="nuevaCita.fecha" type="date" required />
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="grid gap-1 text-xs font-semibold text-fuchsia-100/70">
+              Fecha *
+              <input
+                v-model="nuevaCita.fecha"
+                :min="fechaMinima"
+                type="date"
+                required
+                class="min-h-11 rounded-xl border border-fuchsia-200/15 bg-slate-950/70 px-3 text-sm text-fuchsia-50 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              />
+            </label>
+
+            <label class="grid gap-1 text-xs font-semibold text-fuchsia-100/70">
+              Hora *
+              <input
+                v-model="nuevaCita.hora"
+                type="time"
+                required
+                class="min-h-11 rounded-xl border border-fuchsia-200/15 bg-slate-950/70 px-3 text-sm text-fuchsia-50 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              />
+            </label>
           </div>
 
-          <div class="form-group">
-            <label>Hora *</label>
-            <input v-model="nuevaCita.hora" type="time" required />
-          </div>
-
-          <div class="form-group">
-            <label>Notas</label>
+          <label class="grid gap-1 text-xs font-semibold text-fuchsia-100/70">
+            Notas
             <textarea
               v-model="nuevaCita.notas"
+              rows="4"
               placeholder="Agrega cualquier nota especial..."
-            ></textarea>
-          </div>
+              class="rounded-xl border border-fuchsia-200/15 bg-slate-950/70 px-3 py-2 text-sm text-fuchsia-50 outline-none transition placeholder:text-fuchsia-100/28 focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+            />
+          </label>
 
-          <button type="submit" class="btn-enviar" :disabled="enviando">
-            {{ enviando ? "Creando..." : "Agendar Cita" }}
+          <button
+            type="submit"
+            class="min-h-11 rounded-full border border-[#ead7a1]/25 bg-gradient-to-r from-fuchsia-300/24 via-pink-400/22 to-[#ead7a1]/18 px-5 text-sm font-bold text-fuchsia-50 shadow-lg shadow-black/25 transition hover:-translate-y-0.5 hover:border-[#ead7a1]/45 disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="enviando"
+          >
+            {{ enviando ? "Creando..." : "Agendar cita" }}
           </button>
-          <p v-if="errorCita" class="error">{{ errorCita }}</p>
-          <p v-if="exitoCita" class="exito">¡Cita creada exitosamente!</p>
+
+          <p
+            v-if="errorCita"
+            class="rounded-xl border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-100"
+          >
+            {{ errorCita }}
+          </p>
+          <p
+            v-if="exitoCita"
+            class="rounded-xl border border-emerald-300/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-100"
+          >
+            {{ exitoCita }}
+          </p>
         </form>
-      </div>
+      </article>
 
-      <!-- Lista de citas -->
-      <div class="citas-list-section">
-        <h3>Tus Citas</h3>
-
-        <div v-if="cargando" class="loading">
-          <p>Cargando citas...</p>
+      <article
+        class="rounded-[1.4rem] border border-fuchsia-100/10 bg-white/[0.035] p-4 shadow-[0_20px_55px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:p-5"
+      >
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#ead7a1]/75">
+              Historial
+            </p>
+            <h2 class="font-display mt-1 text-[1.7rem] font-semibold text-fuchsia-50">
+              Tus citas
+            </h2>
+          </div>
+          <button
+            type="button"
+            class="rounded-full border border-fuchsia-100/14 bg-white/5 px-4 py-2 text-xs font-bold text-fuchsia-100/70 transition hover:border-fuchsia-200/35 hover:text-fuchsia-50"
+            @click="cargarCitas"
+          >
+            Refrescar
+          </button>
         </div>
 
-        <div v-else-if="misCitas.length === 0" class="empty">
-          <p>No tienes citas agendadas</p>
+        <div v-if="cargando" class="rounded-xl border border-fuchsia-100/10 bg-slate-950/35 p-5 text-sm text-fuchsia-100/58">
+          Cargando citas...
         </div>
 
-        <div v-else class="citas-list">
-          <div
+        <div v-else-if="misCitas.length === 0" class="rounded-xl border border-fuchsia-100/10 bg-slate-950/35 p-5 text-sm text-fuchsia-100/58">
+          No tienes citas agendadas.
+        </div>
+
+        <div v-else class="grid gap-3">
+          <article
             v-for="cita in misCitas"
             :key="cita.id"
-            class="cita-item"
-            :class="cita.estado"
+            class="grid gap-3 rounded-2xl border border-fuchsia-100/10 bg-slate-950/38 p-3 transition hover:border-fuchsia-200/25 sm:grid-cols-[86px_1fr_auto]"
+            :class="{ 'opacity-55': cita.estado === 'cancelada' }"
           >
-            <div class="cita-info">
-              <h4>{{ cita.servicio?.nombre || "Servicio desconocido" }}</h4>
-              <p class="fecha">📅 {{ formatearFecha(cita.fecha) }}</p>
-              <p class="hora">🕐 {{ cita.hora }}</p>
-              <p v-if="cita.notas" class="notas">{{ cita.notas }}</p>
+            <img
+              :src="imagenServicio(cita.servicio)"
+              :alt="cita.servicio?.nombre || 'Servicio'"
+              class="h-24 w-full rounded-xl object-cover sm:h-full"
+            />
+            <div>
+              <h3 class="font-display text-[1.25rem] font-semibold text-fuchsia-50">
+                {{ cita.servicio?.nombre || "Servicio desconocido" }}
+              </h3>
+              <p class="mt-1 text-sm text-fuchsia-100/60">
+                {{ formatearFecha(cita.fecha) }} · {{ cita.hora }}
+              </p>
+              <p v-if="cita.notas" class="mt-2 text-sm italic leading-6 text-fuchsia-100/46">
+                {{ cita.notas }}
+              </p>
             </div>
-            <div class="cita-status">
-              <span class="estado-badge" :class="cita.estado">{{
-                cita.estado
-              }}</span>
+            <div class="flex items-start gap-2 sm:flex-col sm:items-end">
+              <span
+                class="rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.1em]"
+                :class="claseEstado(cita.estado)"
+              >
+                {{ cita.estado }}
+              </span>
               <button
                 v-if="cita.estado !== 'cancelada'"
+                type="button"
+                class="rounded-full border border-rose-300/30 bg-rose-500/10 px-3 py-1 text-xs font-bold text-rose-100 transition hover:border-rose-300/50"
                 @click="cancelarCita(cita.id)"
-                class="btn-cancelar"
               >
                 Cancelar
               </button>
             </div>
-          </div>
+          </article>
         </div>
-      </div>
-    </div>
-  </div>
+      </article>
+    </section>
+  </main>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { obtenerServicios } from "@/nucleo/firebase/servicios.js";
 import {
   obtenerMisCitas,
   crearCita,
   cancelarCita as cancelarCitaFirebase,
 } from "@/nucleo/firebase/citas.js";
-import { useAuthStore } from "@/nucleo/estado/auth.js";
 
-const auth = useAuthStore();
 const servicios = ref([]);
 const misCitas = ref([]);
 const cargando = ref(true);
@@ -116,18 +245,24 @@ const nuevaCita = ref({
   notas: "",
 });
 
+const fechaMinima = computed(() => new Date().toISOString().slice(0, 10));
+
+const citasActivas = computed(
+  () => misCitas.value.filter((cita) => cita.estado !== "cancelada").length,
+);
+
+const servicioSeleccionado = computed(() =>
+  servicios.value.find((servicio) => servicio.id === nuevaCita.value.servicioId),
+);
+
 onMounted(async () => {
   try {
-    // Cargar servicios
     servicios.value = await obtenerServicios();
+    await cargarCitas();
 
-    // Cargar mis citas
-    cargarCitas();
-
-    // Si hay un servicio seleccionado en sessionStorage, usarlo
-    const servicioSeleccionado = sessionStorage.getItem("servicioSeleccionado");
-    if (servicioSeleccionado) {
-      const servicio = JSON.parse(servicioSeleccionado);
+    const servicioStorage = sessionStorage.getItem("servicioSeleccionado");
+    if (servicioStorage) {
+      const servicio = JSON.parse(servicioStorage);
       nuevaCita.value.servicioId = servicio.id;
       sessionStorage.removeItem("servicioSeleccionado");
     }
@@ -136,40 +271,33 @@ onMounted(async () => {
   }
 });
 
-const cargarCitas = async () => {
+async function cargarCitas() {
   cargando.value = true;
   try {
     const citas = await obtenerMisCitas();
-    // Enriquecer citas con info del servicio
     misCitas.value = citas.map((cita) => ({
       ...cita,
-      servicio: servicios.value.find((s) => s.id === cita.servicioId),
+      servicio: servicios.value.find((servicio) => servicio.id === cita.servicioId),
     }));
   } catch (error) {
     console.error("Error cargando citas:", error);
   } finally {
     cargando.value = false;
   }
-};
+}
 
-const crearNuevaCita = async () => {
+async function crearNuevaCita() {
   errorCita.value = "";
   exitoCita.value = "";
 
-  if (
-    !nuevaCita.value.servicioId ||
-    !nuevaCita.value.fecha ||
-    !nuevaCita.value.hora
-  ) {
-    errorCita.value = "Completa todos los campos requeridos";
+  if (!nuevaCita.value.servicioId || !nuevaCita.value.fecha || !nuevaCita.value.hora) {
+    errorCita.value = "Completa todos los campos requeridos.";
     return;
   }
 
   enviando.value = true;
   try {
-    const fechaHora = new Date(
-      `${nuevaCita.value.fecha}T${nuevaCita.value.hora}`,
-    );
+    const fechaHora = new Date(`${nuevaCita.value.fecha}T${nuevaCita.value.hora}`);
 
     await crearCita({
       servicioId: nuevaCita.value.servicioId,
@@ -178,261 +306,79 @@ const crearNuevaCita = async () => {
       notas: nuevaCita.value.notas,
     });
 
-    exitoCita.value = "¡Cita creada exitosamente!";
-
-    // Limpiar formulario
-    nuevaCita.value = {
-      servicioId: "",
-      fecha: "",
-      hora: "",
-      notas: "",
-    };
-
-    // Recargar citas
+    exitoCita.value = "Cita creada exitosamente.";
+    nuevaCita.value = { servicioId: "", fecha: "", hora: "", notas: "" };
     await cargarCitas();
 
-    // Limpiar mensaje de éxito después de 3 segundos
     setTimeout(() => {
       exitoCita.value = "";
     }, 3000);
   } catch (error) {
-    errorCita.value = "Error al crear la cita: " + error.message;
+    errorCita.value = `Error al crear la cita: ${error.message}`;
   } finally {
     enviando.value = false;
   }
-};
+}
 
-const cancelarCita = async (citaId) => {
-  if (confirm("¿Estás seguro de que deseas cancelar esta cita?")) {
-    try {
-      await cancelarCitaFirebase(citaId, "Cancelada por el usuario");
-      await cargarCitas();
-    } catch (error) {
-      console.error("Error cancelando cita:", error);
-    }
+async function cancelarCita(citaId) {
+  if (!confirm("¿Estás seguro de que deseas cancelar esta cita?")) return;
+
+  try {
+    await cancelarCitaFirebase(citaId, "Cancelada por el usuario");
+    await cargarCitas();
+  } catch (error) {
+    console.error("Error cancelando cita:", error);
   }
-};
+}
 
-const formatearFecha = (fecha) => {
+function formatearFecha(fecha) {
   if (!fecha) return "";
   const date = fecha instanceof Date ? fecha : new Date(fecha);
-  const opciones = {
+  return date.toLocaleDateString("es-MX", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
+  });
+}
+
+function formatoMoneda(valor) {
+  return `$${Number(valor || 0).toLocaleString("es-MX")}`;
+}
+
+function claseEstado(estado = "") {
+  if (estado === "cancelada") {
+    return "border-rose-300/25 bg-rose-500/10 text-rose-100";
+  }
+  if (estado === "confirmada") {
+    return "border-emerald-300/25 bg-emerald-400/10 text-emerald-100";
+  }
+  return "border-[#ead7a1]/25 bg-[#ead7a1]/10 text-[#f6e7bc]";
+}
+
+function normalizarCategoria(categoria = "") {
+  return String(categoria)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function imagenPorCategoria(categoria = "") {
+  const valor = normalizarCategoria(categoria);
+  const imagenes = {
+    manos: "/img/inicio/servicio-unas.jpg",
+    pies: "/img/inicio/promo-manicure.jpg",
+    facial: "/img/inicio/servicio-facial.jpg",
+    cabello: "/img/inicio/servicio-color.jpg",
+    eventos: "/img/inicio/servicio-maquillaje.jpg",
+    diseno: "/img/inicio/promo-manicure.jpg",
+    extensiones: "/img/inicio/servicio-unas.jpg",
   };
-  return date.toLocaleDateString("es-MX", opciones);
-};
+  return imagenes[valor] || "/img/inicio/cta.jpg";
+}
+
+function imagenServicio(servicio) {
+  return servicio?.imagenUrl || imagenPorCategoria(servicio?.categoria);
+}
 </script>
-
-<style scoped>
-.citas-container {
-  padding: 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.citas-content h2 {
-  font-family: "Syne", sans-serif;
-  font-size: 2rem;
-  color: #fff;
-  margin-bottom: 2rem;
-}
-
-h3 {
-  font-family: "Syne", sans-serif;
-  font-size: 1.3rem;
-  color: #fff;
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-/* Sección nueva cita */
-.nueva-cita-section {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  backdrop-filter: blur(10px);
-}
-
-.cita-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 0.75rem;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 0.95rem;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #ec64b0;
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.form-group textarea {
-  grid-column: 1 / -1;
-  min-height: 80px;
-  resize: vertical;
-}
-
-.btn-enviar {
-  grid-column: 1 / -1;
-  background: linear-gradient(135deg, #ec64b0, #d946ef);
-  color: #fff;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-family: "Syne", sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-enviar:hover:not(:disabled) {
-  transform: scale(1.02);
-  box-shadow: 0 0 20px rgba(236, 100, 176, 0.4);
-}
-
-.btn-enviar:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.error {
-  grid-column: 1 / -1;
-  color: #ff6b6b;
-  font-size: 0.9rem;
-  margin: 0.5rem 0 0 0;
-}
-
-.exito {
-  grid-column: 1 / -1;
-  color: #51cf66;
-  font-size: 0.9rem;
-  margin: 0.5rem 0 0 0;
-}
-
-/* Lista de citas */
-.citas-list-section {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-  backdrop-filter: blur(10px);
-}
-
-.loading,
-.empty {
-  text-align: center;
-  padding: 2rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.citas-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.cita-item {
-  background: rgba(255, 255, 255, 0.05);
-  border-left: 4px solid #ec64b0;
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.3s ease;
-}
-
-.cita-item.cancelada {
-  opacity: 0.6;
-  border-left-color: #999;
-}
-
-.cita-item:hover:not(.cancelada) {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.cita-info h4 {
-  margin: 0 0 0.5rem 0;
-  color: #fff;
-  font-family: "Syne", sans-serif;
-}
-
-.cita-info p {
-  margin: 0.25rem 0;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
-}
-
-.notas {
-  color: rgba(255, 255, 255, 0.6);
-  font-style: italic;
-  margin-top: 0.5rem;
-}
-
-.cita-status {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
-}
-
-.estado-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  background: rgba(236, 100, 176, 0.2);
-  color: #ec64b0;
-}
-
-.estado-badge.cancelada {
-  background: rgba(200, 50, 50, 0.2);
-  color: #ff6b6b;
-}
-
-.btn-cancelar {
-  background: transparent;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-cancelar:hover {
-  background: rgba(255, 107, 107, 0.1);
-}
-</style>
