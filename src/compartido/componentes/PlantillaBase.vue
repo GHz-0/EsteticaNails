@@ -243,7 +243,8 @@ function handleLogout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.15rem 1rem 1rem;
+  min-height: 5.2rem;
+  padding: 0 1rem;
   border-bottom: 1px solid rgba(249, 168, 212, 0.08);
   position: relative;
   z-index: 1;
@@ -494,7 +495,8 @@ function handleLogout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  min-height: 5.2rem;
+  padding: 0 1rem;
   border-bottom: 1px solid rgba(249, 168, 212, 0.08);
   background:
     linear-gradient(
@@ -753,6 +755,8 @@ function handleLogout() {
 /* ── Page content ────────────────────────────────── */
 .page-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 1.5rem;
   overflow-y: auto;
 }

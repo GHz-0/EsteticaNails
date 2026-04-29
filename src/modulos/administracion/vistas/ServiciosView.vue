@@ -61,7 +61,9 @@
       </div>
     </header>
 
-    <section class="grid grid-cols-1 gap-3 xl:grid-cols-[0.95fr_1.25fr]">
+    <section
+      class="grid grid-cols-1 items-stretch gap-3 xl:grid-cols-[0.95fr_1.25fr]"
+    >
       <article
         class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-3.5 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl"
       >
