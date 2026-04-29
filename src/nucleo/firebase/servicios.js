@@ -1,4 +1,4 @@
-import { getFirebaseDb } from "./client.js";
+import { getFirebaseDb, getFirebaseStorage } from "./client.js";
 import {
   collection,
   getDocs,
@@ -10,8 +10,15 @@ import {
   writeBatch,
   serverTimestamp,
 } from "firebase/firestore";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref as storageRef,
+  uploadBytes,
+} from "firebase/storage";
 
 const db = getFirebaseDb();
+const storage = getFirebaseStorage();
 
 function normalizarTexto(texto = "") {
   return texto
@@ -32,6 +39,27 @@ function obtenerTimestampMs(servicio) {
   if (updated?.toMillis) return updated.toMillis();
   if (created?.toMillis) return created.toMillis();
   return 0;
+}
+
+function extensionArchivo(nombre = "", tipo = "") {
+  const extensionNombre = nombre.split(".").pop()?.toLowerCase();
+  if (extensionNombre && extensionNombre !== nombre) return extensionNombre;
+  const extensionTipo = tipo.split("/").pop()?.toLowerCase();
+  return extensionTipo || "jpg";
+}
+
+function validarImagenServicio(archivo) {
+  if (!archivo) return;
+  if (!archivo.type?.startsWith("image/")) {
+    const err = new Error("El archivo debe ser una imagen.");
+    err.code = "INVALID_IMAGE_TYPE";
+    throw err;
+  }
+  if (archivo.size > 3 * 1024 * 1024) {
+    const err = new Error("La imagen no debe superar 3MB.");
+    err.code = "IMAGE_TOO_LARGE";
+    throw err;
+  }
 }
 
 export async function existeServicioDuplicado(
@@ -142,6 +170,33 @@ export async function obtenerServicio(servicioId) {
   }
 }
 
+export async function subirImagenServicio(servicioId, archivo) {
+  validarImagenServicio(archivo);
+
+  const extension = extensionArchivo(archivo.name, archivo.type);
+  const path = `servicios/${servicioId}/${Date.now()}.${extension}`;
+  const refImagen = storageRef(storage, path);
+
+  await uploadBytes(refImagen, archivo, {
+    contentType: archivo.type || "image/jpeg",
+  });
+
+  const url = await getDownloadURL(refImagen);
+  return { imagenUrl: url, imagenPath: path };
+}
+
+export async function eliminarImagenServicio(imagenPath) {
+  if (!imagenPath) return;
+
+  try {
+    await deleteObject(storageRef(storage, imagenPath));
+  } catch (error) {
+    if (error?.code !== "storage/object-not-found") {
+      console.warn("No se pudo eliminar la imagen anterior:", error);
+    }
+  }
+}
+
 /**
  * Crea un nuevo servicio (solo admin)
  */
@@ -162,6 +217,8 @@ export async function crearServicio(datos) {
     const serviciosRef = collection(db, "servicios");
     const docRef = await addDoc(serviciosRef, {
       ...datos,
+      imagenUrl: datos.imagenUrl || "",
+      imagenPath: datos.imagenPath || "",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -193,6 +250,8 @@ export async function actualizarServicio(servicioId, datos) {
     const servicioRef = doc(db, "servicios", servicioId);
     await updateDoc(servicioRef, {
       ...datos,
+      imagenUrl: datos.imagenUrl || "",
+      imagenPath: datos.imagenPath || "",
       updatedAt: serverTimestamp(),
     });
     return { id: servicioId, ...datos };

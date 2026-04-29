@@ -156,8 +156,13 @@
             <article
               v-for="servicio in serviciosFiltrados"
               :key="servicio.id"
-              class="grid gap-4 border-b border-fuchsia-100/10 px-5 py-5 last:border-b-0 md:grid-cols-[1fr_auto_auto]"
+              class="grid gap-4 border-b border-fuchsia-100/10 px-5 py-5 last:border-b-0 md:grid-cols-[120px_1fr_auto_auto]"
             >
+              <img
+                :src="imagenServicio(servicio)"
+                :alt="servicio.nombre"
+                class="h-28 w-full rounded-[1rem] border border-fuchsia-100/10 object-cover shadow-[0_14px_30px_rgba(0,0,0,0.22)] md:h-24"
+              />
               <div>
                 <h3 class="text-base font-extrabold text-fuchsia-50">{{ servicio.nombre }}</h3>
                 <p class="mt-2 text-sm text-fuchsia-100/68">
@@ -375,6 +380,24 @@ function formatoDuracion(valor) {
 
 function formatoMoneda(valor) {
   return `$${Number(valor || 0).toLocaleString("es-MX")}`;
+}
+
+function imagenPorCategoria(categoria = "") {
+  const valor = normalizarCategoria(categoria);
+  const imagenes = {
+    manos: "/img/inicio/servicio-unas.jpg",
+    pies: "/img/inicio/promo-manicure.jpg",
+    facial: "/img/inicio/servicio-facial.jpg",
+    cabello: "/img/inicio/servicio-color.jpg",
+    eventos: "/img/inicio/servicio-maquillaje.jpg",
+    diseno: "/img/inicio/promo-manicure.jpg",
+    extensiones: "/img/inicio/servicio-unas.jpg",
+  };
+  return imagenes[valor] || "/img/inicio/cta.jpg";
+}
+
+function imagenServicio(servicio) {
+  return servicio?.imagenUrl || imagenPorCategoria(servicio?.categoria);
 }
 
 function irAListaServicios() {

@@ -259,6 +259,39 @@
               ></textarea>
             </label>
 
+            <div
+              class="sm:col-span-2 grid gap-3 rounded-xl border border-fuchsia-100/12 bg-slate-950/45 p-3 sm:grid-cols-[150px_1fr]"
+            >
+              <img
+                :src="imagenPreviewUrl || form.imagenUrl || imagenPorCategoria(form.categoria)"
+                alt="Vista previa del servicio"
+                class="h-32 w-full rounded-lg object-cover sm:h-full"
+              />
+              <div class="grid content-center gap-2">
+                <label class="grid gap-1 text-xs font-medium text-slate-300">
+                  Foto del servicio
+                  <input
+                    type="file"
+                    accept="image/*"
+                    class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 file:mr-3 file:rounded-full file:border-0 file:bg-fuchsia-300/15 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-fuchsia-100"
+                    @change="alSeleccionarImagen"
+                  />
+                </label>
+                <p class="text-[0.68rem] leading-5 text-slate-400">
+                  Sube una imagen JPG, PNG o WebP de hasta 3MB. Si no subes una,
+                  se mostrara una foto de respaldo segun la categoria.
+                </p>
+                <button
+                  v-if="imagenArchivo || form.imagenUrl"
+                  type="button"
+                  class="w-fit rounded-full border border-fuchsia-100/18 bg-white/5 px-3 py-1 text-[0.68rem] font-semibold text-slate-200 transition-all hover:border-fuchsia-200/40"
+                  @click="quitarImagenSeleccionada"
+                >
+                  Quitar foto
+                </button>
+              </div>
+            </div>
+
             <p
               v-if="error"
               class="sm:col-span-2 rounded-xl border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100"
@@ -359,6 +392,11 @@
             @keydown.space.prevent="editar(servicio)"
           >
             <div class="flex flex-wrap items-start justify-between gap-1.5">
+              <img
+                :src="servicio.imagenUrl || imagenPorCategoria(servicio.categoria)"
+                :alt="servicio.nombre"
+                class="h-14 w-14 rounded-lg object-cover"
+              />
               <div class="min-w-0 flex-1">
                 <h3
                   class="truncate text-[0.82rem] font-semibold text-fuchsia-50"
@@ -410,8 +448,10 @@ import {
   actualizarServicio,
   crearServicio,
   eliminarServicio,
+  eliminarImagenServicio,
   limpiarDuplicadosServicios,
   obtenerServicios,
+  subirImagenServicio,
 } from "@/nucleo/firebase/servicios";
 
 const categorias = ["manos", "pies", "diseño", "extensiones", "otros"];
@@ -428,6 +468,9 @@ const duplicadosDepurados = ref(false);
 const formularioAbierto = ref(false);
 const selectorEdicionAbierto = ref(false);
 const servicioEdicionId = ref("");
+const imagenArchivo = ref(null);
+const imagenPreviewUrl = ref("");
+const imagenPathAEliminar = ref("");
 
 const formVacio = () => ({
   nombre: "",
@@ -435,6 +478,8 @@ const formVacio = () => ({
   precio: 250,
   duracion: 30,
   descripcion: "",
+  imagenUrl: "",
+  imagenPath: "",
 });
 
 const form = ref(formVacio());
@@ -475,6 +520,68 @@ function etiquetaCategoria(categoria) {
 
 function formatoMoneda(valor) {
   return `$${Number(valor || 0).toLocaleString("es-MX")}`;
+}
+
+function normalizarCategoriaImagen(categoria = "") {
+  return String(categoria)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function imagenPorCategoria(categoria = "") {
+  const valor = normalizarCategoriaImagen(categoria);
+  const imagenes = {
+    manos: "/img/inicio/servicio-unas.jpg",
+    unas: "/img/inicio/servicio-unas.jpg",
+    pies: "/img/inicio/promo-manicure.jpg",
+    diseno: "/img/inicio/promo-manicure.jpg",
+    extensiones: "/img/inicio/servicio-unas.jpg",
+    facial: "/img/inicio/servicio-facial.jpg",
+    cabello: "/img/inicio/servicio-color.jpg",
+    eventos: "/img/inicio/servicio-maquillaje.jpg",
+  };
+  return imagenes[valor] || "/img/inicio/cta.jpg";
+}
+
+function liberarPreviewImagen() {
+  if (imagenPreviewUrl.value) {
+    URL.revokeObjectURL(imagenPreviewUrl.value);
+  }
+  imagenPreviewUrl.value = "";
+}
+
+function alSeleccionarImagen(evento) {
+  limpiarMensajes();
+  const archivo = evento.target.files?.[0] || null;
+  liberarPreviewImagen();
+  imagenArchivo.value = null;
+
+  if (!archivo) return;
+
+  if (!archivo.type?.startsWith("image/")) {
+    error.value = "El archivo debe ser una imagen.";
+    evento.target.value = "";
+    return;
+  }
+
+  if (archivo.size > 3 * 1024 * 1024) {
+    error.value = "La imagen no debe superar 3MB.";
+    evento.target.value = "";
+    return;
+  }
+
+  imagenArchivo.value = archivo;
+  imagenPreviewUrl.value = URL.createObjectURL(archivo);
+}
+
+function quitarImagenSeleccionada() {
+  liberarPreviewImagen();
+  imagenArchivo.value = null;
+  imagenPathAEliminar.value = form.value.imagenPath || imagenPathAEliminar.value;
+  form.value.imagenUrl = "";
+  form.value.imagenPath = "";
 }
 
 function limpiarMensajes() {
@@ -534,7 +641,12 @@ function editar(servicio) {
     precio: Number(servicio.precio || 0),
     duracion: Number(servicio.duracion || 0),
     descripcion: servicio.descripcion || "",
+    imagenUrl: servicio.imagenUrl || "",
+    imagenPath: servicio.imagenPath || "",
   };
+  liberarPreviewImagen();
+  imagenArchivo.value = null;
+  imagenPathAEliminar.value = "";
 }
 
 function cancelarEdicion() {
@@ -542,6 +654,9 @@ function cancelarEdicion() {
   formularioAbierto.value = false;
   form.value = formVacio();
   servicioEdicionId.value = "";
+  liberarPreviewImagen();
+  imagenArchivo.value = null;
+  imagenPathAEliminar.value = "";
   limpiarMensajes();
 }
 
@@ -589,14 +704,33 @@ async function guardarServicio() {
     precio: Number(form.value.precio),
     duracion: Number(form.value.duracion),
     descripcion: form.value.descripcion,
+    imagenUrl: form.value.imagenUrl || "",
+    imagenPath: form.value.imagenPath || "",
   };
 
   try {
+    let servicioGuardadoId = editandoId.value;
+    let payloadFinal = { ...payload };
+
     if (editandoId.value) {
-      await actualizarServicio(editandoId.value, payload);
+      if (imagenArchivo.value) {
+        const imagenAnteriorPath = form.value.imagenPath || imagenPathAEliminar.value;
+        const imagen = await subirImagenServicio(editandoId.value, imagenArchivo.value);
+        payloadFinal = { ...payloadFinal, ...imagen };
+        await eliminarImagenServicio(imagenAnteriorPath);
+      } else if (imagenPathAEliminar.value) {
+        await eliminarImagenServicio(imagenPathAEliminar.value);
+      }
+      await actualizarServicio(editandoId.value, payloadFinal);
       ok.value = "Servicio actualizado correctamente.";
     } else {
-      await crearServicio(payload);
+      const creado = await crearServicio(payloadFinal);
+      servicioGuardadoId = creado.id;
+      if (imagenArchivo.value) {
+        const imagen = await subirImagenServicio(servicioGuardadoId, imagenArchivo.value);
+        payloadFinal = { ...payloadFinal, ...imagen };
+        await actualizarServicio(servicioGuardadoId, payloadFinal);
+      }
       ok.value = "Servicio creado correctamente.";
     }
     cancelarEdicion();
