@@ -197,38 +197,6 @@
       </div>
     </section>
 
-    <!-- ── SERVICIOS ── -->
-    <section class="section servicios-section">
-      <header class="section-header">
-        <div>
-          <p class="eyebrow">Profesionales certificadas</p>
-          <h2>Nuestros servicios</h2>
-        </div>
-      </header>
-
-      <div class="servicios-grid">
-        <article
-          v-for="(s, i) in servicios"
-          :key="s.titulo"
-          class="servicio-card"
-          :style="{ '--delay': `${i * 60}ms` }"
-        >
-          <div class="servicio-img-wrap">
-            <img class="servicio-img" :src="s.imagen" :alt="s.titulo" />
-            <span class="servicio-precio-tag">{{ s.precio }}</span>
-          </div>
-          <div class="servicio-body">
-            <h3>{{ s.titulo }}</h3>
-            <p>{{ s.descripcion }}</p>
-          </div>
-          <div class="servicio-footer">
-            <span class="duracion-pill">⏱ {{ s.duracion }}</span>
-            <span class="servicio-link">Reservar →</span>
-          </div>
-        </article>
-      </div>
-    </section>
-
     <!-- ── TESTIMONIOS ── -->
     <section class="section testimonios-section">
       <header class="section-header centered">
@@ -337,51 +305,6 @@ const promociones = [
     antes: "$700",
     ahora: "$520",
     destacada: true,
-  },
-];
-
-const servicios = [
-  {
-    imagen: "/img/inicio/servicio-corte.jpg",
-    titulo: "Corte y peinado",
-    descripcion: "Diseño personalizado según tu tipo de rostro y estilo.",
-    precio: "Desde $150",
-    duracion: "45 min",
-  },
-  {
-    imagen: "/img/inicio/servicio-color.jpg",
-    titulo: "Color y tratamientos",
-    descripcion: "Coloración, matices y tratamientos para recuperar brillo.",
-    precio: "Desde $350",
-    duracion: "90 min",
-  },
-  {
-    imagen: "/img/inicio/servicio-unas.jpg",
-    titulo: "Uñas",
-    descripcion: "Manicure, gel semipermanente y diseños para toda ocasión.",
-    precio: "Desde $180",
-    duracion: "60 min",
-  },
-  {
-    imagen: "/img/inicio/servicio-maquillaje.jpg",
-    titulo: "Maquillaje",
-    descripcion: "Maquillaje social y profesional para eventos especiales.",
-    precio: "Desde $300",
-    duracion: "75 min",
-  },
-  {
-    imagen: "/img/inicio/servicio-facial.jpg",
-    titulo: "Faciales",
-    descripcion: "Limpieza e hidratación para una piel fresca y luminosa.",
-    precio: "Desde $250",
-    duracion: "50 min",
-  },
-  {
-    imagen: "/img/inicio/servicio-paquetes.jpg",
-    titulo: "Paquetes",
-    descripcion: "Combina servicios y obtén mejores precios.",
-    precio: "Desde $450",
-    duracion: "2–3 h",
   },
 ];
 
@@ -1283,102 +1206,6 @@ header, section, footer, .ticker-wrap {
   border-radius: var(--r-card);
   background: rgba(255,255,255,0.04);
 }
-
-.servicios-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 1rem;
-}
-
-.servicio-card {
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
-  border-radius: var(--r-card);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
-  animation: fadeUp 0.5s ease both;
-  animation-delay: var(--delay, 0ms);
-}
-.servicio-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 16px 40px rgba(150,50,120,0.25);
-  border-color: rgba(220,140,200,0.4);
-}
-
-.servicio-img-wrap {
-  position: relative;
-  height: 140px;
-  overflow: hidden;
-}
-.servicio-img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-.servicio-card:hover .servicio-img { transform: scale(1.07); }
-
-.servicio-precio-tag {
-  position: absolute;
-  top: 0.7rem;
-  right: 0.7rem;
-  background: rgba(10,5,10,0.75);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(220,140,200,0.30);
-  color: var(--c-rose);
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.22rem 0.65rem;
-  border-radius: var(--r-pill);
-}
-
-.servicio-body {
-  padding: 0.9rem 1rem 0.5rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-.servicio-body h3 {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 0;
-}
-.servicio-body p {
-  color: var(--c-muted);
-  font-size: 0.83rem;
-  line-height: 1.55;
-  margin: 0;
-  flex: 1;
-}
-
-.servicio-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.65rem 1rem 0.9rem;
-  border-top: 1px solid var(--c-border2);
-  margin-top: auto;
-}
-
-.duracion-pill {
-  font-size: 0.76rem;
-  color: var(--c-muted);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--c-border2);
-  border-radius: var(--r-pill);
-  padding: 0.18rem 0.6rem;
-}
-.servicio-link {
-  font-size: 0.82rem;
-  color: var(--c-rose-d);
-  font-weight: 700;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-.servicio-card:hover .servicio-link { color: var(--c-rose); }
 
 /* ══════════════════════════════════════════
    TESTIMONIOS
