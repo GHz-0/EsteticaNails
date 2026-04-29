@@ -354,7 +354,7 @@ const catalogoCategorias = [
 
 const catalogoItems = [
   {
-    imagen: "/img/inicio/servicio-unas.jpg",
+    imagen: "/img/catalogo/manicure-gel-con-diseno.webp",
     titulo: "Manicure gel con diseno",
     descripcion: "Color semipermanente, preparacion de cuticula y detalle personalizado.",
     precio: "Desde $180",
@@ -362,7 +362,7 @@ const catalogoItems = [
     categoria: "Unas",
   },
   {
-    imagen: "/img/inicio/promo-manicure.jpg",
+    imagen: "/img/catalogo/manicure-gel.jpg",
     titulo: "Promo Manicure + Gel",
     descripcion: "Diseno incluido para nuevas clientas que apartan en linea.",
     precio: "$199",
@@ -370,7 +370,7 @@ const catalogoItems = [
     categoria: "Promos",
   },
   {
-    imagen: "/img/inicio/servicio-color.jpg",
+    imagen: "/img/catalogo/color-y-tratamiento-de-brillo.jpg",
     titulo: "Color y tratamiento de brillo",
     descripcion: "Coloracion, matiz y nutricion para un acabado suave y luminoso.",
     precio: "Desde $350",
@@ -378,7 +378,7 @@ const catalogoItems = [
     categoria: "Cabello",
   },
   {
-    imagen: "/img/inicio/servicio-facial.jpg",
+    imagen: "/img/catalogo/facial-hidratante.webp",
     titulo: "Facial hidratante",
     descripcion: "Limpieza, mascarilla y sellado para recuperar frescura en la piel.",
     precio: "Desde $250",
@@ -386,7 +386,7 @@ const catalogoItems = [
     categoria: "Piel",
   },
   {
-    imagen: "/img/inicio/servicio-maquillaje.jpg",
+    imagen: "/img/catalogo/maquillaje-social.webp",
     titulo: "Maquillaje social",
     descripcion: "Acabado profesional para fotos, graduaciones, bodas y eventos.",
     precio: "Desde $300",
@@ -394,7 +394,7 @@ const catalogoItems = [
     categoria: "Eventos",
   },
   {
-    imagen: "/img/inicio/promo-maquillaje.jpg",
+    imagen: "/img/catalogo/maquillaje-peinado.jpg",
     titulo: "Promo Maquillaje + Peinado",
     descripcion: "Paquete completo para lucir lista antes de tu evento especial.",
     precio: "$450",
@@ -1111,7 +1111,7 @@ header, section, footer, .ticker-wrap {
 
 .catalog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
 
@@ -1127,8 +1127,10 @@ header, section, footer, .ticker-wrap {
 
 .catalog-image {
   width: 100%;
-  height: 170px;
-  object-fit: cover;
+  height: clamp(220px, 16vw, 280px);
+  object-fit: contain;
+  object-position: center;
+  background: rgba(15,8,15,0.72);
 }
 
 .catalog-body {
