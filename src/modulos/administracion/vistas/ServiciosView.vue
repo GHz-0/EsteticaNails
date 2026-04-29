@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto w-full max-w-[940px] px-3 pb-5 pt-4 sm:px-4 lg:px-5">
+  <section class="mx-auto w-full max-w-[1180px] px-3 pb-5 pt-4 sm:px-4 lg:px-5">
     <header
       class="relative mb-4 overflow-hidden rounded-[1.75rem] border border-fuchsia-100/12 bg-[rgba(6,8,14,0.84)] px-4 py-4 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:px-5"
     >
@@ -61,9 +61,7 @@
       </div>
     </header>
 
-    <section
-      class="grid grid-cols-1 items-stretch gap-3 xl:grid-cols-[0.95fr_1.25fr]"
-    >
+    <section class="grid grid-cols-1 items-stretch gap-3">
       <article
         class="rounded-2xl border border-fuchsia-100/10 bg-[rgba(6,8,14,0.72)] p-3.5 shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur-xl"
       >
@@ -195,7 +193,7 @@
         >
           <form
             v-if="formularioAbierto"
-            class="grid gap-2 overflow-hidden sm:grid-cols-2"
+            class="grid gap-2 overflow-hidden sm:grid-cols-2 lg:grid-cols-4"
             @submit.prevent="guardarServicio"
           >
             <label class="grid gap-1 text-xs font-medium text-slate-300">
@@ -246,9 +244,7 @@
               />
             </label>
 
-            <label
-              class="grid gap-1 text-xs font-medium text-slate-300 sm:col-span-2"
-            >
+            <label class="grid gap-1 text-xs font-medium text-slate-300 sm:col-span-2 lg:col-span-4">
               Descripcion
               <textarea
                 v-model.trim="form.descripcion"
@@ -260,25 +256,25 @@
             </label>
 
             <div
-              class="sm:col-span-2 grid gap-3 rounded-xl border border-fuchsia-100/12 bg-slate-950/45 p-3 sm:grid-cols-[150px_1fr]"
+              class="grid gap-3 rounded-xl border border-fuchsia-100/12 bg-slate-950/45 p-3 sm:col-span-2 sm:grid-cols-[180px_minmax(0,1fr)] lg:col-span-4"
             >
               <img
                 :src="imagenPreviewUrl || form.imagenUrl || imagenPorCategoria(form.categoria)"
                 alt="Vista previa del servicio"
                 class="h-32 w-full rounded-lg object-cover sm:h-full"
               />
-              <div class="grid content-center gap-2">
+              <div class="grid min-w-0 content-center gap-2">
                 <label class="grid gap-1 text-xs font-medium text-slate-300">
                   Foto del servicio
                   <input
                     type="file"
                     accept="image/*"
-                    class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 file:mr-3 file:rounded-full file:border-0 file:bg-fuchsia-300/15 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-fuchsia-100"
+                    class="block w-full min-w-0 max-w-full rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-xs text-slate-100 file:mr-3 file:rounded-full file:border-0 file:bg-fuchsia-300/15 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-fuchsia-100"
                     @change="alSeleccionarImagen"
                   />
                 </label>
-                <p class="text-[0.68rem] leading-5 text-slate-400">
-                  Sube una imagen JPG, PNG o WebP de hasta 3MB. Si no subes una,
+                <p class="max-w-full text-[0.68rem] leading-5 text-slate-400">
+                  Sube una imagen JPG, PNG o WebP de hasta 5MB. Si no subes una,
                   se mostrara una foto de respaldo segun la categoria.
                 </p>
                 <button
@@ -294,18 +290,18 @@
 
             <p
               v-if="error"
-              class="sm:col-span-2 rounded-xl border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100"
+              class="rounded-xl border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100 sm:col-span-2 lg:col-span-4"
             >
               {{ error }}
             </p>
             <p
               v-if="ok"
-              class="sm:col-span-2 rounded-xl border border-emerald-300/30 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-100"
+              class="rounded-xl border border-emerald-300/30 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-100 sm:col-span-2 lg:col-span-4"
             >
               {{ ok }}
             </p>
 
-            <div class="sm:col-span-2 flex flex-wrap gap-2 pt-1">
+            <div class="flex flex-wrap gap-2 pt-1 sm:col-span-2 lg:col-span-4">
               <button
                 type="submit"
                 class="inline-flex items-center justify-center rounded-full border border-[#ead7a1]/25 bg-gradient-to-r from-fuchsia-400/20 via-pink-400/18 to-[#ead7a1]/14 px-4 py-1.5 text-[0.72rem] font-semibold tracking-wide text-fuchsia-50 shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:border-[#ead7a1]/45 disabled:cursor-not-allowed disabled:opacity-70"
@@ -380,7 +376,7 @@
           No hay resultados con los filtros aplicados.
         </p>
 
-        <ul v-else class="space-y-1.5">
+        <ul v-else class="grid gap-2 md:grid-cols-2">
           <li
             v-for="servicio in serviciosFiltrados"
             :key="servicio.id"
@@ -566,8 +562,8 @@ function alSeleccionarImagen(evento) {
     return;
   }
 
-  if (archivo.size > 3 * 1024 * 1024) {
-    error.value = "La imagen no debe superar 3MB.";
+  if (archivo.size > 5 * 1024 * 1024) {
+    error.value = "La imagen no debe superar 5MB.";
     evento.target.value = "";
     return;
   }

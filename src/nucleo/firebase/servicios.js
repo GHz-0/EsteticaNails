@@ -55,8 +55,8 @@ function validarImagenServicio(archivo) {
     err.code = "INVALID_IMAGE_TYPE";
     throw err;
   }
-  if (archivo.size > 3 * 1024 * 1024) {
-    const err = new Error("La imagen no debe superar 3MB.");
+  if (archivo.size > 5 * 1024 * 1024) {
+    const err = new Error("La imagen no debe superar 5MB.");
     err.code = "IMAGE_TOO_LARGE";
     throw err;
   }
