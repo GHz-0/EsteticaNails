@@ -734,6 +734,16 @@ async function guardarServicio() {
   } catch (e) {
     if (e?.code === "DUPLICATE_SERVICE") {
       error.value = "Ya existe un servicio con ese nombre y categoria.";
+    } else if (
+      e?.code === "storage/unauthorized" ||
+      e?.code === "storage/canceled" ||
+      e?.code === "storage/retry-limit-exceeded" ||
+      e?.code === "STORAGE_UPLOAD_TIMEOUT"
+    ) {
+      error.value =
+        "No se pudo subir la foto. Revisa las reglas de Firebase Storage y vuelve a intentar.";
+    } else if (e?.code === "INVALID_IMAGE_TYPE" || e?.code === "IMAGE_TOO_LARGE") {
+      error.value = e.message;
     } else {
       error.value =
         "No se pudo guardar el servicio. Verifica permisos de admin.";

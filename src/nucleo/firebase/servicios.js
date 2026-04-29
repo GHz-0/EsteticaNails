@@ -62,6 +62,19 @@ function validarImagenServicio(archivo) {
   }
 }
 
+function conTimeoutUpload(promesa, ms = 45000) {
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      const err = new Error("La subida de la imagen tardo demasiado.");
+      err.code = "STORAGE_UPLOAD_TIMEOUT";
+      reject(err);
+    }, ms);
+  });
+
+  return Promise.race([promesa, timeout]).finally(() => clearTimeout(timeoutId));
+}
+
 export async function existeServicioDuplicado(
   nombre,
   categoria,
@@ -177,9 +190,11 @@ export async function subirImagenServicio(servicioId, archivo) {
   const path = `servicios/${servicioId}/${Date.now()}.${extension}`;
   const refImagen = storageRef(storage, path);
 
-  await uploadBytes(refImagen, archivo, {
-    contentType: archivo.type || "image/jpeg",
-  });
+  await conTimeoutUpload(
+    uploadBytes(refImagen, archivo, {
+      contentType: archivo.type || "image/jpeg",
+    }),
+  );
 
   const url = await getDownloadURL(refImagen);
   return { imagenUrl: url, imagenPath: path };
