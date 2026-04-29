@@ -93,6 +93,71 @@
         <RouterLink to="/registro" class="promo-link">Ver promociones</RouterLink>
       </section>
 
+      <section class="section catalog-section">
+        <header class="section-head catalog-head">
+          <div>
+            <p class="section-kicker">Catalogo interactivo</p>
+            <h2>Explora servicios y promociones</h2>
+          </div>
+
+          <label class="catalog-search" for="catalog-search">
+            <span>Buscar</span>
+            <input
+              id="catalog-search"
+              v-model="busquedaCatalogo"
+              type="search"
+              placeholder="Unas, facial, maquillaje..."
+            />
+          </label>
+        </header>
+
+        <div class="catalog-filters" aria-label="Filtrar catalogo">
+          <button
+            v-for="categoria in catalogoCategorias"
+            :key="categoria.valor"
+            type="button"
+            class="catalog-filter"
+            :class="{ active: categoriaActiva === categoria.valor }"
+            @click="categoriaActiva = categoria.valor"
+          >
+            {{ categoria.etiqueta }}
+          </button>
+        </div>
+
+        <div v-if="catalogoFiltrado.length" class="catalog-grid">
+          <article
+            v-for="(item, i) in catalogoFiltrado"
+            :key="item.titulo"
+            class="catalog-card"
+            :style="{ '--delay': `${i * 55}ms` }"
+          >
+            <img :src="item.imagen" :alt="item.titulo" class="catalog-image" />
+
+            <div class="catalog-body">
+              <div class="catalog-top">
+                <span class="catalog-tag">{{ item.categoria }}</span>
+                <span class="catalog-duration">{{ item.duracion }}</span>
+              </div>
+
+              <h3>{{ item.titulo }}</h3>
+              <p>{{ item.descripcion }}</p>
+
+              <div class="catalog-footer">
+                <span class="catalog-price">{{ item.precio }}</span>
+                <RouterLink to="/registro" class="catalog-action">Reservar</RouterLink>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div v-else class="catalog-empty">
+          <p>No encontramos resultados con ese filtro.</p>
+          <button type="button" class="catalog-action" @click="limpiarCatalogo">
+            Ver todo
+          </button>
+        </div>
+      </section>
+
       <section class="section">
         <header class="section-head">
           <div>
@@ -223,7 +288,11 @@
 </template>
 
 <script setup>
+import { computed, ref } from "vue";
+
 const anioActual = new Date().getFullYear();
+const categoriaActiva = ref("Todos");
+const busquedaCatalogo = ref("");
 
 const imagenesUi = {
   cta: "/img/inicio/cta.jpg",
@@ -344,6 +413,86 @@ const beneficios = [
     texto: "Aparta tu cita en pocos pasos y recibe promociones especiales.",
   },
 ];
+
+const catalogoCategorias = [
+  { etiqueta: "Todo", valor: "Todos" },
+  { etiqueta: "Unas", valor: "Unas" },
+  { etiqueta: "Cabello", valor: "Cabello" },
+  { etiqueta: "Piel", valor: "Piel" },
+  { etiqueta: "Eventos", valor: "Eventos" },
+  { etiqueta: "Promos", valor: "Promos" },
+];
+
+const catalogoItems = [
+  {
+    imagen: "/img/inicio/servicio-unas.jpg",
+    titulo: "Manicure gel con diseno",
+    descripcion: "Color semipermanente, preparacion de cuticula y detalle personalizado.",
+    precio: "Desde $180",
+    duracion: "60 min",
+    categoria: "Unas",
+  },
+  {
+    imagen: "/img/inicio/promo-manicure.jpg",
+    titulo: "Promo Manicure + Gel",
+    descripcion: "Diseno incluido para nuevas clientas que apartan en linea.",
+    precio: "$199",
+    duracion: "70 min",
+    categoria: "Promos",
+  },
+  {
+    imagen: "/img/inicio/servicio-color.jpg",
+    titulo: "Color y tratamiento de brillo",
+    descripcion: "Coloracion, matiz y nutricion para un acabado suave y luminoso.",
+    precio: "Desde $350",
+    duracion: "90 min",
+    categoria: "Cabello",
+  },
+  {
+    imagen: "/img/inicio/servicio-facial.jpg",
+    titulo: "Facial hidratante",
+    descripcion: "Limpieza, mascarilla y sellado para recuperar frescura en la piel.",
+    precio: "Desde $250",
+    duracion: "50 min",
+    categoria: "Piel",
+  },
+  {
+    imagen: "/img/inicio/servicio-maquillaje.jpg",
+    titulo: "Maquillaje social",
+    descripcion: "Acabado profesional para fotos, graduaciones, bodas y eventos.",
+    precio: "Desde $300",
+    duracion: "75 min",
+    categoria: "Eventos",
+  },
+  {
+    imagen: "/img/inicio/promo-maquillaje.jpg",
+    titulo: "Promo Maquillaje + Peinado",
+    descripcion: "Paquete completo para lucir lista antes de tu evento especial.",
+    precio: "$450",
+    duracion: "2 h",
+    categoria: "Promos",
+  },
+];
+
+const catalogoFiltrado = computed(() => {
+  const busqueda = busquedaCatalogo.value.trim().toLowerCase();
+
+  return catalogoItems.filter((item) => {
+    const coincideCategoria =
+      categoriaActiva.value === "Todos" || item.categoria === categoriaActiva.value;
+    const coincideBusqueda = [item.titulo, item.descripcion, item.categoria]
+      .join(" ")
+      .toLowerCase()
+      .includes(busqueda);
+
+    return coincideCategoria && coincideBusqueda;
+  });
+});
+
+function limpiarCatalogo() {
+  categoriaActiva.value = "Todos";
+  busquedaCatalogo.value = "";
+}
 </script>
 
 <style scoped>
@@ -778,6 +927,183 @@ const beneficios = [
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
+.catalog-section {
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.56);
+  box-shadow: 0 24px 48px rgba(90, 52, 67, 0.08);
+}
+
+.catalog-head {
+  align-items: center;
+}
+
+.catalog-search {
+  display: grid;
+  gap: 0.4rem;
+  min-width: min(100%, 320px);
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.catalog-search input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 1rem;
+  border: 1px solid rgba(214, 81, 125, 0.2);
+  border-radius: 999px;
+  outline: none;
+  color: var(--text);
+  font: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+  background: rgba(255, 255, 255, 0.86);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.catalog-search input:focus {
+  border-color: rgba(214, 81, 125, 0.55);
+  box-shadow: 0 0 0 4px rgba(214, 81, 125, 0.12);
+}
+
+.catalog-filters {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.catalog-filter {
+  min-height: 40px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.catalog-filter:hover {
+  transform: translateY(-2px);
+  border-color: rgba(214, 81, 125, 0.28);
+}
+
+.catalog-filter.active {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--berry), var(--peach));
+  box-shadow: 0 12px 26px rgba(214, 81, 125, 0.2);
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.catalog-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 16px 30px rgba(90, 52, 67, 0.07);
+  animation: rise 0.55s ease both;
+  animation-delay: var(--delay, 0ms);
+}
+
+.catalog-image {
+  height: 190px;
+}
+
+.catalog-body {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+}
+
+.catalog-top,
+.catalog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.catalog-tag,
+.catalog-duration {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.catalog-tag {
+  color: var(--berry);
+}
+
+.catalog-duration {
+  color: var(--muted);
+}
+
+.catalog-body h3 {
+  margin: 0;
+  font-family: "Prata", serif;
+  font-size: 1.18rem;
+}
+
+.catalog-body p,
+.catalog-empty p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.catalog-price {
+  color: var(--berry);
+  font-weight: 900;
+}
+
+.catalog-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-decoration: none;
+  background: var(--dark);
+  cursor: pointer;
+}
+
+.catalog-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem;
+  border: 1px dashed rgba(214, 81, 125, 0.28);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.64);
+}
+
 .promo-card,
 .service-card,
 .testimonial-card,
@@ -1038,6 +1364,8 @@ const beneficios = [
   }
 
   .promo-strip,
+  .catalog-head,
+  .catalog-empty,
   .final-cta {
     display: grid;
     grid-template-columns: 1fr;
