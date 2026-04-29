@@ -1111,7 +1111,7 @@ header, section, footer, .ticker-wrap {
 
 .catalog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
 
@@ -1127,8 +1127,10 @@ header, section, footer, .ticker-wrap {
 
 .catalog-image {
   width: 100%;
-  height: 170px;
-  object-fit: cover;
+  height: clamp(220px, 16vw, 280px);
+  object-fit: contain;
+  object-position: center;
+  background: rgba(15,8,15,0.72);
 }
 
 .catalog-body {
