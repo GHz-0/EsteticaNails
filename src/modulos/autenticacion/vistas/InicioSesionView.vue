@@ -1,74 +1,70 @@
 <template>
   <div class="login-page">
-    <!-- Fondo animado -->
-    <div class="bg-canvas">
+    <div class="bg-canvas" aria-hidden="true">
       <div class="blob blob-1"></div>
       <div class="blob blob-2"></div>
-      <div class="blob blob-3"></div>
-      <div class="petals">
-        <span v-for="i in 12" :key="i" class="petal" :style="petalStyle(i)"
-          >🌸</span
-        >
-      </div>
+      <div class="grid-lines"></div>
     </div>
 
-    <!-- Panel izquierdo — identidad del salón -->
-    <div class="panel-left">
-      <div class="salon-identity">
-        <div class="salon-logo">◈</div>
-        <h1 class="salon-nombre">Nails Bere</h1>
-        <p class="salon-tagline">Belleza que inspira, cuidado que transforma</p>
-        <div class="salon-servicios">
-          <span v-for="s in servicios" :key="s" class="servicio-chip">{{
-            s
-          }}</span>
+    <section class="brand-panel" aria-label="Nails Bere">
+      <RouterLink to="/" class="back-link">Volver al inicio</RouterLink>
+
+      <div class="brand-content">
+        <div class="brand-mark">NB</div>
+        <p class="eyebrow">Salón de belleza</p>
+        <h1>Nails Bere</h1>
+        <p class="brand-copy">
+          Agenda, consulta y administra tus citas en un espacio hecho para cuidar
+          cada detalle de tu experiencia.
+        </p>
+
+        <div class="service-row">
+          <span v-for="s in servicios" :key="s">{{ s }}</span>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Panel derecho — formulario -->
-    <div class="panel-right">
+    <section class="form-panel" aria-label="Iniciar sesión">
       <div class="login-card" :class="{ loaded: cardCargada }">
-        <!-- Header -->
         <div class="card-header">
-          <div class="card-logo">◈</div>
-          <h2 class="card-titulo">Bienvenida</h2>
-          <p class="card-sub">Inicia sesión en tu cuenta</p>
+          <div class="card-logo">NB</div>
+          <p class="eyebrow">Acceso seguro</p>
+          <h2>Bienvenida</h2>
+          <p>Inicia sesión para continuar con tu cuenta.</p>
         </div>
 
-        <!-- Formulario -->
         <form class="login-form" @submit.prevent="handleLogin">
-          <!-- Email -->
-          <div
+          <label
             class="field-wrap"
             :class="{ focused: foco === 'email', filled: form.email }"
           >
-            <label class="field-label">Correo electrónico</label>
-            <div class="field-inner">
-              <span class="field-icon">✉</span>
+            <span class="field-label">Correo electrónico</span>
+            <span class="field-inner">
+              <span class="field-icon">@</span>
               <input
                 v-model="form.email"
                 type="email"
                 autocomplete="email"
+                placeholder="tu@email.com"
                 required
                 @focus="foco = 'email'"
                 @blur="foco = ''"
               />
-            </div>
-          </div>
+            </span>
+          </label>
 
-          <!-- Password -->
-          <div
+          <label
             class="field-wrap"
             :class="{ focused: foco === 'password', filled: form.password }"
           >
-            <label class="field-label">Contraseña</label>
-            <div class="field-inner">
-              <span class="field-icon">🔒</span>
+            <span class="field-label">Contraseña</span>
+            <span class="field-inner">
+              <span class="field-icon">*</span>
               <input
                 v-model="form.password"
                 :type="mostrarPassword ? 'text' : 'password'"
                 autocomplete="current-password"
+                placeholder="Tu contraseña"
                 required
                 @focus="foco = 'password'"
                 @blur="foco = ''"
@@ -78,17 +74,15 @@
                 class="toggle-pass"
                 @click="mostrarPassword = !mostrarPassword"
               >
-                {{ mostrarPassword ? "🙈" : "👁" }}
+                {{ mostrarPassword ? "Ocultar" : "Ver" }}
               </button>
-            </div>
-          </div>
+            </span>
+          </label>
 
-          <!-- Error -->
           <Transition name="shake">
-            <div v-if="auth.error" class="error-msg">⚠ {{ auth.error }}</div>
+            <div v-if="auth.error" class="error-msg">{{ auth.error }}</div>
           </Transition>
 
-          <!-- Botón login -->
           <button type="submit" class="btn-login" :disabled="auth.cargando">
             <span v-if="auth.cargando" class="spinner"></span>
             <span v-else>Iniciar sesión</span>
@@ -100,7 +94,7 @@
           <RouterLink to="/registro">Crear cuenta</RouterLink>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -119,7 +113,7 @@ const foco = ref("");
 const mostrarPassword = ref(false);
 const cardCargada = ref(false);
 
-const servicios = ["✂️ Corte", "💅 Uñas", "🧖 Facial", "💄 Maquillaje"];
+const servicios = ["Manicure", "Color", "Facial", "Maquillaje"];
 
 onMounted(() => {
   setTimeout(() => {
@@ -127,24 +121,9 @@ onMounted(() => {
   }, 100);
 });
 
-// Estilo aleatorio para pétalos
-function petalStyle(i) {
-  const left = ((i - 1) * 8.5) % 100;
-  const delay = (i * 0.7) % 6;
-  const dur = 6 + (i % 4);
-  const size = 0.8 + (i % 3) * 0.3;
-  return {
-    left: `${left}%`,
-    animationDelay: `${delay}s`,
-    animationDuration: `${dur}s`,
-    fontSize: `${size}rem`,
-  };
-}
-
 async function handleLogin() {
   auth.limpiarError();
 
-  // Validar campos
   if (!form.email.trim() || !form.password.trim()) {
     auth.error = "Completa email y contraseña";
     return;
@@ -159,231 +138,188 @@ async function handleLogin() {
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap");
 
-/* ── Base ────────────────────────────────────────── */
 .login-page {
+  --c-bg: #100b0f;
+  --c-panel: rgba(255,255,255,0.045);
+  --c-card: rgba(25,18,24,0.88);
+  --c-border: rgba(236,171,218,0.20);
+  --c-border-soft: rgba(255,255,255,0.09);
+  --c-rose: #f0a7d8;
+  --c-rose-d: #c95aa8;
+  --c-gold: #f5cf92;
+  --c-text: #fff7fb;
+  --c-muted: rgba(255,247,251,0.64);
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Cabinet Grotesk", "DM Sans", sans-serif;
+
   min-height: 100vh;
-  display: flex;
-  background: #1a0a12;
-  font-family: "DM Sans", sans-serif;
-  color: #fff;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 520px);
+  background:
+    radial-gradient(circle at top left, rgba(122,47,103,0.32), transparent 34rem),
+    linear-gradient(180deg, #130d12 0%, #100b0f 54%, #090608 100%);
+  color: var(--c-text);
+  font-family: var(--font-body);
   overflow: hidden;
   position: relative;
 }
 
-/* ── Fondo animado ───────────────────────────────── */
 .bg-canvas {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  pointer-events: none;
   z-index: 0;
+  pointer-events: none;
 }
 
 .blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(90px);
-  animation: blobFloat 8s ease-in-out infinite;
+  filter: blur(120px);
+  opacity: 0.28;
 }
 
 .blob-1 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, #f9a8d4 0%, #be185d 100%);
-  opacity: 0.18;
-  top: -150px;
-  left: -100px;
-  animation-delay: 0s;
+  width: 520px;
+  height: 520px;
+  left: -160px;
+  top: -180px;
+  background: #963781;
 }
 
 .blob-2 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, #fbcfe8 0%, #f472b6 100%);
-  opacity: 0.14;
-  bottom: -100px;
-  right: -80px;
-  animation-delay: 3s;
+  width: 420px;
+  height: 420px;
+  right: -120px;
+  bottom: -140px;
+  background: #c95aa8;
+  opacity: 0.18;
 }
 
-.blob-3 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, #fce7f3 0%, #ec4899 100%);
-  opacity: 0.1;
-  top: 40%;
-  left: 45%;
-  animation-delay: 1.5s;
-}
-
-@keyframes blobFloat {
-  0%,
-  100% {
-    transform: scale(1) translate(0, 0);
-  }
-  33% {
-    transform: scale(1.06) translate(20px, -20px);
-  }
-  66% {
-    transform: scale(0.95) translate(-15px, 15px);
-  }
-}
-
-/* Pétalos */
-.petals {
+.grid-lines {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  background-image:
+    linear-gradient(rgba(236,171,218,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(236,171,218,0.025) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 30%, transparent 100%);
 }
 
-.petal {
-  position: absolute;
-  top: -40px;
-  opacity: 0.25;
-  animation: petalFall linear infinite;
-  user-select: none;
-}
-
-@keyframes petalFall {
-  0% {
-    transform: translateY(0) rotate(0deg) translateX(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.3;
-  }
-  90% {
-    opacity: 0.15;
-  }
-  100% {
-    transform: translateY(110vh) rotate(360deg) translateX(40px);
-    opacity: 0;
-  }
-}
-
-/* ── Panel izquierdo ─────────────────────────────── */
-.panel-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
+.brand-panel,
+.form-panel {
   position: relative;
   z-index: 1;
 }
 
-.salon-identity {
-  text-align: center;
-  animation: fadeSlideUp 0.8s ease both;
+.brand-panel {
+  display: flex;
+  align-items: center;
+  padding: clamp(2rem, 6vw, 5rem);
 }
 
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.back-link {
+  position: absolute;
+  top: 1.5rem;
+  left: clamp(1.5rem, 4vw, 3rem);
+  color: var(--c-muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: color 0.2s ease;
 }
 
-.salon-logo {
-  font-size: 3.5rem;
-  color: #f9a8d4;
-  line-height: 1;
-  margin-bottom: 1rem;
-  animation: pulse-icon 3s ease-in-out infinite;
+.back-link:hover {
+  color: var(--c-text);
 }
 
-@keyframes pulse-icon {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 8px rgba(249, 168, 212, 0.5));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(249, 168, 212, 0.9));
-  }
+.brand-content {
+  max-width: 560px;
+  animation: fadeUp 0.7s ease both;
 }
 
-.salon-nombre {
-  font-family: "Cormorant Garamond", serif;
-  font-style: italic;
-  font-size: 4rem;
-  font-weight: 600;
+.brand-mark,
+.card-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
   color: #fff;
+  background: linear-gradient(135deg, #ef9bd4 0%, #c95aa8 55%, #8f347c 100%);
+  border: 1px solid rgba(255,180,230,0.30);
+  box-shadow: 0 14px 30px rgba(180,60,140,0.22);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.eyebrow {
+  margin: 1.4rem 0 0.45rem;
+  color: var(--c-gold);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.brand-content h1 {
   margin: 0;
-  line-height: 1;
-  background: linear-gradient(135deg, #fce7f3, #f9a8d4, #ec4899);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 0.02em;
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 7vw, 6rem);
+  line-height: 0.95;
+  font-weight: 700;
 }
 
-.salon-tagline {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.45);
-  margin: 0.8rem 0 2rem;
-  font-style: italic;
-  letter-spacing: 0.02em;
+.brand-copy {
+  max-width: 440px;
+  margin: 1.2rem 0 1.8rem;
+  color: var(--c-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
 }
 
-.salon-servicios {
+.service-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  justify-content: center;
+  gap: 0.65rem;
 }
 
-.servicio-chip {
-  background: rgba(249, 168, 212, 0.1);
-  border: 1px solid rgba(249, 168, 212, 0.25);
-  color: rgba(255, 255, 255, 0.65);
-  padding: 0.35rem 0.9rem;
-  border-radius: 20px;
-  font-size: 0.82rem;
-  animation: fadeSlideUp 0.8s ease both;
+.service-row span {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 0.9rem;
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,247,251,0.78);
+  font-size: 0.84rem;
+  font-weight: 700;
 }
 
-.servicio-chip:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.servicio-chip:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.servicio-chip:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.servicio-chip:nth-child(4) {
-  animation-delay: 0.4s;
-}
-
-/* ── Panel derecho ───────────────────────────────── */
-.panel-right {
-  width: 460px;
-  min-width: 460px;
+.form-panel {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  position: relative;
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.025);
-  border-left: 1px solid rgba(249, 168, 212, 0.12);
-  backdrop-filter: blur(20px);
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border-left: 1px solid var(--c-border-soft);
+  background: rgba(255,255,255,0.025);
+  backdrop-filter: blur(18px);
 }
 
-/* ── Card ────────────────────────────────────────── */
 .login-card {
-  width: 100%;
-  max-width: 380px;
+  width: min(100%, 410px);
+  padding: clamp(1.4rem, 4vw, 2rem);
+  border: 1px solid var(--c-border);
+  border-radius: 24px;
+  background: var(--c-card);
+  box-shadow: 0 28px 80px rgba(0,0,0,0.34);
   opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.6s ease,
-    transform 0.6s ease;
+  transform: translateY(20px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
 .login-card.loaded {
@@ -391,252 +327,232 @@ async function handleLogin() {
   transform: translateY(0);
 }
 
-/* Header de la card */
 .card-header {
-  text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.8rem;
 }
 
-.card-logo {
-  font-size: 2rem;
-  color: #f9a8d4;
-  margin-bottom: 0.8rem;
-  display: block;
+.card-header .eyebrow {
+  margin-top: 1rem;
 }
 
-.card-titulo {
-  font-family: "Cormorant Garamond", serif;
-  font-style: italic;
-  font-size: 2rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0 0 0.3rem;
-}
-
-.card-sub {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+.card-header h2 {
   margin: 0;
+  font-family: var(--font-display);
+  font-size: 2.35rem;
+  line-height: 1;
 }
 
-/* ── Form fields ─────────────────────────────────── */
+.card-header p {
+  margin: 0.7rem 0 0;
+  color: var(--c-muted);
+  line-height: 1.55;
+}
+
 .login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  margin-bottom: 1.5rem;
+  display: grid;
+  gap: 1rem;
 }
 
 .field-wrap {
-  position: relative;
+  display: grid;
+  gap: 0.45rem;
 }
 
 .field-label {
-  display: block;
+  color: rgba(255,247,251,0.58);
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.35);
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.4rem;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .field-wrap.focused .field-label {
-  color: #f9a8d4;
+  color: var(--c-rose);
 }
 
 .field-inner {
+  min-height: 52px;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 0 1rem;
-  transition:
-    border-color 0.25s,
-    background 0.25s,
-    box-shadow 0.25s;
+  gap: 0.7rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--c-border-soft);
+  border-radius: 16px;
+  background: rgba(12,8,12,0.76);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .field-wrap.focused .field-inner {
-  border-color: rgba(249, 168, 212, 0.6);
-  background: rgba(249, 168, 212, 0.07);
-  box-shadow: 0 0 0 3px rgba(249, 168, 212, 0.1);
+  border-color: rgba(236,171,218,0.44);
+  background: rgba(255,255,255,0.055);
+  box-shadow: 0 0 0 4px rgba(236,171,218,0.08);
 }
 
 .field-icon {
-  font-size: 0.9rem;
-  opacity: 0.4;
-  flex-shrink: 0;
-  margin-right: 0.6rem;
-  transition: opacity 0.2s;
-}
-
-.field-wrap.focused .field-icon {
-  opacity: 0.8;
+  width: 22px;
+  color: var(--c-rose);
+  font-weight: 900;
+  text-align: center;
 }
 
 .field-inner input {
+  min-width: 0;
   flex: 1;
-  background: none;
-  border: none;
-  outline: none;
-  color: #fff;
-  font-size: 0.9rem;
-  font-family: "DM Sans", sans-serif;
-  padding: 0.75rem 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--c-text);
+  font: inherit;
+  font-size: 0.95rem;
 }
 
 .field-inner input::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(255,247,251,0.30);
 }
 
 .toggle-pass {
-  background: none;
-  border: none;
+  border: 0;
+  background: transparent;
+  color: var(--c-muted);
   cursor: pointer;
-  font-size: 0.9rem;
-  padding: 0.2rem;
-  opacity: 0.5;
-  transition: opacity 0.2s;
-  flex-shrink: 0;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.35rem 0;
+  transition: color 0.2s ease;
 }
+
 .toggle-pass:hover {
-  opacity: 1;
+  color: var(--c-text);
 }
 
-/* Error */
 .error-msg {
-  background: rgba(255, 100, 100, 0.1);
-  border: 1px solid rgba(255, 100, 100, 0.25);
-  border-radius: 10px;
-  padding: 0.65rem 1rem;
-  color: #fca5a5;
-  font-size: 0.82rem;
+  padding: 0.78rem 0.95rem;
+  border: 1px solid rgba(248,113,113,0.26);
+  border-radius: 14px;
+  color: #fecaca;
+  background: rgba(127,29,29,0.20);
+  font-size: 0.86rem;
 }
 
-/* Animación shake para error */
-.shake-enter-active {
-  animation: shake 0.4s ease;
-}
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  20% {
-    transform: translateX(-8px);
-  }
-  40% {
-    transform: translateX(8px);
-  }
-  60% {
-    transform: translateX(-5px);
-  }
-  80% {
-    transform: translateX(5px);
-  }
-}
-
-/* Botón login */
 .btn-login {
-  background: linear-gradient(135deg, #f472b6, #ec4899);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 0.9rem;
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.05rem;
-  font-style: italic;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: 0.04em;
-  transition:
-    opacity 0.2s,
-    transform 0.15s,
-    box-shadow 0.2s;
-  display: flex;
+  min-height: 52px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0.4rem;
-  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.3);
+  border: 1px solid rgba(255,180,230,0.30);
+  border-radius: 16px;
+  color: #fff;
+  background: linear-gradient(135deg, #ef9bd4 0%, #c95aa8 55%, #8f347c 100%);
+  box-shadow: 0 14px 30px rgba(180,60,140,0.24);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  margin-top: 0.2rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
 .btn-login:hover:not(:disabled) {
-  opacity: 0.9;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(236, 72, 153, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(180,60,140,0.32);
 }
 
-.btn-login:active:not(:disabled) {
-  transform: translateY(0);
-}
 .btn-login:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
+  opacity: 0.58;
   box-shadow: none;
 }
 
 .spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.35);
+  border: 2px solid rgba(255,255,255,0.35);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ── Divider ─────────────────────────────────────── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
 .registro-link {
-  margin-top: 1rem;
-  text-align: center;
   display: flex;
   justify-content: center;
-  gap: 0.4rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.8rem;
+  gap: 0.45rem;
+  margin-top: 1.25rem;
+  color: var(--c-muted);
+  font-size: 0.9rem;
 }
 
 .registro-link a {
-  color: #f9a8d4;
+  color: var(--c-rose);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 900;
 }
 
-/* ── Responsive ──────────────────────────────────── */
-@media (max-width: 768px) {
-  .panel-left {
+.registro-link a:hover {
+  color: var(--c-text);
+}
+
+.shake-enter-active {
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 860px) {
+  .login-page {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+
+  .brand-panel {
+    min-height: 38vh;
+    padding: 5rem 1.25rem 2rem;
+    align-items: flex-end;
+  }
+
+  .brand-content h1 {
+    font-size: clamp(3rem, 14vw, 4.4rem);
+  }
+
+  .brand-copy {
+    margin-bottom: 1.2rem;
+  }
+
+  .form-panel {
+    border-left: 0;
+    align-items: flex-start;
+    padding: 1rem 1rem 2rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .service-row {
     display: none;
   }
-  .panel-right {
-    width: 100%;
-    min-width: 100%;
-    border-left: none;
+
+  .registro-link {
+    flex-direction: column;
+    align-items: center;
   }
 }
 </style>

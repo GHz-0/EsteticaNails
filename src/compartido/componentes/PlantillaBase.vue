@@ -22,7 +22,12 @@
           active-class="nav-item--active"
           :style="{ animationDelay: `${i * 0.07}s` }"
         >
-          <span class="nav-icon">{{ item.icono }}</span>
+          <span
+            v-if="item.iconoSvg"
+            class="nav-icon nav-icon--svg"
+            v-html="item.iconoSvg"
+          ></span>
+          <span v-else class="nav-icon">{{ item.icono }}</span>
           <span class="nav-label">{{ item.titulo }}</span>
         </RouterLink>
       </nav>
@@ -398,10 +403,17 @@ function handleLogout() {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.025);
   border: 1px solid rgba(255, 255, 255, 0.04);
+  color: currentColor;
   transition:
     transform 0.2s,
     background 0.2s,
     border-color 0.2s;
+}
+
+.nav-icon--svg :deep(svg) {
+  width: 1.12rem;
+  height: 1.12rem;
+  stroke-width: 2.1;
 }
 
 .nav-item:hover .nav-icon {
