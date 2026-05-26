@@ -35,7 +35,9 @@ service cloud.firestore {
     }
 
     match /appointments/{appointmentId} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() && (
+        resource.data.usuarioId == request.auth.uid || isAdmin() || userRole() == 'empleado'
+      );
       allow create: if isSignedIn() && request.resource.data.usuarioId == request.auth.uid;
       allow update, delete: if isSignedIn() && (
         resource.data.usuarioId == request.auth.uid || isAdmin()
@@ -43,7 +45,9 @@ service cloud.firestore {
     }
 
     match /citas/{appointmentId} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() && (
+        resource.data.usuarioId == request.auth.uid || isAdmin() || userRole() == 'empleado'
+      );
       allow create: if isSignedIn() && request.resource.data.usuarioId == request.auth.uid;
       allow update, delete: if isSignedIn() && (
         resource.data.usuarioId == request.auth.uid || isAdmin()
