@@ -1,4 +1,4 @@
-<template>
+1<template>
   <section class="servicios-admin">
     <header class="cabecera">
       <h2>Gestión de Servicios</h2>

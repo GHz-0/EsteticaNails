@@ -57,7 +57,7 @@
             </div>
           </div>
 
-          <!-- Password -->
+          <!-- contraseña -->
           <div
             class="field-wrap"
             :class="{ focused: foco === 'password', filled: form.password }"
@@ -95,23 +95,6 @@
           </button>
         </form>
 
-        <!-- Divider -->
-        <div class="divider"><span>o acceso rápido demo</span></div>
-
-        <!-- Botones demo -->
-        <div class="demo-buttons">
-          <button
-            v-for="demo in demoUsers"
-            :key="demo.rol"
-            class="demo-btn"
-            :class="`demo-${demo.rol}`"
-            @click="loginDemo(demo)"
-          >
-            <span class="demo-icon">{{ demo.icono }}</span>
-            <span class="demo-label">{{ demo.etiqueta }}</span>
-          </button>
-        </div>
-
         <div class="registro-link">
           <span>¿Aún no tienes cuenta?</span>
           <RouterLink to="/registro">Crear cuenta</RouterLink>
@@ -138,14 +121,12 @@ const cardCargada = ref(false);
 
 const servicios = ["✂️ Corte", "💅 Uñas", "🧖 Facial", "💄 Maquillaje"];
 
-
 onMounted(() => {
   setTimeout(() => {
     cardCargada.value = true;
   }, 100);
 });
 
-// Estilo aleatorio para pétalos
 function petalStyle(i) {
   const left = ((i - 1) * 8.5) % 100;
   const delay = (i * 0.7) % 6;
@@ -166,12 +147,6 @@ async function handleLogin() {
     const redirect = route.query.redirect || getRutaDashboard(resultado.rol);
     router.push(redirect);
   }
-}
-
-async function loginDemo(demo) {
-  form.email = demo.email;
-  form.password = demo.password;
-  await handleLogin();
 }
 </script>
 
@@ -235,19 +210,11 @@ async function loginDemo(demo) {
 }
 
 @keyframes blobFloat {
-  0%,
-  100% {
-    transform: scale(1) translate(0, 0);
-  }
-  33% {
-    transform: scale(1.06) translate(20px, -20px);
-  }
-  66% {
-    transform: scale(0.95) translate(-15px, 15px);
-  }
+  0%, 100% { transform: scale(1) translate(0, 0); }
+  33% { transform: scale(1.06) translate(20px, -20px); }
+  66% { transform: scale(0.95) translate(-15px, 15px); }
 }
 
-/* Pétalos */
 .petals {
   position: absolute;
   inset: 0;
@@ -263,20 +230,10 @@ async function loginDemo(demo) {
 }
 
 @keyframes petalFall {
-  0% {
-    transform: translateY(0) rotate(0deg) translateX(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.3;
-  }
-  90% {
-    opacity: 0.15;
-  }
-  100% {
-    transform: translateY(110vh) rotate(360deg) translateX(40px);
-    opacity: 0;
-  }
+  0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
+  10% { opacity: 0.3; }
+  90% { opacity: 0.15; }
+  100% { transform: translateY(110vh) rotate(360deg) translateX(40px); opacity: 0; }
 }
 
 /* ── Panel izquierdo ─────────────────────────────── */
@@ -290,20 +247,11 @@ async function loginDemo(demo) {
   z-index: 1;
 }
 
-.salon-identity {
-  text-align: center;
-  animation: fadeSlideUp 0.8s ease both;
-}
+.salon-identity { text-align: center; animation: fadeSlideUp 0.8s ease both; }
 
 @keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .salon-logo {
@@ -315,13 +263,8 @@ async function loginDemo(demo) {
 }
 
 @keyframes pulse-icon {
-  0%,
-  100% {
-    filter: drop-shadow(0 0 8px rgba(249, 168, 212, 0.5));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(249, 168, 212, 0.9));
-  }
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(249, 168, 212, 0.5)); }
+  50% { filter: drop-shadow(0 0 20px rgba(249, 168, 212, 0.9)); }
 }
 
 .salon-nombre {
@@ -347,12 +290,7 @@ async function loginDemo(demo) {
   letter-spacing: 0.02em;
 }
 
-.salon-servicios {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  justify-content: center;
-}
+.salon-servicios { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
 
 .servicio-chip {
   background: rgba(249, 168, 212, 0.1);
@@ -362,19 +300,6 @@ async function loginDemo(demo) {
   border-radius: 20px;
   font-size: 0.82rem;
   animation: fadeSlideUp 0.8s ease both;
-}
-
-.servicio-chip:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.servicio-chip:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.servicio-chip:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.servicio-chip:nth-child(4) {
-  animation-delay: 0.4s;
 }
 
 /* ── Panel derecho ───────────────────────────────── */
@@ -392,34 +317,19 @@ async function loginDemo(demo) {
   backdrop-filter: blur(20px);
 }
 
-/* ── Card ────────────────────────────────────────── */
 .login-card {
   width: 100%;
   max-width: 380px;
   opacity: 0;
   transform: translateY(24px);
-  transition:
-    opacity 0.6s ease,
-    transform 0.6s ease;
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.login-card.loaded {
-  opacity: 1;
-  transform: translateY(0);
-}
+.login-card.loaded { opacity: 1; transform: translateY(0); }
 
-/* Header de la card */
-.card-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
+.card-header { text-align: center; margin-bottom: 2rem; }
 
-.card-logo {
-  font-size: 2rem;
-  color: #f9a8d4;
-  margin-bottom: 0.8rem;
-  display: block;
-}
+.card-logo { font-size: 2rem; color: #f9a8d4; margin-bottom: 0.8rem; display: block; }
 
 .card-titulo {
   font-family: "Cormorant Garamond", serif;
@@ -430,23 +340,12 @@ async function loginDemo(demo) {
   margin: 0 0 0.3rem;
 }
 
-.card-sub {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin: 0;
-}
+.card-sub { font-size: 0.85rem; color: rgba(255, 255, 255, 0.4); margin: 0; }
 
 /* ── Form fields ─────────────────────────────────── */
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  margin-bottom: 1.5rem;
-}
+.login-form { display: flex; flex-direction: column; gap: 1.1rem; margin-bottom: 1.5rem; }
 
-.field-wrap {
-  position: relative;
-}
+.field-wrap { position: relative; }
 
 .field-label {
   display: block;
@@ -458,9 +357,7 @@ async function loginDemo(demo) {
   transition: color 0.2s;
 }
 
-.field-wrap.focused .field-label {
-  color: #f9a8d4;
-}
+.field-wrap.focused .field-label { color: #f9a8d4; }
 
 .field-inner {
   display: flex;
@@ -469,10 +366,7 @@ async function loginDemo(demo) {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 0 1rem;
-  transition:
-    border-color 0.25s,
-    background 0.25s,
-    box-shadow 0.25s;
+  transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
 }
 
 .field-wrap.focused .field-inner {
@@ -481,17 +375,8 @@ async function loginDemo(demo) {
   box-shadow: 0 0 0 3px rgba(249, 168, 212, 0.1);
 }
 
-.field-icon {
-  font-size: 0.9rem;
-  opacity: 0.4;
-  flex-shrink: 0;
-  margin-right: 0.6rem;
-  transition: opacity 0.2s;
-}
-
-.field-wrap.focused .field-icon {
-  opacity: 0.8;
-}
+.field-icon { font-size: 0.9rem; opacity: 0.4; flex-shrink: 0; margin-right: 0.6rem; transition: opacity 0.2s; }
+.field-wrap.focused .field-icon { opacity: 0.8; }
 
 .field-inner input {
   flex: 1;
@@ -504,9 +389,7 @@ async function loginDemo(demo) {
   padding: 0.75rem 0;
 }
 
-.field-inner input::placeholder {
-  color: rgba(255, 255, 255, 0.2);
-}
+.field-inner input::placeholder { color: rgba(255, 255, 255, 0.2); }
 
 .toggle-pass {
   background: none;
@@ -518,11 +401,8 @@ async function loginDemo(demo) {
   transition: opacity 0.2s;
   flex-shrink: 0;
 }
-.toggle-pass:hover {
-  opacity: 1;
-}
+.toggle-pass:hover { opacity: 1; }
 
-/* Error */
 .error-msg {
   background: rgba(255, 100, 100, 0.1);
   border: 1px solid rgba(255, 100, 100, 0.25);
@@ -532,30 +412,15 @@ async function loginDemo(demo) {
   font-size: 0.82rem;
 }
 
-/* Animación shake para error */
-.shake-enter-active {
-  animation: shake 0.4s ease;
-}
+.shake-enter-active { animation: shake 0.4s ease; }
 @keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  20% {
-    transform: translateX(-8px);
-  }
-  40% {
-    transform: translateX(8px);
-  }
-  60% {
-    transform: translateX(-5px);
-  }
-  80% {
-    transform: translateX(5px);
-  }
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
 }
 
-/* Botón login */
 .btn-login {
   background: linear-gradient(135deg, #f472b6, #ec4899);
   color: #fff;
@@ -568,10 +433,7 @@ async function loginDemo(demo) {
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.04em;
-  transition:
-    opacity 0.2s,
-    transform 0.15s,
-    box-shadow 0.2s;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -585,14 +447,8 @@ async function loginDemo(demo) {
   box-shadow: 0 6px 24px rgba(236, 72, 153, 0.45);
 }
 
-.btn-login:active:not(:disabled) {
-  transform: translateY(0);
-}
-.btn-login:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  box-shadow: none;
-}
+.btn-login:active:not(:disabled) { transform: translateY(0); }
+.btn-login:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 
 .spinner {
   width: 18px;
@@ -603,89 +459,7 @@ async function loginDemo(demo) {
   animation: spin 0.7s linear infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ── Divider ─────────────────────────────────────── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* ── Demo buttons ────────────────────────────────── */
-.demo-buttons {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.demo-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.7rem 0.5rem;
-  border-radius: 12px;
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: "DM Sans", sans-serif;
-}
-
-.demo-icon {
-  font-size: 1.2rem;
-}
-.demo-label {
-  font-size: 0.7rem;
-  font-weight: 500;
-}
-
-.demo-usuario {
-  background: rgba(249, 168, 212, 0.08);
-  border-color: rgba(249, 168, 212, 0.25);
-  color: #f9a8d4;
-}
-.demo-usuario:hover {
-  background: rgba(249, 168, 212, 0.18);
-  transform: translateY(-2px);
-}
-
-.demo-empleado {
-  background: rgba(253, 186, 116, 0.08);
-  border-color: rgba(253, 186, 116, 0.25);
-  color: #fdba74;
-}
-.demo-empleado:hover {
-  background: rgba(253, 186, 116, 0.18);
-  transform: translateY(-2px);
-}
-
-.demo-admin {
-  background: rgba(196, 181, 253, 0.08);
-  border-color: rgba(196, 181, 253, 0.25);
-  color: #c4b5fd;
-}
-.demo-admin:hover {
-  background: rgba(196, 181, 253, 0.18);
-  transform: translateY(-2px);
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .registro-link {
   margin-top: 1rem;
@@ -705,13 +479,7 @@ async function loginDemo(demo) {
 
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
-  .panel-left {
-    display: none;
-  }
-  .panel-right {
-    width: 100%;
-    min-width: 100%;
-    border-left: none;
-  }
+  .panel-left { display: none; }
+  .panel-right { width: 100%; min-width: 100%; border-left: none; }
 }
 </style>
