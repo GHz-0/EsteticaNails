@@ -51,9 +51,123 @@
               </p>
             </article>
           </div>
+
+          <!-- Tarjeta de Saldo Pendiente -->
+          <div class="mt-4 rounded-2xl border border-fuchsia-100/12 bg-gradient-to-r from-fuchsia-300/8 via-pink-400/6 to-[#ead7a1]/6 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <p class="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[#ead7a1]/80">
+                Saldo Pendiente Acumulado
+              </p>
+              <p class="font-ingresos-libre mt-2 text-[1.85rem] font-bold text-[#f6e7bc]">
+                {{ formatoMoneda(saldoPendiente) }}
+              </p>
+              <p class="mt-1 text-xs text-slate-400">
+                Corresponde a citas físicas o productos a recibir en tu hogar.
+              </p>
+            </div>
+            <button
+              v-if="saldoPendiente > 0"
+              @click="abrirPagoModal = true"
+              class="rounded-full border border-[#ead7a1]/25 bg-gradient-to-r from-fuchsia-300/24 via-pink-400/22 to-[#ead7a1]/18 px-5 py-2.5 text-xs font-bold text-fuchsia-50 shadow-lg transition hover:-translate-y-0.5 hover:border-[#ead7a1]/45"
+            >
+              Pagar Saldo Online
+            </button>
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- Modal de Pago de Saldo -->
+    <div
+      v-if="abrirPagoModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/72 p-3 backdrop-blur-sm"
+    >
+      <div
+        class="w-full max-w-[420px] rounded-3xl border border-fuchsia-100/12 bg-[rgba(10,12,22,0.92)] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.5)]"
+      >
+        <header class="mb-4 flex items-center justify-between border-b border-fuchsia-100/10 pb-3">
+          <h2 class="font-display text-lg font-semibold text-fuchsia-50">
+            Pagar Saldo Pendiente
+          </h2>
+          <button @click="abrirPagoModal = false" class="text-slate-400 hover:text-white">✕</button>
+        </header>
+
+        <form @submit.prevent="procesarPago" class="grid gap-3.5">
+          <p class="text-xs text-slate-300">
+            Estás liquidando tu saldo pendiente de <strong class="text-[#f6e7bc]">{{ formatoMoneda(saldoPendiente) }}</strong>.
+          </p>
+
+          <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
+            Número de Tarjeta
+            <input
+              v-model="tarjetaForm.numero"
+              type="text"
+              required
+              maxlength="16"
+              placeholder="16 dígitos"
+              class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+            />
+          </label>
+
+          <div class="grid grid-cols-2 gap-2">
+            <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
+              Vence (MM/AA)
+              <input
+                v-model="tarjetaForm.vence"
+                type="text"
+                required
+                placeholder="MM/AA"
+                maxlength="5"
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+              />
+            </label>
+
+            <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
+              CVV
+              <input
+                v-model="tarjetaForm.cvv"
+                type="password"
+                required
+                maxlength="3"
+                placeholder="3 dígitos"
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+              />
+            </label>
+          </div>
+
+          <p
+            v-if="pagoError"
+            class="rounded-xl border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-100"
+          >
+            {{ pagoError }}
+          </p>
+          <p
+            v-if="pagoExito"
+            class="rounded-xl border border-emerald-300/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-100"
+          >
+            {{ pagoExito }}
+          </p>
+
+          <div class="flex gap-2">
+            <button
+              type="submit"
+              class="flex-1 min-h-9 rounded-full border border-[#ead7a1]/25 bg-gradient-to-r from-fuchsia-300/24 via-pink-400/22 to-[#ead7a1]/18 px-4 text-xs font-bold text-fuchsia-50 shadow disabled:opacity-50"
+              :disabled="procesando"
+            >
+              {{ procesando ? "Procesando..." : "Liquidar Adeudo" }}
+            </button>
+            <button
+              type="button"
+              @click="abrirPagoModal = false"
+              class="rounded-full border border-fuchsia-100/18 bg-white/5 px-4 py-2 text-xs font-semibold text-slate-200"
+              :disabled="procesando"
+            >
+              Cerrar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <section class="mt-4 grid gap-4 lg:grid-cols-[1fr_0.9fr]">
       <article
@@ -111,12 +225,25 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useAuthStore } from "@/nucleo/estado/auth";
+import { obtenerSaldoUsuario, pagarSaldo } from "@/nucleo/firebase/pagos";
 
 const auth = useAuthStore();
 
 const usuario = computed(() => auth.usuario || {});
+const saldoPendiente = ref(0);
+
+const abrirPagoModal = ref(false);
+const pagoError = ref("");
+const pagoExito = ref("");
+const procesando = ref(false);
+
+const tarjetaForm = ref({
+  numero: "",
+  vence: "",
+  cvv: "",
+});
 
 const inicialesUsuario = computed(() =>
   String(usuario.value.nombre || "Usuario")
@@ -151,4 +278,56 @@ const preferencias = [
     texto: "Consulta tus citas activas y tu historial desde el panel.",
   },
 ];
+
+async function cargarSaldo() {
+  saldoPendiente.value = await obtenerSaldoUsuario();
+}
+
+async function procesarPago() {
+  pagoError.value = "";
+  pagoExito.value = "";
+
+  const num = tarjetaForm.value.numero.trim();
+  const cvv = tarjetaForm.value.cvv.trim();
+
+  if (num.length !== 16 || Number.isNaN(Number(num))) {
+    pagoError.value = "Número de tarjeta inválido. Debe tener 16 dígitos.";
+    return;
+  }
+  if (cvv.length !== 3 || Number.isNaN(Number(cvv))) {
+    pagoError.value = "CVV inválido. Debe tener 3 dígitos.";
+    return;
+  }
+
+  procesando.value = true;
+  try {
+    const nuevoSaldo = await pagarSaldo(saldoPendiente.value);
+    saldoPendiente.value = nuevoSaldo;
+    pagoExito.value = "¡Adeudo liquidado con éxito!";
+    
+    // Resetear formulario
+    tarjetaForm.value = { numero: "", vence: "", cvv: "" };
+    
+    setTimeout(() => {
+      abrirPagoModal.value = false;
+      pagoExito.value = "";
+    }, 2000);
+  } catch (error) {
+    pagoError.value = `Error en el pago: ${error.message}`;
+  } finally {
+    procesando.value = false;
+  }
+}
+
+function formatoMoneda(valor) {
+  return `$${Number(valor || 0).toLocaleString("es-MX")}`;
+}
+
+onMounted(cargarSaldo);
 </script>
+
+<style scoped>
+h1, h2, h3 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+}
+</style>

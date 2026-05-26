@@ -54,6 +54,18 @@ const rutasUsuario = [
         component: () => import("@/modulos/usuario/vistas/PerfilView.vue"),
         meta: { titulo: "Mi Perfil", icono: "👤" },
       },
+      {
+        path: "productos",
+        name: "usuario-productos",
+        component: () => import("@/modulos/usuario/vistas/ProductosView.vue"),
+        meta: { titulo: "Tienda de Productos", icono: "🧴" },
+      },
+      {
+        path: "notificaciones",
+        name: "usuario-notificaciones",
+        component: () => import("@/modulos/usuario/vistas/NotificacionesView.vue"),
+        meta: { titulo: "Notificaciones", icono: "🔔" },
+      },
     ],
   },
 ];

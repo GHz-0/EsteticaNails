@@ -115,6 +115,66 @@
           </div>
 
           <label class="grid gap-1 text-xs font-semibold text-fuchsia-100/70">
+            Método de Pago *
+            <select
+              v-model="nuevaCita.metodoPago"
+              required
+              class="min-h-11 rounded-xl border border-fuchsia-200/15 bg-slate-950/70 px-3 text-sm text-fuchsia-50 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+            >
+              <option value="online">Tarjeta Online (Pago seguro anticipado)</option>
+              <option value="fisico">Físico (Pago en sucursal - se acumula saldo pendiente)</option>
+            </select>
+          </label>
+
+          <!-- Simulador de Tarjeta (Pago Online) -->
+          <div
+            v-if="nuevaCita.metodoPago === 'online'"
+            class="grid gap-3 rounded-2xl border border-fuchsia-100/10 bg-slate-950/50 p-3.5"
+          >
+            <p class="text-[0.62rem] font-bold uppercase tracking-wider text-[#ead7a1]">
+              Simulador de Pago con Tarjeta
+            </p>
+
+            <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
+              Número de Tarjeta
+              <input
+                v-model="tarjetaForm.numero"
+                type="text"
+                required
+                maxlength="16"
+                placeholder="16 dígitos"
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+              />
+            </label>
+
+            <div class="grid grid-cols-2 gap-2">
+              <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
+                Vence (MM/AA)
+                <input
+                  v-model="tarjetaForm.vence"
+                  type="text"
+                  required
+                  placeholder="MM/AA"
+                  maxlength="5"
+                  class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+                />
+              </label>
+
+              <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
+                CVV
+                <input
+                  v-model="tarjetaForm.cvv"
+                  type="password"
+                  required
+                  maxlength="3"
+                  placeholder="3 dígitos"
+                  class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+                />
+              </label>
+            </div>
+          </div>
+
+          <label class="grid gap-1 text-xs font-semibold text-fuchsia-100/70">
             Notas
             <textarea
               v-model="nuevaCita.notas"
@@ -195,6 +255,20 @@
               <p class="mt-1 text-sm text-fuchsia-100/60">
                 {{ formatearFecha(cita.fecha) }} · {{ cita.hora }}
               </p>
+              
+              <!-- Detalles de Pago de la Cita -->
+              <p class="mt-1.5 flex flex-wrap gap-1.5">
+                <span class="rounded bg-white/5 border border-fuchsia-100/10 px-2 py-0.5 text-[0.68rem] text-slate-300">
+                  Pago: {{ cita.metodoPago === 'online' ? 'Tarjeta Online' : 'Físico en Sucursal' }}
+                </span>
+                <span
+                  class="rounded px-2 py-0.5 text-[0.68rem] font-bold"
+                  :class="cita.estadoPago === 'completado' ? 'bg-emerald-500/10 border border-emerald-300/25 text-emerald-300' : 'bg-rose-500/10 border border-rose-300/25 text-rose-300'"
+                >
+                  {{ cita.estadoPago === 'completado' ? 'Pagado' : 'Pendiente' }}
+                </span>
+              </p>
+
               <p v-if="cita.notas" class="mt-2 text-sm italic leading-6 text-fuchsia-100/46">
                 {{ cita.notas }}
               </p>
@@ -238,11 +312,18 @@ const enviando = ref(false);
 const errorCita = ref("");
 const exitoCita = ref("");
 
+const tarjetaForm = ref({
+  numero: "",
+  vence: "",
+  cvv: "",
+});
+
 const nuevaCita = ref({
   servicioId: "",
   fecha: "",
   hora: "",
   notas: "",
+  metodoPago: "online",
 });
 
 const fechaMinima = computed(() => new Date().toISOString().slice(0, 10));
@@ -295,19 +376,36 @@ async function crearNuevaCita() {
     return;
   }
 
+  if (nuevaCita.value.metodoPago === "online") {
+    const num = tarjetaForm.value.numero.trim();
+    const cvv = tarjetaForm.value.cvv.trim();
+    if (num.length !== 16 || Number.isNaN(Number(num))) {
+      errorCita.value = "Número de tarjeta inválido. Debe tener 16 dígitos.";
+      return;
+    }
+    if (cvv.length !== 3 || Number.isNaN(Number(cvv))) {
+      errorCita.value = "CVV de tarjeta inválido. Debe tener 3 dígitos.";
+      return;
+    }
+  }
+
   enviando.value = true;
   try {
     const fechaHora = new Date(`${nuevaCita.value.fecha}T${nuevaCita.value.hora}`);
+    const precio = servicioSeleccionado.value?.precio || 0;
 
     await crearCita({
       servicioId: nuevaCita.value.servicioId,
       fecha: fechaHora,
       hora: nuevaCita.value.hora,
       notas: nuevaCita.value.notas,
+      metodoPago: nuevaCita.value.metodoPago,
+      precio,
     });
 
     exitoCita.value = "Cita creada exitosamente.";
-    nuevaCita.value = { servicioId: "", fecha: "", hora: "", notas: "" };
+    nuevaCita.value = { servicioId: "", fecha: "", hora: "", notas: "", metodoPago: "online" };
+    tarjetaForm.value = { numero: "", vence: "", cvv: "" };
     await cargarCitas();
 
     setTimeout(() => {

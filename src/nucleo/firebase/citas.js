@@ -77,6 +77,9 @@ export async function obtenerCitasPorEmpleado(empleadoId) {
   }
 }
 
+import { crearNotificacion } from "./pagos.js";
+import { increment } from "firebase/firestore";
+
 /**
  * Crea una nueva cita
  */
@@ -85,20 +88,47 @@ export async function crearCita(datos) {
     const usuario = auth.currentUser;
     if (!usuario) throw new Error("Usuario no autenticado");
 
+    const estadoPago = datos.metodoPago === "online" ? "completado" : "pendiente";
+    const precio = Number(datos.precio || 0);
+
     const citasRef = collection(db, "citas");
     const docRef = await addDoc(citasRef, {
       ...datos,
       usuarioId: usuario.uid,
       estado: "pendiente",
+      estadoPago,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
+
+    // Registrar saldo pendiente e invocar notificaciones según el método de pago
+    if (datos.metodoPago === "fisico") {
+      const userRef = doc(db, "users", usuario.uid);
+      await updateDoc(userRef, {
+        montoPendiente: increment(precio),
+      });
+
+      await crearNotificacion(
+        usuario.uid,
+        "Cobro pendiente de cita",
+        `Has reservado tu cita para ${datos.hora || "el horario seleccionado"}. Al elegir pago físico en sucursal, se ha sumado $${precio.toLocaleString("es-MX")} a tu saldo pendiente.`,
+        "pago"
+      );
+    } else {
+      await crearNotificacion(
+        usuario.uid,
+        "Cita pagada y agendada",
+        `Confirmamos tu cita para las ${datos.hora || "el horario seleccionado"} con pago en línea procesado exitosamente por $${precio.toLocaleString("es-MX")}.`,
+        "general"
+      );
+    }
 
     return {
       id: docRef.id,
       ...datos,
       usuarioId: usuario.uid,
       estado: "pendiente",
+      estadoPago,
     };
   } catch (error) {
     console.error("Error creando cita:", error);

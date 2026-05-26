@@ -19,5 +19,7 @@ const navItems = [
   { name: "usuario-dashboard", titulo: "Mi Panel", icono: "🏠" },
   { name: "usuario-servicios", titulo: "Servicios", icono: "🛍️" },
   { name: "usuario-citas", titulo: "Mis Citas", icono: "📅" },
+  { name: "usuario-productos", titulo: "Tienda", icono: "🧴" },
+  { name: "usuario-notificaciones", titulo: "Notificaciones", icono: "🔔" },
 ];
 </script>
