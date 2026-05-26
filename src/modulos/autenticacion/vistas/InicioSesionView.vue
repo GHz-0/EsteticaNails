@@ -10,7 +10,6 @@
       <RouterLink to="/" class="back-link">Volver al inicio</RouterLink>
 
       <div class="brand-content">
-        <div class="brand-mark">NB</div>
         <p class="eyebrow">Salón de belleza</p>
         <h1>Nails Bere</h1>
         <p class="brand-copy">
@@ -27,7 +26,6 @@
     <section class="form-panel" aria-label="Iniciar sesión">
       <div class="login-card" :class="{ loaded: cardCargada }">
         <div class="card-header">
-          <div class="card-logo">NB</div>
           <p class="eyebrow">Acceso seguro</p>
           <h2>Bienvenida</h2>
           <p>Inicia sesión para continuar con tu cuenta.</p>
@@ -73,8 +71,18 @@
                 type="button"
                 class="toggle-pass"
                 @click="mostrarPassword = !mostrarPassword"
+                :aria-label="mostrarPassword ? 'Ocultar contraseña' : 'Ver contraseña'"
+                title="{{ mostrarPassword ? 'Ocultar' : 'Ver' }}"
               >
-                {{ mostrarPassword ? "Ocultar" : "Ver" }}
+                <svg v-if="!mostrarPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.86 21.86 0 0 1 5.06-5.94"></path>
+                  <path d="M1 1l22 22"></path>
+                  <path d="M9.88 9.88A3 3 0 0 0 14.12 14.12"></path>
+                </svg>
               </button>
             </span>
           </label>
