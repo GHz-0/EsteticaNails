@@ -18,7 +18,7 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read: if isSelf(uid) || isAdmin();
+      allow read: if isSelf(uid) || isAdmin() || resource.data.rol == 'empleado';
       allow create: if isSelf(uid) || isAdmin();
       allow update: if isSelf(uid) || isAdmin();
       allow delete: if isAdmin();
