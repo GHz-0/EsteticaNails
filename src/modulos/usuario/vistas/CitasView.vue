@@ -468,6 +468,7 @@ async function crearNuevaCita() {
   try {
     const fechaHora = new Date(`${nuevaCita.value.fecha}T${nuevaCita.value.hora}`);
     const precio = servicioSeleccionado.value?.precio || 0;
+    const puntos = servicioSeleccionado.value?.puntos || 0;
     const empleadoObj = listaEmpleados.value.find((e) => e.id === nuevaCita.value.empleadoId);
     const empleadaNombre = empleadoObj ? empleadoObj.nombre : "Por asignar";
 
@@ -480,6 +481,7 @@ async function crearNuevaCita() {
       precio,
       empleadoId: nuevaCita.value.empleadoId,
       empleadaNombre,
+      puntos,
     });
 
     exitoCita.value = "Cita creada exitosamente.";

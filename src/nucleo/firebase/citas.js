@@ -90,6 +90,7 @@ export async function crearCita(datos) {
 
     const estadoPago = datos.metodoPago === "online" ? "completado" : "pendiente";
     const precio = Number(datos.precio || 0);
+    const puntos = Number(datos.puntos || 0);
 
     const citasRef = collection(db, "citas");
     const docRef = await addDoc(citasRef, {
@@ -101,24 +102,29 @@ export async function crearCita(datos) {
       updatedAt: serverTimestamp(),
     });
 
-    // Registrar saldo pendiente e invocar notificaciones según el método de pago
+    // Registrar saldo pendiente, puntos e invocar notificaciones según el método de pago
+    const userRef = doc(db, "users", usuario.uid);
     if (datos.metodoPago === "fisico") {
-      const userRef = doc(db, "users", usuario.uid);
       await updateDoc(userRef, {
         montoPendiente: increment(precio),
+        score: increment(puntos),
       });
 
       await crearNotificacion(
         usuario.uid,
         "Cobro pendiente de cita",
-        `Has reservado tu cita para ${datos.hora || "el horario seleccionado"}. Al elegir pago físico en sucursal, se ha sumado $${precio.toLocaleString("es-MX")} a tu saldo pendiente.`,
+        `Has reservado tu cita para ${datos.hora || "el horario seleccionado"}. Al elegir pago físico en sucursal, se ha sumado $${precio.toLocaleString("es-MX")} a tu saldo pendiente. Ganaste +${puntos} puntos por agendar.`,
         "pago"
       );
     } else {
+      await updateDoc(userRef, {
+        score: increment(puntos),
+      });
+
       await crearNotificacion(
         usuario.uid,
         "Cita pagada y agendada",
-        `Confirmamos tu cita para las ${datos.hora || "el horario seleccionado"} con pago en línea procesado exitosamente por $${precio.toLocaleString("es-MX")}.`,
+        `Confirmamos tu cita para las ${datos.hora || "el horario seleccionado"} con pago en línea procesado exitosamente por $${precio.toLocaleString("es-MX")}. Ganaste +${puntos} puntos por agendar.`,
         "general"
       );
     }

@@ -287,7 +287,7 @@ const stats = computed(() => {
   return [
     { titulo: "Citas este mes", valor: String(citasMes), icono: "◷" },
     { titulo: "Servicios usados", valor: String(serviciosUsados), icono: "✦" },
-    { titulo: "Puntos acumulados", valor: String(citasActivas.value.length * 40), icono: "◇" },
+    { titulo: "Puntos acumulados", valor: String(auth.usuario?.score || 0), icono: "◇" },
   ];
 });
 

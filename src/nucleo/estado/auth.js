@@ -127,6 +127,7 @@ export const useAuthStore = defineStore("auth", () => {
       direccionEnvio: data.direccionEnvio || "",
       tarjetas: data.tarjetas || [],
       montoPendiente: data.montoPendiente || 0,
+      score: Number(data.score || 0),
     };
 
     // Bootstrap opcional: si el correo está en VITE_ADMIN_EMAILS, se promueve a admin.
@@ -160,6 +161,7 @@ export const useAuthStore = defineStore("auth", () => {
         direccionEnvio: perfil.direccionEnvio,
         tarjetas: perfil.tarjetas,
         montoPendiente: perfil.montoPendiente,
+        score: perfil.score,
       };
       token.value = idToken;
       persistirSesion();
@@ -213,6 +215,7 @@ export const useAuthStore = defineStore("auth", () => {
         direccionEnvio: perfil.direccionEnvio,
         tarjetas: perfil.tarjetas,
         montoPendiente: perfil.montoPendiente,
+        score: perfil.score,
       };
       token.value = idToken;
       persistirSesion();
@@ -266,6 +269,7 @@ export const useAuthStore = defineStore("auth", () => {
           direccionEnvio: perfil.direccionEnvio,
           tarjetas: perfil.tarjetas,
           montoPendiente: perfil.montoPendiente,
+          score: perfil.score,
         };
         token.value = idToken;
         persistirSesion();

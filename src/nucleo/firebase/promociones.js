@@ -50,7 +50,6 @@ export async function obtenerPromocionesActivas() {
   const q = query(
     collection(db, COLECCION),
     where("activa", "==", true),
-    orderBy("creadaEn", "desc"),
   );
   const snap = await getDocs(q);
   const ahora = new Date();
@@ -67,6 +66,11 @@ export async function obtenerPromocionesActivas() {
       // Si tiene fecha de fin, verificar que no haya expirado
       if (promo.fechaFin && promo.fechaFin < ahora) return false;
       return true;
+    })
+    .sort((a, b) => {
+      const tA = a.creadaEn ? a.creadaEn.getTime() : 0;
+      const tB = b.creadaEn ? b.creadaEn.getTime() : 0;
+      return tB - tA;
     });
 }
 

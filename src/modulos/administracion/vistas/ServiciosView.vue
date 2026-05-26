@@ -227,6 +227,37 @@
                 type="number"
                 min="1"
                 step="1"
+            <label class="grid gap-1 text-xs font-medium text-slate-300">
+              Nombre
+              <input
+                v-model.trim="form.nombre"
+                type="text"
+                required
+                maxlength="80"
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              />
+            </label>
+
+            <label class="grid gap-1 text-xs font-medium text-slate-300">
+              Categoria
+              <select
+                v-model="form.categoria"
+                required
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              >
+                <option v-for="cat in categorias" :key="cat" :value="cat">
+                  {{ etiquetaCategoria(cat) }}
+                </option>
+              </select>
+            </label>
+
+            <label class="grid gap-1 text-xs font-medium text-slate-300">
+              Precio (MXN)
+              <input
+                v-model.number="form.precio"
+                type="number"
+                min="1"
+                step="1"
                 required
                 class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
               />
@@ -241,6 +272,18 @@
                 step="5"
                 required
                 class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              />
+            </label>
+
+            <label class="grid gap-1 text-xs font-medium text-slate-300">
+              Puntos que otorga
+              <input
+                v-model.number="form.puntos"
+                type="number"
+                min="0"
+                step="1"
+                required
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-[#f6e7bc] font-bold outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
               />
             </label>
 
@@ -430,6 +473,12 @@
               >
                 {{ servicio.duracion }} min
               </span>
+              <span
+                v-if="servicio.puntos"
+                class="rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-1 text-[0.66rem] font-bold text-amber-200"
+              >
+                ✨ {{ servicio.puntos }} pts
+              </span>
             </div>
           </li>
         </ul>
@@ -476,6 +525,7 @@ const formVacio = () => ({
   descripcion: "",
   imagenUrl: "",
   imagenPath: "",
+  puntos: 10,
 });
 
 const form = ref(formVacio());
@@ -639,6 +689,7 @@ function editar(servicio) {
     descripcion: servicio.descripcion || "",
     imagenUrl: servicio.imagenUrl || "",
     imagenPath: servicio.imagenPath || "",
+    puntos: Number(servicio.puntos || 0),
   };
   liberarPreviewImagen();
   imagenArchivo.value = null;
@@ -702,6 +753,7 @@ async function guardarServicio() {
     descripcion: form.value.descripcion,
     imagenUrl: form.value.imagenUrl || "",
     imagenPath: form.value.imagenPath || "",
+    puntos: Number(form.value.puntos || 0),
   };
 
   try {
