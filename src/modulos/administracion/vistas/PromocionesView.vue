@@ -129,6 +129,41 @@
             @submit.prevent="guardarPromocion"
           >
             <label class="grid gap-1 text-xs font-medium text-slate-300">
+              Vincular a
+              <select
+                v-model="form.tipoPromo"
+                @change="alCambiarTipoPromo"
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-slate-100 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+              >
+                <option value="general">General / Sin vincular</option>
+                <option value="servicio">Servicio del catálogo</option>
+                <option value="producto">Producto del inventario</option>
+              </select>
+            </label>
+
+            <label v-if="form.tipoPromo !== 'general'" class="grid gap-1 text-xs font-medium text-slate-300">
+              Seleccionar {{ form.tipoPromo === 'servicio' ? 'Servicio' : 'Producto' }}
+              <select
+                :value="itemSeleccionadoId"
+                @change="alSeleccionarItem($event.target.value)"
+                required
+                class="rounded-lg border border-fuchsia-200/15 bg-slate-950/70 px-2.5 py-1.5 text-sm text-[#ead7a1] outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15 font-semibold"
+              >
+                <option value="">-- Selecciona una opción --</option>
+                <template v-if="form.tipoPromo === 'servicio'">
+                  <option v-for="s in servicios" :key="s.id" :value="s.id">
+                    {{ s.nombre }} (${{ s.precio }})
+                  </option>
+                </template>
+                <template v-else-if="form.tipoPromo === 'producto'">
+                  <option v-for="p in inventario" :key="p.id" :value="p.id">
+                    {{ p.nombre }} (${{ p.precioVenta }})
+                  </option>
+                </template>
+              </select>
+            </label>
+
+            <label class="grid gap-1 text-xs font-medium text-slate-300">
               Título
               <input
                 v-model.trim="form.titulo"
@@ -451,6 +486,8 @@ import {
   subirImagenPromocion,
   eliminarImagenPromocion,
 } from "@/nucleo/firebase/promociones";
+import { obtenerServicios } from "@/nucleo/firebase/servicios";
+import { obtenerInventario } from "@/nucleo/firebase/inventario";
 
 const categorias = [
   { valor: "unas", etiqueta: "Uñas" },
@@ -464,6 +501,8 @@ const categorias = [
 const cargando = ref(false);
 const guardando = ref(false);
 const promociones = ref([]);
+const servicios = ref([]);
+const inventario = ref([]);
 const editandoId = ref(null);
 const error = ref("");
 const ok = ref("");
@@ -473,6 +512,7 @@ const formularioAbierto = ref(false);
 const imagenArchivo = ref(null);
 const imagenPreviewUrl = ref("");
 const imagenPathAEliminar = ref("");
+const itemSeleccionadoId = ref("");
 
 const formVacio = () => ({
   titulo: "",
@@ -486,6 +526,9 @@ const formVacio = () => ({
   fechaFin: "",
   imagenUrl: "",
   imagenPath: "",
+  tipoPromo: "general",
+  servicioId: "",
+  productoId: "",
 });
 
 const form = ref(formVacio());
@@ -575,6 +618,44 @@ function toggleFormulario() {
   }
 }
 
+function alCambiarTipoPromo() {
+  form.value.servicioId = "";
+  form.value.productoId = "";
+  itemSeleccionadoId.value = "";
+  form.value.titulo = "";
+  form.value.precioAntes = 0;
+  form.value.descripcion = "";
+  form.value.imagenUrl = "";
+}
+
+function alSeleccionarItem(itemId) {
+  itemSeleccionadoId.value = itemId;
+  if (!itemId) return;
+
+  if (form.value.tipoPromo === "servicio") {
+    const s = servicios.value.find((x) => x.id === itemId);
+    if (s) {
+      form.value.servicioId = s.id;
+      form.value.titulo = s.nombre;
+      form.value.precioAntes = Number(s.precio || 0);
+      form.value.descripcion = s.descripcion || "";
+      form.value.imagenUrl = s.imagenUrl || "";
+      const catVal = s.categoria ? String(s.categoria).toLowerCase() : "general";
+      form.value.categoria = categorias.some((c) => c.valor === catVal) ? catVal : "general";
+    }
+  } else if (form.value.tipoPromo === "producto") {
+    const p = inventario.value.find((x) => x.id === itemId);
+    if (p) {
+      form.value.productoId = p.id;
+      form.value.titulo = p.nombre;
+      form.value.precioAntes = Number(p.precioVenta || 0);
+      form.value.descripcion = `¡Aprovecha nuestro producto ${p.nombre} de la marca ${p.marca || ""} en promoción!`;
+      form.value.imagenUrl = p.imagenUrl || "";
+      form.value.categoria = "general";
+    }
+  }
+}
+
 function editar(promo) {
   limpiarMensajes();
   editandoId.value = promo.id;
@@ -600,7 +681,11 @@ function editar(promo) {
       : "",
     imagenUrl: promo.imagenUrl || "",
     imagenPath: promo.imagenPath || "",
+    tipoPromo: promo.tipoPromo || "general",
+    servicioId: promo.servicioId || "",
+    productoId: promo.productoId || "",
   };
+  itemSeleccionadoId.value = promo.servicioId || promo.productoId || "";
   liberarPreview();
   imagenArchivo.value = null;
   imagenPathAEliminar.value = "";
@@ -610,6 +695,7 @@ function cancelarEdicion() {
   editandoId.value = null;
   formularioAbierto.value = false;
   form.value = formVacio();
+  itemSeleccionadoId.value = "";
   liberarPreview();
   imagenArchivo.value = null;
   imagenPathAEliminar.value = "";
@@ -659,6 +745,9 @@ async function guardarPromocion() {
     fechaFin: form.value.fechaFin || null,
     imagenUrl: form.value.imagenUrl || "",
     imagenPath: form.value.imagenPath || "",
+    tipoPromo: form.value.tipoPromo || "general",
+    servicioId: form.value.servicioId || "",
+    productoId: form.value.productoId || "",
   };
 
   try {
@@ -733,7 +822,15 @@ async function toggleActiva(promo) {
   }
 }
 
-onMounted(cargarPromociones);
+onMounted(async () => {
+  await cargarPromociones();
+  try {
+    servicios.value = await obtenerServicios();
+    inventario.value = await obtenerInventario();
+  } catch (e) {
+    console.error("Error cargando catálogos en promociones:", e);
+  }
+});
 
 // ── Animaciones de transición (mismo patrón que ServiciosView) ──
 function antesEntrar(el) {
