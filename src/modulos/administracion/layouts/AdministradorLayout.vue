@@ -20,6 +20,5 @@ const navItems = [
   { name: "admin-reportes", titulo: "Reportes", icono: "📊" },
   { name: "admin-empleados", titulo: "Empleados", icono: "👨‍💼" },
   { name: "admin-servicios", titulo: "Servicios", icono: "🛠️" },
-  { name: "admin-config", titulo: "Configuración", icono: "⚙️" },
 ];
 </script>
