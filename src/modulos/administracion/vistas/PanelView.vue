@@ -196,12 +196,6 @@ const accionesRapidas = [
     label: "Reportes",
     detail: "Ingresos, citas y clientes",
   },
-  {
-    name: "admin-config",
-    icon: "*",
-    label: "Configuracion",
-    detail: "Ajustes generales del sistema",
-  },
 ];
 
 onMounted(async () => {

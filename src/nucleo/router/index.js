@@ -130,13 +130,6 @@ const rutasAdmin = [
           import("@/modulos/administracion/vistas/ServiciosView.vue"),
         meta: { titulo: "Servicios", icono: "🛠️" },
       },
-      {
-        path: "configuracion",
-        name: "admin-config",
-        component: () =>
-          import("@/modulos/administracion/vistas/ConfiguracionView.vue"),
-        meta: { titulo: "Configuración", icono: "⚙️" },
-      },
     ],
   },
 ];
