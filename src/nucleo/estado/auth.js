@@ -123,6 +123,10 @@ export const useAuthStore = defineStore("auth", () => {
       rol: data.rol || ROLES.USUARIO,
       avatar: data.avatar || iniciales(data.nombre || nombreBase),
       estado: data.estado || "activo",
+      telefono: data.telefono || "",
+      direccionEnvio: data.direccionEnvio || "",
+      tarjetas: data.tarjetas || [],
+      montoPendiente: data.montoPendiente || 0,
     };
 
     // Bootstrap opcional: si el correo está en VITE_ADMIN_EMAILS, se promueve a admin.
@@ -152,6 +156,10 @@ export const useAuthStore = defineStore("auth", () => {
         email: perfil.email,
         rol: perfil.rol,
         avatar: perfil.avatar,
+        telefono: perfil.telefono,
+        direccionEnvio: perfil.direccionEnvio,
+        tarjetas: perfil.tarjetas,
+        montoPendiente: perfil.montoPendiente,
       };
       token.value = idToken;
       persistirSesion();
@@ -182,6 +190,10 @@ export const useAuthStore = defineStore("auth", () => {
         rol: esCorreoAdmin(email) ? ROLES.ADMIN : ROLES.USUARIO,
         avatar: iniciales(nombre),
         estado: "activo",
+        telefono: "",
+        direccionEnvio: "",
+        tarjetas: [],
+        montoPendiente: 0,
       };
 
       await setDoc(doc(db, "users", cred.user.uid), {
@@ -197,6 +209,10 @@ export const useAuthStore = defineStore("auth", () => {
         email: perfil.email,
         rol: perfil.rol,
         avatar: perfil.avatar,
+        telefono: perfil.telefono,
+        direccionEnvio: perfil.direccionEnvio,
+        tarjetas: perfil.tarjetas,
+        montoPendiente: perfil.montoPendiente,
       };
       token.value = idToken;
       persistirSesion();
@@ -246,12 +262,44 @@ export const useAuthStore = defineStore("auth", () => {
           email: perfil.email,
           rol: perfil.rol,
           avatar: perfil.avatar,
+          telefono: perfil.telefono,
+          direccionEnvio: perfil.direccionEnvio,
+          tarjetas: perfil.tarjetas,
+          montoPendiente: perfil.montoPendiente,
         };
         token.value = idToken;
         persistirSesion();
       });
     } catch {
       // Si Firebase no está configurado aún, mantenemos el estado local actual.
+    }
+  }
+
+  async function actualizarPerfil(datos) {
+    cargando.value = true;
+    error.value = null;
+    try {
+      const db = getFirebaseDb();
+      const userRef = doc(db, "users", usuario.value.id);
+      
+      await updateDoc(userRef, {
+        ...datos,
+        updatedAt: serverTimestamp(),
+      });
+
+      // Actualizar el estado local en Pinia
+      usuario.value = {
+        ...usuario.value,
+        ...datos,
+      };
+      persistirSesion();
+      return { ok: true };
+    } catch (err) {
+      console.error("Error actualizando perfil:", err);
+      error.value = err.message;
+      return { ok: false, mensaje: err.message };
+    } finally {
+      cargando.value = false;
     }
   }
 
@@ -274,6 +322,7 @@ export const useAuthStore = defineStore("auth", () => {
     registrar,
     logout,
     inicializarAuth,
+    actualizarPerfil,
     limpiarError,
   };
 });

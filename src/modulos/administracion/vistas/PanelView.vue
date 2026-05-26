@@ -196,6 +196,12 @@ const accionesRapidas = [
     label: "Reportes",
     detail: "Ingresos, citas y clientes",
   },
+  {
+    name: "admin-promociones",
+    icon: "★",
+    label: "Promociones",
+    detail: "Ofertas y descuentos activos",
+  },
 ];
 
 onMounted(async () => {

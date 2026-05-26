@@ -175,7 +175,7 @@
           </div>
 
           <button
-            @click="abrirCheckout = true"
+            @click="abrirCheckoutModal"
             class="mt-2 min-h-10 w-full rounded-full border border-[#ead7a1]/25 bg-gradient-to-r from-fuchsia-300/24 via-pink-400/22 to-[#ead7a1]/18 px-4 text-xs font-bold text-fuchsia-50 shadow hover:-translate-y-0.5 hover:border-[#ead7a1]/45"
           >
             Proceder al Checkout
@@ -183,7 +183,7 @@
         </div>
       </aside>
     </section>
-
+ 
     <!-- Modal de Checkout -->
     <div
       v-if="abrirCheckout"
@@ -200,7 +200,7 @@
             ✕
           </button>
         </header>
-
+ 
         <form @submit.prevent="procesarCheckout" class="grid gap-3.5">
           <!-- Dirección de envío -->
           <label class="grid gap-1 text-xs font-semibold text-slate-300">
@@ -213,7 +213,7 @@
               class="rounded-xl border border-fuchsia-200/15 bg-slate-950/70 px-3 py-2 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
             />
           </label>
-
+ 
           <!-- Método de pago -->
           <label class="grid gap-1 text-xs font-semibold text-slate-300">
             Método de Pago *
@@ -226,7 +226,7 @@
               <option value="fisico">Físico (Efectivo al recibir - se acumula saldo pendiente)</option>
             </select>
           </label>
-
+ 
           <!-- Formulario de tarjeta (Si es online) -->
           <div
             v-if="datosCheckout.metodoPago === 'online'"
@@ -235,7 +235,25 @@
             <p class="text-[0.62rem] font-bold uppercase tracking-wider text-[#ead7a1]">
               Simulador de Tarjeta
             </p>
-
+ 
+            <!-- Selector de tarjeta guardada -->
+            <label v-if="auth.usuario?.tarjetas?.length" class="grid gap-1 text-[0.68rem] font-semibold text-slate-400">
+              Pagar con tarjeta guardada
+              <select
+                @change="seleccionarTarjetaGuardada"
+                class="min-h-9 rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+              >
+                <option value="">-- Usar una tarjeta nueva --</option>
+                <option
+                  v-for="tarjeta in auth.usuario.tarjetas"
+                  :key="tarjeta.id"
+                  :value="tarjeta.id"
+                >
+                  {{ tarjeta.marca }} terminada en {{ tarjeta.numero.slice(-4) }} ({{ tarjeta.nombre }})
+                </option>
+              </select>
+            </label>
+ 
             <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
               Número de Tarjeta
               <input
@@ -245,9 +263,10 @@
                 maxlength="16"
                 placeholder="16 dígitos"
                 class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+                :disabled="tarjetaSeleccionadaId !== ''"
               />
             </label>
-
+ 
             <div class="grid grid-cols-2 gap-2">
               <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
                 Fecha Vence (MM/AA)
@@ -258,9 +277,10 @@
                   placeholder="MM/AA"
                   maxlength="5"
                   class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+                  :disabled="tarjetaSeleccionadaId !== ''"
                 />
               </label>
-
+ 
               <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
                 CVV
                 <input
@@ -322,6 +342,10 @@
 import { computed, onMounted, ref } from "vue";
 import { obtenerInventario } from "@/nucleo/firebase/inventario";
 import { realizarCompra } from "@/nucleo/firebase/pagos";
+import { useAuthStore } from "@/nucleo/estado/auth";
+
+const auth = useAuthStore();
+const tarjetaSeleccionadaId = ref("");
 
 const cargando = ref(true);
 const procesando = ref(false);
@@ -343,6 +367,32 @@ const datosCheckout = ref({
   tarjetaVence: "",
   tarjetaCvv: "",
 });
+
+function abrirCheckoutModal() {
+  if (auth.usuario) {
+    datosCheckout.value.direccionEnvio = auth.usuario.direccionEnvio || "";
+  }
+  abrirCheckout.value = true;
+}
+
+function seleccionarTarjetaGuardada(event) {
+  const id = event.target.value;
+  tarjetaSeleccionadaId.value = id;
+
+  if (!id) {
+    datosCheckout.value.tarjetaNumero = "";
+    datosCheckout.value.tarjetaVence = "";
+    datosCheckout.value.tarjetaCvv = "";
+    return;
+  }
+
+  const tarjeta = auth.usuario?.tarjetas?.find((t) => t.id === id);
+  if (tarjeta) {
+    datosCheckout.value.tarjetaNumero = tarjeta.numero;
+    datosCheckout.value.tarjetaVence = tarjeta.vence;
+    datosCheckout.value.tarjetaCvv = "";
+  }
+}
 
 // Obtener categorías únicas
 const categorias = computed(() => {
@@ -435,10 +485,21 @@ async function procesarCheckout() {
     // Validar tarjeta
     const num = datosCheckout.value.tarjetaNumero.trim();
     const cvv = datosCheckout.value.tarjetaCvv.trim();
-    if (num.length !== 16 || Number.isNaN(Number(num))) {
-      checkoutError.value = "Número de tarjeta inválido. Debe tener 16 dígitos.";
-      return;
+
+    const esTarjetaGuardada = num.includes("*");
+
+    if (esTarjetaGuardada) {
+      if (num.length < 12) {
+        checkoutError.value = "La tarjeta guardada seleccionada es inválida.";
+        return;
+      }
+    } else {
+      if (num.replace(/\s+/g, "").length !== 16 || Number.isNaN(Number(num.replace(/\s+/g, "")))) {
+        checkoutError.value = "Número de tarjeta inválido. Debe tener 16 dígitos.";
+        return;
+      }
     }
+
     if (cvv.length !== 3 || Number.isNaN(Number(cvv))) {
       checkoutError.value = "CVV inválido. Debe tener 3 dígitos.";
       return;
@@ -459,6 +520,14 @@ async function procesarCheckout() {
       abrirCheckout.value = false;
       await cargarProductos();
       checkoutExito.value = "";
+      datosCheckout.value = {
+        direccionEnvio: "",
+        metodoPago: "online",
+        tarjetaNumero: "",
+        tarjetaVence: "",
+        tarjetaCvv: "",
+      };
+      tarjetaSeleccionadaId.value = "";
     }, 2500);
   } catch (error) {
     checkoutError.value = `Error en el checkout: ${error.message}`;

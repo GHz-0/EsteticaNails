@@ -142,6 +142,13 @@ const rutasAdmin = [
           import("@/modulos/administracion/vistas/ServiciosView.vue"),
         meta: { titulo: "Servicios", icono: "🛠️" },
       },
+      {
+        path: "promociones",
+        name: "admin-promociones",
+        component: () =>
+          import("@/modulos/administracion/vistas/PromocionesView.vue"),
+        meta: { titulo: "Promociones", icono: "🏷️" },
+      },
     ],
   },
 ];

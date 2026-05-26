@@ -50,6 +50,11 @@ service cloud.firestore {
       );
     }
 
+    match /promociones/{promoId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /inventory/{itemId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();

@@ -55,7 +55,8 @@
           <div class="perfil-wrapper" ref="perfilRef">
             <button class="perfil-btn" @click="perfilAbierto = !perfilAbierto">
               <div class="perfil-avatar" :class="`avatar-${rolTema}`">
-                {{ auth.usuario?.avatar }}
+                <img v-if="auth.usuario?.avatar && auth.usuario.avatar.startsWith('http')" :src="auth.usuario.avatar" alt="Avatar" />
+                <span v-else>{{ auth.usuario?.avatar }}</span>
               </div>
               <span class="perfil-chevron" :class="{ rotado: perfilAbierto }"
                 >▾</span
@@ -67,7 +68,8 @@
               <div v-if="perfilAbierto" class="perfil-dropdown">
                 <div class="dropdown-header">
                   <div class="dropdown-avatar" :class="`avatar-${rolTema}`">
-                    {{ auth.usuario?.avatar }}
+                    <img v-if="auth.usuario?.avatar && auth.usuario.avatar.startsWith('http')" :src="auth.usuario.avatar" alt="Avatar" />
+                    <span v-else>{{ auth.usuario?.avatar }}</span>
                   </div>
                   <div class="dropdown-info">
                     <p class="dropdown-nombre">{{ auth.usuario?.nombre }}</p>
@@ -605,6 +607,13 @@ function handleLogout() {
   transition:
     transform 0.2s,
     box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.perfil-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .perfil-btn:hover .perfil-avatar {
@@ -670,6 +679,13 @@ function handleLogout() {
   color: #f9a8d4;
   border: 1px solid rgba(234, 215, 161, 0.18);
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.dropdown-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .dropdown-nombre {

@@ -153,6 +153,24 @@
               Simulador de Pago con Tarjeta
             </p>
 
+            <!-- Selector de tarjeta guardada -->
+            <label v-if="auth.usuario?.tarjetas?.length" class="grid gap-1 text-[0.68rem] font-semibold text-slate-400">
+              Pagar con tarjeta guardada
+              <select
+                @change="seleccionarTarjetaGuardada"
+                class="min-h-9 rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+              >
+                <option value="">-- Usar una tarjeta nueva --</option>
+                <option
+                  v-for="tarjeta in auth.usuario.tarjetas"
+                  :key="tarjeta.id"
+                  :value="tarjeta.id"
+                >
+                  {{ tarjeta.marca }} terminada en {{ tarjeta.numero.slice(-4) }} ({{ tarjeta.nombre }})
+                </option>
+              </select>
+            </label>
+
             <label class="grid gap-0.5 text-[0.68rem] font-semibold text-slate-400">
               Número de Tarjeta
               <input
@@ -162,6 +180,7 @@
                 maxlength="16"
                 placeholder="16 dígitos"
                 class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+                :disabled="tarjetaSeleccionadaId !== ''"
               />
             </label>
 
@@ -175,6 +194,7 @@
                   placeholder="MM/AA"
                   maxlength="5"
                   class="rounded-lg border border-fuchsia-200/15 bg-slate-950/80 px-2.5 py-1.5 text-xs text-fuchsia-50 outline-none focus:border-[#ead7a1]/55"
+                  :disabled="tarjetaSeleccionadaId !== ''"
                 />
               </label>
 
@@ -323,6 +343,10 @@ import {
   cancelarCita as cancelarCitaFirebase,
 } from "@/nucleo/firebase/citas.js";
 import { obtenerEmpleados } from "@/nucleo/firebase/empleados.js";
+import { useAuthStore } from "@/nucleo/estado/auth";
+
+const auth = useAuthStore();
+const tarjetaSeleccionadaId = ref("");
 
 const servicios = ref([]);
 const misCitas = ref([]);
@@ -357,6 +381,23 @@ const citasActivas = computed(
 const servicioSeleccionado = computed(() =>
   servicios.value.find((servicio) => servicio.id === nuevaCita.value.servicioId),
 );
+
+function seleccionarTarjetaGuardada(event) {
+  const id = event.target.value;
+  tarjetaSeleccionadaId.value = id;
+
+  if (!id) {
+    tarjetaForm.value = { numero: "", vence: "", cvv: "" };
+    return;
+  }
+
+  const tarjeta = auth.usuario?.tarjetas?.find((t) => t.id === id);
+  if (tarjeta) {
+    tarjetaForm.value.numero = tarjeta.numero;
+    tarjetaForm.value.vence = tarjeta.vence;
+    tarjetaForm.value.cvv = "";
+  }
+}
 
 onMounted(async () => {
   try {
@@ -402,10 +443,21 @@ async function crearNuevaCita() {
   if (nuevaCita.value.metodoPago === "online") {
     const num = tarjetaForm.value.numero.trim();
     const cvv = tarjetaForm.value.cvv.trim();
-    if (num.length !== 16 || Number.isNaN(Number(num))) {
-      errorCita.value = "Número de tarjeta inválido. Debe tener 16 dígitos.";
-      return;
+
+    const esTarjetaGuardada = num.includes("*");
+
+    if (esTarjetaGuardada) {
+      if (num.length < 12) {
+        errorCita.value = "La tarjeta guardada seleccionada es inválida.";
+        return;
+      }
+    } else {
+      if (num.replace(/\s+/g, "").length !== 16 || Number.isNaN(Number(num.replace(/\s+/g, "")))) {
+        errorCita.value = "Número de tarjeta inválido. Debe tener 16 dígitos.";
+        return;
+      }
     }
+
     if (cvv.length !== 3 || Number.isNaN(Number(cvv))) {
       errorCita.value = "CVV de tarjeta inválido. Debe tener 3 dígitos.";
       return;
@@ -433,6 +485,7 @@ async function crearNuevaCita() {
     exitoCita.value = "Cita creada exitosamente.";
     nuevaCita.value = { servicioId: "", fecha: "", hora: "", notas: "", metodoPago: "online", empleadoId: "" };
     tarjetaForm.value = { numero: "", vence: "", cvv: "" };
+    tarjetaSeleccionadaId.value = "";
     await cargarCitas();
 
     setTimeout(() => {

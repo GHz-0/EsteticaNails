@@ -90,6 +90,63 @@
       </article>
     </section>
 
+    <!-- ── PROMOCIONES ACTIVAS ── -->
+    <section v-if="promos.length" class="mt-6">
+      <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.22em] text-[#ead7a1]/80">
+            Ofertas especiales
+          </p>
+          <h2 class="font-display mt-1 text-[2rem] font-semibold leading-none text-fuchsia-50">
+            Promociones para ti
+          </h2>
+        </div>
+      </div>
+
+      <div class="flex gap-3 overflow-x-auto pb-2" style="scrollbar-width: thin; scrollbar-color: rgba(249,168,212,0.2) transparent;">
+        <article
+          v-for="promo in promos"
+          :key="promo.id"
+          class="group relative flex w-[300px] flex-shrink-0 gap-3 overflow-hidden rounded-[1.25rem] border border-fuchsia-100/10 bg-white/[0.035] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.2)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-fuchsia-200/28"
+        >
+          <span
+            v-if="promo.destacada"
+            class="absolute right-2 top-2 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 px-2 py-0.5 text-[0.6rem] font-extrabold uppercase text-white shadow-lg"
+          >
+            Popular ★
+          </span>
+
+          <img
+            :src="promo.imagenUrl || '/img/inicio/cta.jpg'"
+            :alt="promo.titulo"
+            class="h-20 w-20 flex-shrink-0 rounded-xl object-cover transition group-hover:scale-105"
+          />
+
+          <div class="flex min-w-0 flex-1 flex-col justify-between">
+            <div>
+              <h3 class="font-display truncate text-[1.05rem] font-semibold text-fuchsia-50">
+                {{ promo.titulo }}
+              </h3>
+              <p class="mt-1 line-clamp-2 text-[0.72rem] leading-4 text-fuchsia-100/52">
+                {{ promo.descripcion }}
+              </p>
+            </div>
+            <div class="mt-2 flex items-center gap-2">
+              <span
+                v-if="promo.precioAntes"
+                class="text-xs text-fuchsia-100/40 line-through"
+              >
+                ${{ promo.precioAntes }}
+              </span>
+              <span class="font-ingresos-libre text-lg font-bold text-[#f6e7bc]">
+                ${{ promo.precioAhora }}
+              </span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <section class="mt-6">
       <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -153,10 +210,12 @@ import { computed, onMounted, ref } from "vue";
 import { useAuthStore } from "@/nucleo/estado/auth";
 import { obtenerServicios } from "@/nucleo/firebase/servicios";
 import { obtenerMisCitas } from "@/nucleo/firebase/citas";
+import { obtenerPromocionesActivas } from "@/nucleo/firebase/promociones";
 
 const auth = useAuthStore();
 const servicios = ref([]);
 const citas = ref([]);
+const promos = ref([]);
 
 const nombreCorto = computed(
   () => auth.usuario?.nombre?.split(" ")[0] || "Clienta",
@@ -164,12 +223,14 @@ const nombreCorto = computed(
 
 onMounted(async () => {
   try {
-    const [listaServicios, listaCitas] = await Promise.all([
+    const [listaServicios, listaCitas, listaPromos] = await Promise.all([
       obtenerServicios(),
       obtenerMisCitas(),
+      obtenerPromocionesActivas(),
     ]);
     servicios.value = listaServicios;
     citas.value = listaCitas;
+    promos.value = listaPromos;
   } catch (error) {
     console.error("Error cargando datos del panel:", error);
   }

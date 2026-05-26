@@ -164,10 +164,10 @@
       </div>
     </section>
 
-    <section class="section promos-section">
+    <section v-if="promocionesActivas.length" class="section promos-section">
       <header class="section-header">
         <div>
-          <p class="eyebrow">Abril 2025</p>
+          <p class="eyebrow">{{ mesActual }}</p>
           <h2>Promociones del mes</h2>
         </div>
         <RouterLink to="/registro" class="header-link">Ver todas →</RouterLink>
@@ -175,23 +175,23 @@
 
       <div class="promos-grid">
         <article
-          v-for="(promo, i) in promociones"
-          :key="promo.titulo"
+          v-for="(promo, i) in promocionesActivas"
+          :key="promo.id"
           class="promo-card"
           :class="{ 'promo-featured': promo.destacada }"
           :style="{ '--delay': `${i * 80}ms` }"
         >
           <div v-if="promo.destacada" class="hot-badge">Popular ★</div>
           <div class="promo-thumb-wrap">
-            <img class="promo-thumb" :src="promo.imagen" :alt="promo.titulo" />
+            <img class="promo-thumb" :src="promo.imagenUrl || '/img/inicio/cta.jpg'" :alt="promo.titulo" />
           </div>
           <div class="promo-body">
             <p class="promo-titulo">{{ promo.titulo }}</p>
-            <p class="promo-desc">{{ promo.desc }}</p>
+            <p class="promo-desc">{{ promo.descripcion }}</p>
           </div>
           <div class="promo-precio-wrap">
-            <span class="precio-before">{{ promo.antes }}</span>
-            <span class="precio-now">{{ promo.ahora }}</span>
+            <span v-if="promo.precioAntes" class="precio-before">${{ promo.precioAntes }}</span>
+            <span class="precio-now">${{ promo.precioAhora }}</span>
           </div>
         </article>
       </div>
@@ -262,7 +262,8 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { obtenerPromocionesActivas } from "@/nucleo/firebase/promociones";
 
 const categoriaActiva = ref("Todos");
 const busquedaCatalogo = ref("");
@@ -273,40 +274,21 @@ const imagenesUi = {
   cta: "/img/inicio/cta.jpg",
 };
 
-const promociones = [
-  {
-    imagen: "/img/inicio/promo-manicure.jpg",
-    titulo: "Manicure + Gel",
-    desc: "Diseño incluido para nuevas clientas",
-    antes: "$280",
-    ahora: "$199",
-    destacada: true,
-  },
-  {
-    imagen: "/img/inicio/promo-facial.jpg",
-    titulo: "Facial Express",
-    desc: "Limpieza profunda + hidratación",
-    antes: "$350",
-    ahora: "$250",
-    destacada: false,
-  },
-  {
-    imagen: "/img/inicio/promo-maquillaje.jpg",
-    titulo: "Maquillaje + Peinado",
-    desc: "Pack eventos y graduaciones",
-    antes: "$600",
-    ahora: "$450",
-    destacada: false,
-  },
-  {
-    imagen: "/img/inicio/promo-color.jpg",
-    titulo: "Color completo",
-    desc: "Tinte + tratamiento de brillo",
-    antes: "$700",
-    ahora: "$520",
-    destacada: true,
-  },
-];
+const promocionesActivas = ref([]);
+
+const mesActual = computed(() => {
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const ahora = new Date();
+  return `${meses[ahora.getMonth()]} ${ahora.getFullYear()}`;
+});
+
+onMounted(async () => {
+  try {
+    promocionesActivas.value = await obtenerPromocionesActivas();
+  } catch (e) {
+    console.error('Error cargando promociones:', e);
+  }
+});
 
 const testimonios = [
   {
