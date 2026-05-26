@@ -6,6 +6,7 @@ import { useAuthStore } from "@/nucleo/estado/auth";
 import { inicializarServicios } from "@/nucleo/firebase/servicios.js";
 import { inicializarInventario } from "@/nucleo/firebase/inventario.js";
 import { inicializarCitas } from "@/nucleo/firebase/citas.js";
+import { inicializarEmpleados } from "@/nucleo/firebase/empleados.js";
 import "./styles.css";
 
 const app = createApp(App);
@@ -24,6 +25,7 @@ auth.$subscribe(async (mutation, state) => {
       await inicializarServicios();
       await inicializarInventario();
       await inicializarCitas();
+      await inicializarEmpleados();
     } catch (error) {
       console.error("Error inicializando datos:", error);
     }

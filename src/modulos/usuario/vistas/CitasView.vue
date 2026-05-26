@@ -115,6 +115,24 @@
           </div>
 
           <label class="grid gap-1 text-xs font-semibold text-fuchsia-100/70">
+            Especialista / Estilista *
+            <select
+              v-model="nuevaCita.empleadoId"
+              required
+              class="min-h-11 rounded-xl border border-fuchsia-200/15 bg-slate-950/70 px-3 text-sm text-fuchsia-50 outline-none transition focus:border-[#ead7a1]/55 focus:ring-2 focus:ring-[#ead7a1]/15"
+            >
+              <option value="">Selecciona especialista</option>
+              <option
+                v-for="emp in listaEmpleados"
+                :key="emp.id"
+                :value="emp.id"
+              >
+                {{ emp.nombre }} ({{ emp.especialidad || 'General' }})
+              </option>
+            </select>
+          </label>
+
+          <label class="grid gap-1 text-xs font-semibold text-fuchsia-100/70">
             Método de Pago *
             <select
               v-model="nuevaCita.metodoPago"
@@ -304,6 +322,7 @@ import {
   crearCita,
   cancelarCita as cancelarCitaFirebase,
 } from "@/nucleo/firebase/citas.js";
+import { obtenerEmpleados } from "@/nucleo/firebase/empleados.js";
 
 const servicios = ref([]);
 const misCitas = ref([]);
@@ -318,12 +337,15 @@ const tarjetaForm = ref({
   cvv: "",
 });
 
+const listaEmpleados = ref([]);
+
 const nuevaCita = ref({
   servicioId: "",
   fecha: "",
   hora: "",
   notas: "",
   metodoPago: "online",
+  empleadoId: "",
 });
 
 const fechaMinima = computed(() => new Date().toISOString().slice(0, 10));
@@ -340,6 +362,7 @@ onMounted(async () => {
   try {
     servicios.value = await obtenerServicios();
     await cargarCitas();
+    listaEmpleados.value = await obtenerEmpleados();
 
     const servicioStorage = sessionStorage.getItem("servicioSeleccionado");
     if (servicioStorage) {
@@ -371,8 +394,8 @@ async function crearNuevaCita() {
   errorCita.value = "";
   exitoCita.value = "";
 
-  if (!nuevaCita.value.servicioId || !nuevaCita.value.fecha || !nuevaCita.value.hora) {
-    errorCita.value = "Completa todos los campos requeridos.";
+  if (!nuevaCita.value.servicioId || !nuevaCita.value.fecha || !nuevaCita.value.hora || !nuevaCita.value.empleadoId) {
+    errorCita.value = "Completa todos los campos requeridos, incluyendo la especialista.";
     return;
   }
 
@@ -393,6 +416,8 @@ async function crearNuevaCita() {
   try {
     const fechaHora = new Date(`${nuevaCita.value.fecha}T${nuevaCita.value.hora}`);
     const precio = servicioSeleccionado.value?.precio || 0;
+    const empleadoObj = listaEmpleados.value.find((e) => e.id === nuevaCita.value.empleadoId);
+    const empleadaNombre = empleadoObj ? empleadoObj.nombre : "Por asignar";
 
     await crearCita({
       servicioId: nuevaCita.value.servicioId,
@@ -401,10 +426,12 @@ async function crearNuevaCita() {
       notas: nuevaCita.value.notas,
       metodoPago: nuevaCita.value.metodoPago,
       precio,
+      empleadoId: nuevaCita.value.empleadoId,
+      empleadaNombre,
     });
 
     exitoCita.value = "Cita creada exitosamente.";
-    nuevaCita.value = { servicioId: "", fecha: "", hora: "", notas: "", metodoPago: "online" };
+    nuevaCita.value = { servicioId: "", fecha: "", hora: "", notas: "", metodoPago: "online", empleadoId: "" };
     tarjetaForm.value = { numero: "", vence: "", cvv: "" };
     await cargarCitas();
 

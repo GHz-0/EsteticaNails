@@ -122,3 +122,68 @@ export async function eliminarEmpleado(empleadoId) {
     throw error;
   }
 }
+
+/**
+ * Inicializa empleados de prueba en Firestore (si no existen)
+ */
+export async function inicializarEmpleados() {
+  try {
+    const usuariosRef = collection(db, "users");
+    const q = query(usuariosRef, where("rol", "==", "empleado"));
+    const snapshot = await getDocs(q);
+
+    // Si ya existen empleados en Firestore, no hacer nada
+    if (snapshot.docs.length > 0) {
+      console.log("Empleados ya existen en Firestore");
+      return;
+    }
+
+    const empleadosPrueba = [
+      {
+        uid: "demo-empleado-ana",
+        nombre: "Ana Martinez",
+        email: "empleado@demo.com",
+        rol: "empleado",
+        avatar: "AM",
+        estado: "activo",
+        telefono: "555-0191",
+        especialidad: "Corte y Color",
+        horario: "Lunes a Viernes 09:00 - 18:00",
+      },
+      {
+        uid: "demo-empleado-sofia",
+        nombre: "Sofia Ramirez",
+        email: "sofia@salon.com",
+        rol: "empleado",
+        avatar: "SR",
+        estado: "activo",
+        telefono: "555-0192",
+        especialidad: "Facial y Maquillaje",
+        horario: "Lunes a Viernes 09:00 - 18:00",
+      },
+      {
+        uid: "demo-empleado-laura",
+        nombre: "Laura Gonzalez",
+        email: "laura@salon.com",
+        rol: "empleado",
+        avatar: "LG",
+        estado: "activo",
+        telefono: "555-0193",
+        especialidad: "Uñas y Manicure",
+        horario: "Lunes a Viernes 09:00 - 18:00",
+      },
+    ];
+
+    for (const emp of empleadosPrueba) {
+      await setDoc(doc(db, "users", emp.uid), {
+        ...emp,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    }
+
+    console.log("Empleados demo inicializados en Firestore");
+  } catch (error) {
+    console.error("Error inicializando empleados:", error);
+  }
+}
